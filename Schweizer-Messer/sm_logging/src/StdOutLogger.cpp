@@ -1,5 +1,5 @@
-#include <sm/logging/StdOutLogger.hpp>
 #include <boost/cstdint.hpp>
+#include <sm/logging/StdOutLogger.hpp>
 #include <sstream>
 #ifdef WIN32
 #include <windows.h>
@@ -9,18 +9,12 @@
 #include <sm/logging/LoggingEvent.hpp>
 
 namespace sm {
-    namespace logging {
+namespace logging {
 
-        StdOutLogger::StdOutLogger(){}
-        StdOutLogger::~StdOutLogger(){}
-            
-        
-        void StdOutLogger::logImplementation(const LoggingEvent & event)
-        {
-            formatter.print(event,std::cout);
-            
-        }
+StdOutLogger::StdOutLogger() {}
+StdOutLogger::~StdOutLogger() {}
 
+void StdOutLogger::logImplementation(const LoggingEvent& event) { formatter.print(event, std::cout); }
 
-    } // namespace logging
-} // namespace sm
+}  // namespace logging
+}  // namespace sm

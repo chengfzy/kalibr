@@ -26,14 +26,14 @@
 #include <cstdlib>
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    template <typename X, int M = 1> class UniformDistribution;
-
-  }
+template <typename X, int M = 1>
+class UniformDistribution;
 }
+}  // namespace aslam
 
 #include "aslam/calibration/statistics/UniformDistribution1v.h"
 #include "aslam/calibration/statistics/UniformDistributionMv.h"
 
-#endif // ASLAM_CALIBRATION_STATISTICS_UNIFORMDISTRIBUTION_H
+#endif  // ASLAM_CALIBRATION_STATISTICS_UNIFORMDISTRIBUTION_H

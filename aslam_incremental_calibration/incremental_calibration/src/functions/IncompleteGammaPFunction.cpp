@@ -21,65 +21,48 @@
 #include <boost/math/special_functions/gamma.hpp>
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-    IncompleteGammaPFunction::IncompleteGammaPFunction(double alpha) :
-        mAlpha(alpha) {
-    }
+IncompleteGammaPFunction::IncompleteGammaPFunction(double alpha) : mAlpha(alpha) {}
 
-    IncompleteGammaPFunction::IncompleteGammaPFunction(const
-        IncompleteGammaPFunction& other) :
-        mAlpha(other.mAlpha) {
-    }
+IncompleteGammaPFunction::IncompleteGammaPFunction(const IncompleteGammaPFunction& other) : mAlpha(other.mAlpha) {}
 
-    IncompleteGammaPFunction& IncompleteGammaPFunction::operator = (const
-        IncompleteGammaPFunction& other) {
-      if (this != &other) {
+IncompleteGammaPFunction& IncompleteGammaPFunction::operator=(const IncompleteGammaPFunction& other) {
+    if (this != &other) {
         mAlpha = other.mAlpha;
-      }
-      return *this;
     }
+    return *this;
+}
 
-    IncompleteGammaPFunction::~IncompleteGammaPFunction() {
-    }
+IncompleteGammaPFunction::~IncompleteGammaPFunction() {}
 
 /******************************************************************************/
 /* Stream operations                                                          */
 /******************************************************************************/
 
-    void IncompleteGammaPFunction::read(std::istream& stream) {
-    }
+void IncompleteGammaPFunction::read(std::istream& stream) {}
 
-    void IncompleteGammaPFunction::write(std::ostream& stream) const {
-      stream << "alpha: " << mAlpha;
-    }
+void IncompleteGammaPFunction::write(std::ostream& stream) const { stream << "alpha: " << mAlpha; }
 
-    void IncompleteGammaPFunction::read(std::ifstream& stream) {
-    }
+void IncompleteGammaPFunction::read(std::ifstream& stream) {}
 
-    void IncompleteGammaPFunction::write(std::ofstream& stream) const {
-    }
+void IncompleteGammaPFunction::write(std::ofstream& stream) const {}
 
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
 
-    double IncompleteGammaPFunction::getValue(const VariableType& argument)
-        const {
-      return boost::math::gamma_p(mAlpha, argument);
-    }
-
-    double IncompleteGammaPFunction::getAlpha() const {
-      return mAlpha;
-    }
-
-    void IncompleteGammaPFunction::setAlpha(double alpha) {
-      mAlpha = alpha;
-    }
-
-  }
+double IncompleteGammaPFunction::getValue(const VariableType& argument) const {
+    return boost::math::gamma_p(mAlpha, argument);
 }
+
+double IncompleteGammaPFunction::getAlpha() const { return mAlpha; }
+
+void IncompleteGammaPFunction::setAlpha(double alpha) { mAlpha = alpha; }
+
+}  // namespace calibration
+}  // namespace aslam

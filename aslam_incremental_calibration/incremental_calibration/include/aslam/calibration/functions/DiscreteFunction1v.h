@@ -24,44 +24,43 @@
 #include "aslam/calibration/functions/Function.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The class DiscreteFunction1v is an interface to the univariate discrete
-        functions.
-        \brief Univariate discrete function
+/** The class DiscreteFunction1v is an interface to the univariate discrete
+    functions.
+    \brief Univariate discrete function
+  */
+template <typename Y, typename X>
+class DiscreteFunction<Y, X> : public virtual Function<Y, X> {
+  public:
+    /** \name Types
+      @{
       */
-    template <typename Y, typename X> class DiscreteFunction<Y, X> :
-      public virtual Function<Y, X> {
-    public:
-      /** \name Types
-        @{
-        */
-      /// Domain type
-      typedef X DomainType;
-      /// Codomain type
-      typedef Y CodomainType;
-      /** @}
-        */
+    /// Domain type
+    typedef X DomainType;
+    /// Codomain type
+    typedef Y CodomainType;
+    /** @}
+     */
 
-      /** \name Constructors/Destructor
-        @{
-        */
-      /// Destructor
-      virtual ~DiscreteFunction();
-      /** @}
-        */
+    /** \name Constructors/Destructor
+      @{
+      */
+    /// Destructor
+    virtual ~DiscreteFunction();
+    /** @}
+     */
 
-      /** \name Accessors
-        @{
-        */
-      /// Access the function's number of variables
-      virtual size_t getNumVariables() const;
-      /** @}
-        */
+    /** \name Accessors
+      @{
+      */
+    /// Access the function's number of variables
+    virtual size_t getNumVariables() const;
+    /** @}
+     */
+};
 
-    };
-
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
 #include "aslam/calibration/functions/DiscreteFunction1v.tpp"

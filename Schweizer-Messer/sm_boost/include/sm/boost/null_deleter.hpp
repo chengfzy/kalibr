@@ -3,13 +3,11 @@
 
 namespace sm {
 
-    struct null_deleter
-    {
-      template<typename T>
-      void operator()(const T * ){}
-    };
+struct null_deleter {
+    template <typename T>
+    void operator()(const T*) {}
+};
 
-} // namespace sm
-
+}  // namespace sm
 
 #endif /* SM_BOOST_NULL_DELETER_HPP */

@@ -26,15 +26,14 @@
 #include <cstdlib>
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    template <typename Y, typename X, int M = 1, int N = 1>
-      class DiscreteFunction;
-
-  }
+template <typename Y, typename X, int M = 1, int N = 1>
+class DiscreteFunction;
 }
+}  // namespace aslam
 
 #include "aslam/calibration/functions/DiscreteFunction1v.h"
 #include "aslam/calibration/functions/DiscreteFunctionMv.h"
 
-#endif // ASLAM_CALIBRATION_FUNCTIONS_DISCRETEFUNCTION_H
+#endif  // ASLAM_CALIBRATION_FUNCTIONS_DISCRETEFUNCTION_H

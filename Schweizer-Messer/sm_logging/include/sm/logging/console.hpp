@@ -35,209 +35,197 @@
 #include <cstdio>
 #include <sstream>
 
-#include <cstdarg>
 #include <sm/logging/macros.h>
+#include <boost/interprocess/streams/vectorstream.hpp>
+#include <cstdarg>
 #include <sm/logging/Levels.hpp>
 #include <sm/logging/LoggingGlobals.hpp>
-#include <boost/interprocess/streams/vectorstream.hpp>
 
-namespace boost
-{
-    template<typename T> class shared_array;
+namespace boost {
+template <typename T>
+class shared_array;
 }
 
-namespace sm
-{
-    namespace logging {
-        class Logger;
-    } // namespace logging
+namespace sm {
+namespace logging {
+class Logger;
+}  // namespace logging
 
-    namespace logging
-    {
+namespace logging {}  // namespace logging
+}  // namespace sm
 
-
-
-    } // namespace logging
-} // namespace sm
-
-
-
-
-
-#define SMCONSOLE_DEFINE_LOCATION(cond, level, name)                    \
-    static ::sm::logging::LogLocation loc;                              \
-    if (SM_UNLIKELY(!loc._initialized))                                 \
-    {                                                                   \
+#define SMCONSOLE_DEFINE_LOCATION(cond, level, name)                               \
+    static ::sm::logging::LogLocation loc;                                         \
+    if (SM_UNLIKELY(!loc._initialized)) {                                          \
         ::sm::logging::g_logging_globals.initializeLogLocation(&loc, name, level); \
-    }                                                                   \
-    if (SM_UNLIKELY(loc._level != level))                               \
-    {                                                                   \
-        ::sm::logging::g_logging_globals.setLogLocationLevel(&loc, level);             \
-        ::sm::logging::g_logging_globals.checkLogLocationEnabled(&loc);                \
-    }                                                                   \
+    }                                                                              \
+    if (SM_UNLIKELY(loc._level != level)) {                                        \
+        ::sm::logging::g_logging_globals.setLogLocationLevel(&loc, level);         \
+        ::sm::logging::g_logging_globals.checkLogLocationEnabled(&loc);            \
+    }                                                                              \
     bool enabled = loc._loggerEnabled && (cond);
 
-#define SMCONSOLE_PRINT_AT_LOCATION(...)                      \
-    ::sm::logging::g_logging_globals.print(loc._streamName.c_str(), loc._level, __FILE__, __LINE__, __SMCONSOLE_FUNCTION__, __VA_ARGS__)
+#define SMCONSOLE_PRINT_AT_LOCATION(...)                                                            \
+    ::sm::logging::g_logging_globals.print(loc._streamName.c_str(), loc._level, __FILE__, __LINE__, \
+                                           __SMCONSOLE_FUNCTION__, __VA_ARGS__)
 
-
-#define SMCONSOLE_PRINT_STREAM_AT_LOCATION(args)                        \
-    do                                                                  \
-    {                                                                   \
-        ::sm::logging::vectorstream ss;                                 \
-        ss << args;                                                     \
-        ::sm::logging::g_logging_globals.print(loc._streamName.c_str(), loc._level, ss, __FILE__, __LINE__, __SMCONSOLE_FUNCTION__); \
+#define SMCONSOLE_PRINT_STREAM_AT_LOCATION(args)                                                            \
+    do {                                                                                                    \
+        ::sm::logging::vectorstream ss;                                                                     \
+        ss << args;                                                                                         \
+        ::sm::logging::g_logging_globals.print(loc._streamName.c_str(), loc._level, ss, __FILE__, __LINE__, \
+                                               __SMCONSOLE_FUNCTION__);                                     \
     } while (0)
 
-
 /**
- * \brief Log to a given named logger at a given verbosity level, only if a given condition has been met, with printf-style formatting
+ * \brief Log to a given named logger at a given verbosity level, only if a given condition has been met, with
+ * printf-style formatting
  *
  * \note The condition will only be evaluated if this logging statement is enabled
  *
  * \param cond Boolean condition to be evaluated
  * \param level One of the levels specified in ::sm::logging::levels::Level
- * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
+ * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include
+ * "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
  */
-#define SM_LOG_COND(cond, level, name, ...)             \
-    do                                                  \
-    {                                                   \
-        SMCONSOLE_DEFINE_LOCATION(cond, level, name);   \
-                                                        \
-        if (SM_UNLIKELY(enabled))                       \
-        {                                               \
-            SMCONSOLE_PRINT_AT_LOCATION(__VA_ARGS__);   \
-        }                                               \
-    } while(0)
+#define SM_LOG_COND(cond, level, name, ...)           \
+    do {                                              \
+        SMCONSOLE_DEFINE_LOCATION(cond, level, name); \
+                                                      \
+        if (SM_UNLIKELY(enabled)) {                   \
+            SMCONSOLE_PRINT_AT_LOCATION(__VA_ARGS__); \
+        }                                             \
+    } while (0)
 
 /**
- * \brief Log to a given named logger at a given verbosity level, only if a given condition has been met, with stream-style formatting
+ * \brief Log to a given named logger at a given verbosity level, only if a given condition has been met, with
+ * stream-style formatting
  *
  * \note The condition will only be evaluated if this logging statement is enabled
  *
  * \param cond Boolean condition to be evaluated
  * \param level One of the levels specified in ::sm::logging::levels::Level
- * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
+ * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include
+ * "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
  */
-#define SM_LOG_STREAM_COND(cond, level, name, args)     \
-    do                                                  \
-    {                                                   \
-        SMCONSOLE_DEFINE_LOCATION(cond, level, name);   \
-        if (SM_UNLIKELY(enabled))                       \
-        {                                               \
-            SMCONSOLE_PRINT_STREAM_AT_LOCATION(args);   \
-        }                                               \
-    } while(0)
+#define SM_LOG_STREAM_COND(cond, level, name, args)   \
+    do {                                              \
+        SMCONSOLE_DEFINE_LOCATION(cond, level, name); \
+        if (SM_UNLIKELY(enabled)) {                   \
+            SMCONSOLE_PRINT_STREAM_AT_LOCATION(args); \
+        }                                             \
+    } while (0)
 
 /**
- * \brief Log to a given named logger at a given verbosity level, only the first time it is hit when enabled, with printf-style formatting
+ * \brief Log to a given named logger at a given verbosity level, only the first time it is hit when enabled, with
+ * printf-style formatting
  *
  * \param level One of the levels specified in ::sm::logging::levels::Level
- * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
+ * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include
+ * "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
  */
-#define SM_LOG_ONCE(level, name, ...)                   \
-    do                                                  \
-    {                                                   \
-        SMCONSOLE_DEFINE_LOCATION(true, level, name);   \
-        static bool hit = false;                        \
-        if (SM_UNLIKELY(enabled) && SM_UNLIKELY(!hit))  \
-        {                                               \
-            hit = true;                                 \
-            SMCONSOLE_PRINT_AT_LOCATION(__VA_ARGS__);   \
-        }                                               \
-    } while(0)
+#define SM_LOG_ONCE(level, name, ...)                    \
+    do {                                                 \
+        SMCONSOLE_DEFINE_LOCATION(true, level, name);    \
+        static bool hit = false;                         \
+        if (SM_UNLIKELY(enabled) && SM_UNLIKELY(!hit)) { \
+            hit = true;                                  \
+            SMCONSOLE_PRINT_AT_LOCATION(__VA_ARGS__);    \
+        }                                                \
+    } while (0)
 
 /**
- * \brief Log to a given named logger at a given verbosity level, only the first time it is hit when enabled, with printf-style formatting
+ * \brief Log to a given named logger at a given verbosity level, only the first time it is hit when enabled, with
+ * printf-style formatting
  *
  * \param level One of the levels specified in ::sm::logging::levels::Level
- * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
+ * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include
+ * "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
  */
-#define SM_LOG_STREAM_ONCE(level, name, args)           \
-    do                                                  \
-    {                                                   \
-        SMCONSOLE_DEFINE_LOCATION(true, level, name);   \
-        static bool hit = false;                        \
-        if (SM_UNLIKELY(enabled) && SM_UNLIKELY(!hit))  \
-        {                                               \
-            hit = true;                                 \
-            SMCONSOLE_PRINT_STREAM_AT_LOCATION(args);   \
-        }                                               \
-    } while(0)
+#define SM_LOG_STREAM_ONCE(level, name, args)            \
+    do {                                                 \
+        SMCONSOLE_DEFINE_LOCATION(true, level, name);    \
+        static bool hit = false;                         \
+        if (SM_UNLIKELY(enabled) && SM_UNLIKELY(!hit)) { \
+            hit = true;                                  \
+            SMCONSOLE_PRINT_STREAM_AT_LOCATION(args);    \
+        }                                                \
+    } while (0)
 
 /**
- * \brief Log to a given named logger at a given verbosity level, limited to a specific rate of printing, with printf-style formatting
+ * \brief Log to a given named logger at a given verbosity level, limited to a specific rate of printing, with
+ * printf-style formatting
  *
  * \param level One of the levels specified in ::sm::logging::levels::Level
- * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
- * \param rate The rate it should actually trigger at
+ * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include
+ * "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name. \param rate The rate it
+ * should actually trigger at
  */
-#define SM_LOG_THROTTLE(rate, level, name, ...)                         \
-    do                                                                  \
-    {                                                                   \
-        SMCONSOLE_DEFINE_LOCATION(true, level, name);                   \
-        static double last_hit = 0.0;                                   \
+#define SM_LOG_THROTTLE(rate, level, name, ...)                                         \
+    do {                                                                                \
+        SMCONSOLE_DEFINE_LOCATION(true, level, name);                                   \
+        static double last_hit = 0.0;                                                   \
         double now = ::sm::logging::g_logging_globals._logger->currentTimeSecondsUtc(); \
-        if (SM_UNLIKELY(enabled) && SM_UNLIKELY(last_hit + rate <= now)) \
-        {                                                               \
-            last_hit = now;                                             \
-            SMCONSOLE_PRINT_AT_LOCATION(__VA_ARGS__);                   \
-        }                                                               \
-    } while(0)
+        if (SM_UNLIKELY(enabled) && SM_UNLIKELY(last_hit + rate <= now)) {              \
+            last_hit = now;                                                             \
+            SMCONSOLE_PRINT_AT_LOCATION(__VA_ARGS__);                                   \
+        }                                                                               \
+    } while (0)
 
 /**
- * \brief Log to a given named logger at a given verbosity level, limited to a specific rate of printing, with printf-style formatting
+ * \brief Log to a given named logger at a given verbosity level, limited to a specific rate of printing, with
+ * printf-style formatting
  *
  * \param level One of the levels specified in ::sm::logging::levels::Level
- * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
- * \param rate The rate it should actually trigger at
+ * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include
+ * "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name. \param rate The rate it
+ * should actually trigger at
  */
-#define SM_LOG_STREAM_THROTTLE(rate, level, name, args)                 \
-    do                                                                  \
-    {                                                                   \
-        SMCONSOLE_DEFINE_LOCATION(true, level, name);                   \
-        static double last_hit = 0.0;                                   \
+#define SM_LOG_STREAM_THROTTLE(rate, level, name, args)                                 \
+    do {                                                                                \
+        SMCONSOLE_DEFINE_LOCATION(true, level, name);                                   \
+        static double last_hit = 0.0;                                                   \
         double now = ::sm::logging::g_logging_globals._logger->currentTimeSecondsUtc(); \
-        if (SM_UNLIKELY(enabled) && SM_UNLIKELY(last_hit + rate <= now)) \
-        {                                                               \
-            last_hit = now;                                             \
-            SMCONSOLE_PRINT_STREAM_AT_LOCATION(args);                   \
-        }                                                               \
-    } while(0)
-
+        if (SM_UNLIKELY(enabled) && SM_UNLIKELY(last_hit + rate <= now)) {              \
+            last_hit = now;                                                             \
+            SMCONSOLE_PRINT_STREAM_AT_LOCATION(args);                                   \
+        }                                                                               \
+    } while (0)
 
 /**
- * \brief Log to a given named logger at a given verbosity level, with user-defined filtering, with stream-style formatting
+ * \brief Log to a given named logger at a given verbosity level, with user-defined filtering, with stream-style
+ * formatting
  *
  * \param cond Boolean condition to be evaluated
  * \param level One of the levels specified in ::sm::logging::levels::Level
- * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
+ * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include
+ * "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
  */
-#define SM_LOG_STREAM_NAME(name, level, args)                     \
-    do                                                                  \
-    {                                                                   \
-        SMCONSOLE_DEFINE_LOCATION(true, level, name);                   \
-        if (SM_UNLIKELY(enabled) )                                      \
-        {                                                               \
-            SMCONSOLE_PRINT_STREAM_AT_LOCATION(args);   \
-        }                                                               \
-    } while(0)
+#define SM_LOG_STREAM_NAME(name, level, args)         \
+    do {                                              \
+        SMCONSOLE_DEFINE_LOCATION(true, level, name); \
+        if (SM_UNLIKELY(enabled)) {                   \
+            SMCONSOLE_PRINT_STREAM_AT_LOCATION(args); \
+        }                                             \
+    } while (0)
 
 /**
  * \brief Log to a given named logger at a given verbosity level, with printf-style formatting
  *
  * \param level One of the levels specified in ::sm::logging::levels::Level
- * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
+ * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include
+ * "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
  */
 #define SM_LOG(level, name, ...) SM_LOG_COND(true, level, name, __VA_ARGS__)
 /**
  * \brief Log to a given named logger at a given verbosity level, with stream-style formatting
  *
  * \param level One of the levels specified in ::sm::logging::levels::Level
- * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
+ * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include
+ * "sm.<package_name>".  Use SMCONSOLE_DEFAULT_NAME if you would like to use the default name.
  */
 #define SM_LOG_STREAM(level, name, args) SM_LOG_STREAM_COND(true, level, name, args)
 
 #include "macros_generated.hpp"
 
-#endif // SMCONSOLE_SMCONSOLE_H
+#endif  // SMCONSOLE_SMCONSOLE_H

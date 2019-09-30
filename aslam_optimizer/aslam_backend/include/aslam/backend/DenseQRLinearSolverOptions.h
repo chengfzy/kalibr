@@ -25,32 +25,30 @@
 #define ASLAM_BACKEND_DENSE_QR_LINEAR_SOLVER_OPTIONS_H
 
 namespace aslam {
-  namespace backend {
+namespace backend {
 
-    /** The class DenseQRLinearSolverOptions contains specific options for the
-        dense QR linear solver.
-        \brief Dense QR linear solver options
+/** The class DenseQRLinearSolverOptions contains specific options for the
+    dense QR linear solver.
+    \brief Dense QR linear solver options
+  */
+class DenseQRLinearSolverOptions {
+  public:
+    /** \name Constructors/destructor
+      @{
       */
-    class DenseQRLinearSolverOptions {
-    public:
-      /** \name Constructors/destructor
-        @{
-        */
-      /// Default constructor
-      DenseQRLinearSolverOptions();
-      /// Copy constructor
-      DenseQRLinearSolverOptions(const DenseQRLinearSolverOptions& other);
-      /// Assignment operator
-      DenseQRLinearSolverOptions& operator =
-        (const DenseQRLinearSolverOptions& other);
-      /// Destructor
-      virtual ~DenseQRLinearSolverOptions();
-      /** @}
-        */
+    /// Default constructor
+    DenseQRLinearSolverOptions();
+    /// Copy constructor
+    DenseQRLinearSolverOptions(const DenseQRLinearSolverOptions& other);
+    /// Assignment operator
+    DenseQRLinearSolverOptions& operator=(const DenseQRLinearSolverOptions& other);
+    /// Destructor
+    virtual ~DenseQRLinearSolverOptions();
+    /** @}
+     */
+};
 
-    };
+}  // namespace backend
+}  // namespace aslam
 
-  }
-}
-
-#endif // ASLAM_BACKEND_DENSE_QR_LINEAR_SOLVER_OPTIONS_H
+#endif  // ASLAM_BACKEND_DENSE_QR_LINEAR_SOLVER_OPTIONS_H

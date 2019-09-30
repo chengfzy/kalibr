@@ -26,27 +26,29 @@
 #include "aslam/calibration/tpl/Boolean.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The Equals structure defines the equality testing template
-        \brief Equality testing template
-      */
-    template <typename A, typename B> struct Equals {
-    public:
-      /// Defines the not equal
-      typedef False Result;
-    };
+/** The Equals structure defines the equality testing template
+    \brief Equality testing template
+  */
+template <typename A, typename B>
+struct Equals {
+  public:
+    /// Defines the not equal
+    typedef False Result;
+};
 
-    /** The Equals structure defines the equality testing template
-        \brief Equality testing template
-      */
-    template <typename A> struct Equals<A, A> {
-    public:
-      /// Defines the equal
-      typedef True Result;
-    };
+/** The Equals structure defines the equality testing template
+    \brief Equality testing template
+  */
+template <typename A>
+struct Equals<A, A> {
+  public:
+    /// Defines the equal
+    typedef True Result;
+};
 
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
-#endif // ASLAM_CALIBRATION_TPL_EQUALS_H
+#endif  // ASLAM_CALIBRATION_TPL_EQUALS_H

@@ -27,57 +27,56 @@
 #include "aslam/calibration/functions/ContinuousFunction.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The DigammaFunction class represents the digamma function.
-        \brief Digamma function
+/** The DigammaFunction class represents the digamma function.
+    \brief Digamma function
+  */
+template <typename X>
+class DigammaFunction : public ContinuousFunction<double, X> {
+    /** \name Private constructors
+      @{
       */
-    template <typename X> class DigammaFunction :
-      public ContinuousFunction<double, X> {
-      /** \name Private constructors
-        @{
-        */
-      /// Copy constructor
-      DigammaFunction(const DigammaFunction& other);
-      /// Assignment operator
-      DigammaFunction& operator = (const DigammaFunction& other);
-      /** @}
-        */
+    /// Copy constructor
+    DigammaFunction(const DigammaFunction& other);
+    /// Assignment operator
+    DigammaFunction& operator=(const DigammaFunction& other);
+    /** @}
+     */
 
-    public:
-      /** \name Types
-        @{
-        */
-      /// Variable type
-      typedef typename ContinuousFunction<double, X>::Domain VariableType;
-      /** @}
-        */
+  public:
+    /** \name Types
+      @{
+      */
+    /// Variable type
+    typedef typename ContinuousFunction<double, X>::Domain VariableType;
+    /** @}
+     */
 
-      /** \name Constructors/destructor
-        @{
-        */
-      /// Default constructor
-      DigammaFunction();
-      /// Destructor
-      virtual ~DigammaFunction();
-      /** @}
-        */
+    /** \name Constructors/destructor
+      @{
+      */
+    /// Default constructor
+    DigammaFunction();
+    /// Destructor
+    virtual ~DigammaFunction();
+    /** @}
+     */
 
-      /** \name Accessors
-        @{
-        */
-      /// Access the function value for the given argument
-      virtual double getValue(const VariableType& argument) const;
-      /** @}
-        */
+    /** \name Accessors
+      @{
+      */
+    /// Access the function value for the given argument
+    virtual double getValue(const VariableType& argument) const;
+    /** @}
+     */
 
-    protected:
+  protected:
+};
 
-    };
-
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
 #include "aslam/calibration/functions/DigammaFunction.tpp"
 
-#endif // ASLAM_CALIBRATION_FUNCTIONS_DIGAMMAFUNCTION_H
+#endif  // ASLAM_CALIBRATION_FUNCTIONS_DIGAMMAFUNCTION_H

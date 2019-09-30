@@ -26,72 +26,79 @@
 #include "aslam/calibration/tpl/Boolean.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The IsNumeric structure determines if a type is numeric
-        \brief Real types definitions
-      */
-    template <typename T> struct IsNumeric {
-    public:
-      /// Definition for non-numeric types
-      typedef False Result;
-    };
+/** The IsNumeric structure determines if a type is numeric
+    \brief Real types definitions
+  */
+template <typename T>
+struct IsNumeric {
+  public:
+    /// Definition for non-numeric types
+    typedef False Result;
+};
 
-    /** The IsNumeric structure determines if a type is numeric
-        \brief Numeric types definitions
-      */
-    template <> struct IsNumeric<float> {
-    public:
-      /// Definition for numeric type
-      typedef True Result;
-    };
+/** The IsNumeric structure determines if a type is numeric
+    \brief Numeric types definitions
+  */
+template <>
+struct IsNumeric<float> {
+  public:
+    /// Definition for numeric type
+    typedef True Result;
+};
 
-    /** The IsNumeric structure determines if a type is numeric
-        \brief Numeric types definitions
-      */
-    template <> struct IsNumeric<double> {
-    public:
-      /// Definition for numeric type
-      typedef True Result;
-    };
+/** The IsNumeric structure determines if a type is numeric
+    \brief Numeric types definitions
+  */
+template <>
+struct IsNumeric<double> {
+  public:
+    /// Definition for numeric type
+    typedef True Result;
+};
 
-    /** The IsNumeric structure determines if a type is numeric
-        \brief Numeric types definitions
-      */
-    template <> struct IsNumeric<int> {
-    public:
-      /// Definition for numeric type
-      typedef True Result;
-    };
+/** The IsNumeric structure determines if a type is numeric
+    \brief Numeric types definitions
+  */
+template <>
+struct IsNumeric<int> {
+  public:
+    /// Definition for numeric type
+    typedef True Result;
+};
 
-    /** The IsNumeric structure determines if a type is numeric
-        \brief Numeric types definitions
-      */
-    template <> struct IsNumeric<unsigned int> {
-    public:
-      /// Definition for numeric type
-      typedef True Result;
-    };
+/** The IsNumeric structure determines if a type is numeric
+    \brief Numeric types definitions
+  */
+template <>
+struct IsNumeric<unsigned int> {
+  public:
+    /// Definition for numeric type
+    typedef True Result;
+};
 
-    /** The IsNumeric structure determines if a type is numeric
-        \brief Numeric types definitions
-      */
-    template <> struct IsNumeric<long> {
-    public:
-      /// Definition for numeric type
-      typedef True Result;
-    };
+/** The IsNumeric structure determines if a type is numeric
+    \brief Numeric types definitions
+  */
+template <>
+struct IsNumeric<long> {
+  public:
+    /// Definition for numeric type
+    typedef True Result;
+};
 
-    /** The IsNumeric structure determines if a type is numeric
-        \brief Numeric types definitions
-      */
-    template <> struct IsNumeric<unsigned long> {
-    public:
-      /// Definition for numeric type
-      typedef True Result;
-    };
+/** The IsNumeric structure determines if a type is numeric
+    \brief Numeric types definitions
+  */
+template <>
+struct IsNumeric<unsigned long> {
+  public:
+    /// Definition for numeric type
+    typedef True Result;
+};
 
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
-#endif // ASLAM_CALIBRATION_TPL_ISNUMERIC_H
+#endif  // ASLAM_CALIBRATION_TPL_ISNUMERIC_H

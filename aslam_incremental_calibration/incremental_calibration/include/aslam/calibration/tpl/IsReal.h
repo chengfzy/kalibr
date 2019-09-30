@@ -26,36 +26,39 @@
 #include "aslam/calibration/tpl/Boolean.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The IsReal structure determines if a type is real
-        \brief Real types definitions
-      */
-    template <typename T> struct IsReal {
-    public:
-      /// Non-real types definition
-      typedef False Result;
-    };
+/** The IsReal structure determines if a type is real
+    \brief Real types definitions
+  */
+template <typename T>
+struct IsReal {
+  public:
+    /// Non-real types definition
+    typedef False Result;
+};
 
-    /** The IsReal structure determines if a type is real
-        \brief Real types definitions
-      */
-    template <> struct IsReal<float> {
-    public:
-      /// Real type definition
-      typedef True Result;
-    };
+/** The IsReal structure determines if a type is real
+    \brief Real types definitions
+  */
+template <>
+struct IsReal<float> {
+  public:
+    /// Real type definition
+    typedef True Result;
+};
 
-    /** The IsReal structure determines if a type is real
-        \brief Real types definitions
-      */
-    template <> struct IsReal<double> {
-    public:
-      /// Real type definition
-      typedef True Result;
-    };
+/** The IsReal structure determines if a type is real
+    \brief Real types definitions
+  */
+template <>
+struct IsReal<double> {
+  public:
+    /// Real type definition
+    typedef True Result;
+};
 
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
-#endif // ASLAM_CALIBRATION_TPL_ISREAL_H
+#endif  // ASLAM_CALIBRATION_TPL_ISREAL_H

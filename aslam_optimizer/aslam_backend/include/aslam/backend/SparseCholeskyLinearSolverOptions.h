@@ -25,33 +25,30 @@
 #define ASLAM_BACKEND_SPARSE_CHOLESKY_LINEAR_SOLVER_OPTIONS_H
 
 namespace aslam {
-  namespace backend {
+namespace backend {
 
-    /** The class SparseCholeskyLinearSolverOptions contains specific options
-        for the sparse Cholesky linear solver.
-        \brief Sparse Cholesky linear solver options
+/** The class SparseCholeskyLinearSolverOptions contains specific options
+    for the sparse Cholesky linear solver.
+    \brief Sparse Cholesky linear solver options
+  */
+class SparseCholeskyLinearSolverOptions {
+  public:
+    /** \name Constructors/destructor
+      @{
       */
-    class SparseCholeskyLinearSolverOptions {
-    public:
-      /** \name Constructors/destructor
-        @{
-        */
-      /// Default constructor
-      SparseCholeskyLinearSolverOptions();
-      /// Copy constructor
-      SparseCholeskyLinearSolverOptions(const SparseCholeskyLinearSolverOptions&
-        other);
-      /// Assignment operator
-      SparseCholeskyLinearSolverOptions& operator =
-        (const SparseCholeskyLinearSolverOptions& other);
-      /// Destructor
-      virtual ~SparseCholeskyLinearSolverOptions();
-      /** @}
-        */
+    /// Default constructor
+    SparseCholeskyLinearSolverOptions();
+    /// Copy constructor
+    SparseCholeskyLinearSolverOptions(const SparseCholeskyLinearSolverOptions& other);
+    /// Assignment operator
+    SparseCholeskyLinearSolverOptions& operator=(const SparseCholeskyLinearSolverOptions& other);
+    /// Destructor
+    virtual ~SparseCholeskyLinearSolverOptions();
+    /** @}
+     */
+};
 
-    };
+}  // namespace backend
+}  // namespace aslam
 
-  }
-}
-
-#endif // ASLAM_BACKEND_SPARSE_CHOLESKY_LINEAR_SOLVER_OPTIONS_H
+#endif  // ASLAM_BACKEND_SPARSE_CHOLESKY_LINEAR_SOLVER_OPTIONS_H

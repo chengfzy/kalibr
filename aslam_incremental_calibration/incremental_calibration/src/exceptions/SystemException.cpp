@@ -21,33 +21,26 @@
 #include <cstring>
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-    SystemException::SystemException(int errNo, const
-        std::string& msg, const std::string& filename, size_t line, const
-        std::string& function) :
-        Exception(msg + std::string(strerror(errNo)), filename, line,
-        function) {
-    }
+SystemException::SystemException(int errNo, const std::string& msg, const std::string& filename, size_t line,
+                                 const std::string& function)
+    : Exception(msg + std::string(strerror(errNo)), filename, line, function) {}
 
-    SystemException::SystemException(const SystemException& other) throw() :
-        Exception(other) {
-    }
+SystemException::SystemException(const SystemException& other) throw() : Exception(other) {}
 
-    SystemException& SystemException::operator =
-        (const SystemException& other) throw() {
-      if (this != &other) {
+SystemException& SystemException::operator=(const SystemException& other) throw() {
+    if (this != &other) {
         Exception::operator=(other);
-      }
-      return *this;
     }
-
-    SystemException::~SystemException() throw() {
-    }
-
-  }
+    return *this;
 }
+
+SystemException::~SystemException() throw() {}
+
+}  // namespace calibration
+}  // namespace aslam

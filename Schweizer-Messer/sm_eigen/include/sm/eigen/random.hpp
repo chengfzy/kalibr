@@ -7,8 +7,7 @@ namespace eigen {
 
 Eigen::VectorXd randn(unsigned dim);
 
-} // namespace eigen
-} // namespace sm
-
+}  // namespace eigen
+}  // namespace sm
 
 #endif /* SM_EIGEN_RANDOM_HPP */

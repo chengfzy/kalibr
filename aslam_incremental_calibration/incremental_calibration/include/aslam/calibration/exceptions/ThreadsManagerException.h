@@ -31,39 +31,36 @@
 #include "aslam/calibration/exceptions/Exception.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The class ThreadsManagerException represents any exceptions occuring
-        with threads management
-        \brief Threads manager exception
+/** The class ThreadsManagerException represents any exceptions occuring
+    with threads management
+    \brief Threads manager exception
+  */
+template <typename X>
+class ThreadsManagerException : public Exception {
+  public:
+    /** \name Constructors/destructor
+      @{
       */
-    template <typename X> class ThreadsManagerException :
-      public Exception {
-    public:
-      /** \name Constructors/destructor
-        @{
-        */
-      /// Constructs exception from argument and string
-      ThreadsManagerException(const X& argument, const std::string& msg, const
-        std::string& filename = " ", size_t line = 0, const std::string&
-        function = " ");
-      /// Copy constructor
-      ThreadsManagerException(const ThreadsManagerException& other) throw ();
-      /// Assignment operator
-      ThreadsManagerException& operator = (const ThreadsManagerException& other)
-        throw ();
-      /// Destructor
-      virtual ~ThreadsManagerException() throw ();
-      /** @}
-        */
+    /// Constructs exception from argument and string
+    ThreadsManagerException(const X& argument, const std::string& msg, const std::string& filename = " ",
+                            size_t line = 0, const std::string& function = " ");
+    /// Copy constructor
+    ThreadsManagerException(const ThreadsManagerException& other) throw();
+    /// Assignment operator
+    ThreadsManagerException& operator=(const ThreadsManagerException& other) throw();
+    /// Destructor
+    virtual ~ThreadsManagerException() throw();
+    /** @}
+     */
 
-    protected:
+  protected:
+};
 
-    };
-
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
 #include "aslam/calibration/exceptions/ThreadsManagerException.tpp"
 
-#endif // ASLAM_CALIBRATION_EXCEPTIONS_THREADSMANAGEREXCEPTION_H
+#endif  // ASLAM_CALIBRATION_EXCEPTIONS_THREADSMANAGEREXCEPTION_H

@@ -25,110 +25,108 @@
 #define ASLAM_CALIBRATION_STATISTICS_RANDOMIZER_H
 
 #include "aslam/calibration/base/Serializable.h"
-#include "aslam/calibration/utils/SizeTSupport.h"
-#include "aslam/calibration/tpl/IsReal.h"
 #include "aslam/calibration/tpl/IsInteger.h"
+#include "aslam/calibration/tpl/IsReal.h"
+#include "aslam/calibration/utils/SizeTSupport.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The Randomizer class implements random sampling from several
-        distributions
-        \brief Random sampling from distributions
+/** The Randomizer class implements random sampling from several
+    distributions
+    \brief Random sampling from distributions
+  */
+template <typename T = double, int M = 1>
+class Randomizer : public virtual Serializable {
+  public:
+    /** \name Traits
+      @{
       */
-    template <typename T = double, int M = 1> class Randomizer :
-      public virtual Serializable {
-    public:
-      /** \name Traits
-        @{
-        */
-      /// Specialization for integer or real types
-      struct Traits {
+    /// Specialization for integer or real types
+    struct Traits {
       public:
         /// Round function for real types
         template <typename Z, typename IsReal<Z>::Result::Numeric>
-          static Z round(const Z& value);
+        static Z round(const Z& value);
         /// Round function for integer types
         template <typename Z, typename IsInteger<Z>::Result::Numeric>
-          static Z round(const double& value);
-      };
-      /** @}
-        */
-
-      /** \name Constructors/destructor
-        @{
-        */
-      /// Constructs randomizer from seed
-      Randomizer(const T& seed = getSeed());
-      /// Copy constructor
-      Randomizer(const Randomizer& other);
-      /// Assignment operator
-      Randomizer& operator = (const Randomizer& other);
-      /// Destructor
-      virtual ~Randomizer();
-      /** @}
-        */
-
-      /** \name Accessors
-        @{
-        */
-      /// Sets the seed of the random sampler
-      void setSeed(const T& seed);
-      /// Returns the seed of the random sampler
-      static T getSeed();
-      /** @}
-        */
-
-      /** \name Methods
-        @{
-        */
-      /// Returns a sample from a uniform distribution within specified support
-      T sampleUniform(const T& minSupport = T(0), const T& maxSupport = T(1))
-        const;
-      /// Returns a sample from a normal distribution
-      T sampleNormal(const T& mean = T(0), const T& variance = T(1)) const;
-      /// Returns a sample from a categorical distribution
-      size_t sampleCategorical(const Eigen::Matrix<double, M, 1>&
-        probabilities = Eigen::Matrix<double, M, 1>::Constant(1.0 / M)) const;
-      /// Returns a sample from a Poisson distribution
-      size_t samplePoisson(double mean = 1.0) const;
-      /// Returns a sample from a exponential distribution
-      double sampleExponential(double rate = 1.0) const;
-      /// Returns a sample from a geometric distribution
-      size_t sampleGeometric(double successProbability = 0.5) const;
-      /// Returns a sample from a gamma distribution
-      double sampleGamma(double shape = 1.0, double invScale = 1.0) const;
-      /** @}
-        */
-
-    protected:
-      /** \name Stream methods
-        @{
-        */
-      /// Reads from standard input
-      virtual void read(std::istream& stream);
-      /// Writes to standard output
-      virtual void write(std::ostream& stream) const;
-      /// Reads from a file
-      virtual void read(std::ifstream& stream);
-      /// Writes to a file
-      virtual void write(std::ofstream& stream) const;
-      /** @}
-        */
-
-      /** \name Protected members
-        @{
-        */
-      /// Seed of the random sampling
-      T mSeed;
-      /** @}
-        */
-
+        static Z round(const double& value);
     };
+    /** @}
+     */
 
-  }
-}
+    /** \name Constructors/destructor
+      @{
+      */
+    /// Constructs randomizer from seed
+    Randomizer(const T& seed = getSeed());
+    /// Copy constructor
+    Randomizer(const Randomizer& other);
+    /// Assignment operator
+    Randomizer& operator=(const Randomizer& other);
+    /// Destructor
+    virtual ~Randomizer();
+    /** @}
+     */
+
+    /** \name Accessors
+      @{
+      */
+    /// Sets the seed of the random sampler
+    void setSeed(const T& seed);
+    /// Returns the seed of the random sampler
+    static T getSeed();
+    /** @}
+     */
+
+    /** \name Methods
+      @{
+      */
+    /// Returns a sample from a uniform distribution within specified support
+    T sampleUniform(const T& minSupport = T(0), const T& maxSupport = T(1)) const;
+    /// Returns a sample from a normal distribution
+    T sampleNormal(const T& mean = T(0), const T& variance = T(1)) const;
+    /// Returns a sample from a categorical distribution
+    size_t sampleCategorical(
+        const Eigen::Matrix<double, M, 1>& probabilities = Eigen::Matrix<double, M, 1>::Constant(1.0 / M)) const;
+    /// Returns a sample from a Poisson distribution
+    size_t samplePoisson(double mean = 1.0) const;
+    /// Returns a sample from a exponential distribution
+    double sampleExponential(double rate = 1.0) const;
+    /// Returns a sample from a geometric distribution
+    size_t sampleGeometric(double successProbability = 0.5) const;
+    /// Returns a sample from a gamma distribution
+    double sampleGamma(double shape = 1.0, double invScale = 1.0) const;
+    /** @}
+     */
+
+  protected:
+    /** \name Stream methods
+      @{
+      */
+    /// Reads from standard input
+    virtual void read(std::istream& stream);
+    /// Writes to standard output
+    virtual void write(std::ostream& stream) const;
+    /// Reads from a file
+    virtual void read(std::ifstream& stream);
+    /// Writes to a file
+    virtual void write(std::ofstream& stream) const;
+    /** @}
+     */
+
+    /** \name Protected members
+      @{
+      */
+    /// Seed of the random sampling
+    T mSeed;
+    /** @}
+     */
+};
+
+}  // namespace calibration
+}  // namespace aslam
 
 #include "aslam/calibration/statistics/Randomizer.tpp"
 
-#endif // ASLAM_CALIBRATION_STATISTICS_RANDOMIZER_H
+#endif  // ASLAM_CALIBRATION_STATISTICS_RANDOMIZER_H

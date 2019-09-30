@@ -14,4 +14,3 @@
 //#include "apriltags/TagFamily.h"
 #include "apriltags/UnionFindSimple.h"
 #include "apriltags/XYWeight.h"
-

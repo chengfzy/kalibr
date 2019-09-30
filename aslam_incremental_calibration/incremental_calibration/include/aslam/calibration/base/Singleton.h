@@ -25,57 +25,57 @@
 #define ASLAM_CALIBRATION_BASE_SINGLETON_H
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The class Singleton implements the singleton design pattern.
-        \brief Singleton design pattern
+/** The class Singleton implements the singleton design pattern.
+    \brief Singleton design pattern
+  */
+template <class C>
+class Singleton {
+  public:
+    /** \name Accessors
+      @{
       */
-    template <class C> class Singleton {
-    public:
-      /** \name Accessors
-        @{
-        */
-      /// Access the static instance
-      static C& getInstance();
-      /** @}
-        */
+    /// Access the static instance
+    static C& getInstance();
+    /** @}
+     */
 
-      /** \name Methods
-        @{
-        */
-      /// Check if the object exists
-      static bool exists();
-      /** @}
-        */
+    /** \name Methods
+      @{
+      */
+    /// Check if the object exists
+    static bool exists();
+    /** @}
+     */
 
-    protected:
-      /** \name Protected constructors/destructor
-        @{
-        */
-      /// Default constructor
-      Singleton();
-      /// Copy constructor
-      Singleton(const Singleton& other) = delete;
-      /// Assignment operator
-      Singleton& operator = (const Singleton& other) = delete;
-      /// Destructor
-      virtual ~Singleton();
-      /** @}
-        */
+  protected:
+    /** \name Protected constructors/destructor
+      @{
+      */
+    /// Default constructor
+    Singleton();
+    /// Copy constructor
+    Singleton(const Singleton& other) = delete;
+    /// Assignment operator
+    Singleton& operator=(const Singleton& other) = delete;
+    /// Destructor
+    virtual ~Singleton();
+    /** @}
+     */
 
-      /** \name Protected members
-        @{
-        */
-      /// Instance of the object
-      static C* instance;
-      /** @}
-        */
+    /** \name Protected members
+      @{
+      */
+    /// Instance of the object
+    static C* instance;
+    /** @}
+     */
+};
 
-    };
-
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
 #include "aslam/calibration/base/Singleton.tpp"
 
-#endif // ASLAM_CALIBRATION_BASE_SINGLETON_H
+#endif  // ASLAM_CALIBRATION_BASE_SINGLETON_H

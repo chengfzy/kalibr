@@ -1,12 +1,9 @@
 #include <sm/kinematics/RotationalKinematics.hpp>
 
-namespace sm { namespace kinematics {
+namespace sm {
+namespace kinematics {
 
+RotationalKinematics::~RotationalKinematics() {}
 
-    RotationalKinematics::~RotationalKinematics()
-    {
-
-    }
-
-
-  }} // sm::kinematics
+}  // namespace kinematics
+}  // namespace sm

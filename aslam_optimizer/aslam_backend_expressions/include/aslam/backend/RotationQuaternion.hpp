@@ -1,63 +1,66 @@
 #ifndef ASLAM_BACKEND_DV_QUAT_HPP
 #define ASLAM_BACKEND_DV_QUAT_HPP
 
-
 #include <Eigen/Core>
 #include <aslam/backend/DesignVariable.hpp>
 #include "RotationExpression.hpp"
 #include "RotationExpressionNode.hpp"
 
 namespace aslam {
-  namespace backend {
-    
-    class RotationQuaternion : public RotationExpressionNode, public DesignVariable
-    {
-    public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      RotationQuaternion(const Eigen::Vector4d & q);
+namespace backend {
 
-      /// Constructs a rotation quaternion expression from a rotation matrix
-      RotationQuaternion(const Eigen::Matrix3d& C);
+class RotationQuaternion : public RotationExpressionNode, public DesignVariable {
+  public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    RotationQuaternion(const Eigen::Vector4d& q);
 
-      virtual ~RotationQuaternion();
+    /// Constructs a rotation quaternion expression from a rotation matrix
+    RotationQuaternion(const Eigen::Matrix3d& C);
 
-      /// \brief Revert the last state update.
-      virtual void revertUpdateImplementation();
+    virtual ~RotationQuaternion();
 
-      /// \brief Update the design variable.
-      virtual void updateImplementation(const double * dp, int size);
+    /// \brief Revert the last state update.
+    virtual void revertUpdateImplementation();
 
-      /// \brief the size of an update step
-      virtual int minimalDimensionsImplementation() const;
+    /// \brief Update the design variable.
+    virtual void updateImplementation(const double* dp, int size);
 
-      virtual void minimalDifferenceImplementation(const Eigen::MatrixXd& xHat, Eigen::VectorXd& outDifference) const;
+    /// \brief the size of an update step
+    virtual int minimalDimensionsImplementation() const;
 
-      virtual void minimalDifferenceAndJacobianImplementation(const Eigen::MatrixXd& xHat, Eigen::VectorXd& outDifference, Eigen::MatrixXd& outJacobian) const;
+    virtual void minimalDifferenceImplementation(const Eigen::MatrixXd& xHat, Eigen::VectorXd& outDifference) const;
 
-      RotationExpression toExpression();
+    virtual void minimalDifferenceAndJacobianImplementation(const Eigen::MatrixXd& xHat, Eigen::VectorXd& outDifference,
+                                                            Eigen::MatrixXd& outJacobian) const;
 
-      const Eigen::Vector4d & getQuaternion(){ return _q; }
+    RotationExpression toExpression();
 
-      void set( const Eigen::Vector4d & q){ _q = q; _p_q = q; }
-    private:
-      virtual Eigen::Matrix3d toRotationMatrixImplementation() const;
-      virtual void evaluateJacobiansImplementation(JacobianContainer & outJacobians) const;
-      virtual void evaluateJacobiansImplementation(JacobianContainer & outJacobians, const Eigen::MatrixXd & applyChainRule) const;
-      virtual void getDesignVariablesImplementation(DesignVariable::set_t & designVariables) const;
+    const Eigen::Vector4d& getQuaternion() { return _q; }
 
-      /// Returns the content of the design variable
-      virtual void getParametersImplementation(Eigen::MatrixXd& value) const;
+    void set(const Eigen::Vector4d& q) {
+        _q = q;
+        _p_q = q;
+    }
 
-      /// Sets the content of the design variable
-      virtual void setParametersImplementation(const Eigen::MatrixXd& value);
+  private:
+    virtual Eigen::Matrix3d toRotationMatrixImplementation() const;
+    virtual void evaluateJacobiansImplementation(JacobianContainer& outJacobians) const;
+    virtual void evaluateJacobiansImplementation(JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
+    virtual void getDesignVariablesImplementation(DesignVariable::set_t& designVariables) const;
 
-      Eigen::Vector4d _q;
-      Eigen::Vector4d _p_q;
-      Eigen::Matrix3d _C;
-      
-    };
+    /// Returns the content of the design variable
+    virtual void getParametersImplementation(Eigen::MatrixXd& value) const;
 
-  } // namespace backend
-} // namespace aslam
+    /// Sets the content of the design variable
+    virtual void setParametersImplementation(const Eigen::MatrixXd& value);
+
+    Eigen::Vector4d _q;
+    Eigen::Vector4d _p_q;
+    Eigen::Matrix3d _C;
+};
+
+}  // namespace backend
+}  // namespace aslam
 
 #endif /* ASLAM_BACKEND_DV_QUAT_HPP */

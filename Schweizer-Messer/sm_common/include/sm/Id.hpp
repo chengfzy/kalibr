@@ -1,6 +1,6 @@
 /*
  * Adapted from the Willow Garage pose_graph package by Paul Furgale on October 22, 2010.
- * 
+ *
  * Original file:
  * Copyright (c) 2008, Willow Garage, Inc.
  * All rights reserved.
@@ -36,180 +36,124 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/functional/hash.hpp>
-#include <iostream>
-#include <functional>
 #include <boost/serialization/nvp.hpp>
+#include <functional>
+#include <iostream>
 
 namespace sm {
-    typedef boost::uint64_t id_type;
+typedef boost::uint64_t id_type;
 
-  ///
-  /// \class Id
-  /// \brief superclass for stronly-typed uint64 ids
-  ///
-  /// Usage:
-  /// \code
-  /// // MyId is a stronly typed Id for my object.
-  /// class MyId : public Id
-  /// {
-  /// public:
-  ///
-  ///   explicit MyId (id_type id = -1) : Id(id) {}
-  ///
-  ///   template<class Archive>
-  ///   void serialize(Archive & ar, const unsigned int version)
-  ///   {
-  ///     ar & id_;
-  ///   }
-  /// };
-  /// \endcode
-  ///
-  class Id
-  {
+///
+/// \class Id
+/// \brief superclass for stronly-typed uint64 ids
+///
+/// Usage:
+/// \code
+/// // MyId is a stronly typed Id for my object.
+/// class MyId : public Id
+/// {
+/// public:
+///
+///   explicit MyId (id_type id = -1) : Id(id) {}
+///
+///   template<class Archive>
+///   void serialize(Archive & ar, const unsigned int version)
+///   {
+///     ar & id_;
+///   }
+/// };
+/// \endcode
+///
+class Id {
   public:
-      
-    explicit Id (id_type id) : _id(id) {}
+    explicit Id(id_type id) : _id(id) {}
 
     /// Only for stl use
-    Id () : _id(-1) {}
+    Id() : _id(-1) {}
 
-    friend std::ostream& operator<< (std::ostream& str, const Id& n)
-    {
-      str << n._id;
-      return str;
+    friend std::ostream& operator<<(std::ostream& str, const Id& n) {
+        str << n._id;
+        return str;
     }
 
-    bool operator== (const Id& other) const
-    {
-      return other._id == _id;
-    }
+    bool operator==(const Id& other) const { return other._id == _id; }
 
-    bool operator!= (const Id& other) const
-    {
-      return other._id != _id;
-    }
+    bool operator!=(const Id& other) const { return other._id != _id; }
 
-    bool operator< (const Id& other) const
-    {
-      return _id < other._id;
-    }
+    bool operator<(const Id& other) const { return _id < other._id; }
 
-    bool operator> (const Id& other) const
-    {
-      return _id > other._id;
-    }
+    bool operator>(const Id& other) const { return _id > other._id; }
 
-    bool operator<=(const Id& other) const
-    {
-      return _id <= other._id;
-    }
+    bool operator<=(const Id& other) const { return _id <= other._id; }
 
-    bool operator>=(const Id& other) const
-    {
-      return _id >= other._id;
-    }
+    bool operator>=(const Id& other) const { return _id >= other._id; }
 
-    id_type getId () const
-    {
-      return _id;
-    }
+    id_type getId() const { return _id; }
 
     // postincrement.
-    Id operator++ (int /*unused*/)
-    {
+    Id operator++(int /*unused*/) {
         Id rval(_id);
-      ++_id;
-      return rval;
+        ++_id;
+        return rval;
     }
 
     // preincrement
-    Id & operator++ ()
-    {
-      ++_id;
-      return (*this);
+    Id& operator++() {
+        ++_id;
+        return (*this);
     }
 
-    Id& operator= (const Id& other)
-    {
-      _id = other._id;
-      return *this;
+    Id& operator=(const Id& other) {
+        _id = other._id;
+        return *this;
     }
 
-    bool isSet() const
-    {
-      return _id != id_type(-1);
-    }
+    bool isSet() const { return _id != id_type(-1); }
 
-    id_type value() const
-    {
-      return _id;
-    }
+    id_type value() const { return _id; }
 
-    void clear()
-    {
-      _id = -1;
-    }
+    void clear() { _id = -1; }
 
-    void swap( Id & rhs)
-    {
-      std::swap(_id,rhs._id);
-    }
+    void swap(Id& rhs) { std::swap(_id, rhs._id); }
 
-    void setRandom()
-    {
-      _id = rand();
-    }
+    void setRandom() { _id = rand(); }
 
-    bool isBinaryEqual(const Id & rhs)
-    {
-      return _id == rhs._id;
-    }
+    bool isBinaryEqual(const Id& rhs) { return _id == rhs._id; }
+
   protected:
     id_type _id;
-  
-  };
+};
 
-} // namespace aslam
-
+}  // namespace sm
 
 #define SM_DEFINE_ID(IdTypeName)                                        \
-    class IdTypeName : public sm::Id                                    \
-    {                                                                   \
-    public:                                                             \
-        explicit IdTypeName (sm::id_type id = -1) : sm::Id(id) {}       \
-        IdTypeName(const sm::Id & id) : sm::Id(id){}                    \
-        template<class Archive>                                         \
-        void serialize(Archive & ar, const unsigned int /* version */)  \
-        {                                                               \
-            ar & BOOST_SERIALIZATION_NVP(_id);                          \
+    class IdTypeName : public sm::Id {                                  \
+      public:                                                           \
+        explicit IdTypeName(sm::id_type id = -1) : sm::Id(id) {}        \
+        IdTypeName(const sm::Id& id) : sm::Id(id) {}                    \
+        template <class Archive>                                        \
+        void serialize(Archive& ar, const unsigned int /* version */) { \
+            ar& BOOST_SERIALIZATION_NVP(_id);                           \
         }                                                               \
-    };									
+    };
 
 // If you need to use the ID in a tr1 hashing container,
 // use this macro outside of any namespace:
 // SM_DEFINE_ID_HASH(my_namespace::myIdType);
-#define SM_DEFINE_ID_HASH(FullyQualifiedIdTypeName)                 \
-    namespace std {                                                 \
-        template<>                                                  \
-        struct hash<FullyQualifiedIdTypeName>                       \
-        {                                                           \
-            hash<boost::uint64_t> _hash;                            \
-            size_t operator()(const FullyQualifiedIdTypeName & id) const  \
-            {                                                       \
-                return _hash(id.getId());                           \
-            }                                                       \
-        };                                                          \
-    }                                                                   \
-    namespace boost {                                                   \
-        template<>                                                      \
-        struct hash<FullyQualifiedIdTypeName>                           \
-        {                                                               \
-            hash<boost::uint64_t> _hash;                                \
-            size_t operator()(const FullyQualifiedIdTypeName & id) const \
-            {                                                           \
-                return _hash(id.getId());                               \
-            }                                                           \
-        };                                                              \
-        } // namespace boost
+#define SM_DEFINE_ID_HASH(FullyQualifiedIdTypeName)                                               \
+    namespace std {                                                                               \
+    template <>                                                                                   \
+    struct hash<FullyQualifiedIdTypeName> {                                                       \
+        hash<boost::uint64_t> _hash;                                                              \
+        size_t operator()(const FullyQualifiedIdTypeName& id) const { return _hash(id.getId()); } \
+    };                                                                                            \
+    }                                                                                             \
+    namespace boost {                                                                             \
+    template <>                                                                                   \
+    struct hash<FullyQualifiedIdTypeName> {                                                       \
+        hash<boost::uint64_t> _hash;                                                              \
+        size_t operator()(const FullyQualifiedIdTypeName& id) const { return _hash(id.getId()); } \
+    };                                                                                            \
+    }  // namespace boost
 
 #endif /* SM_ID_HPP */

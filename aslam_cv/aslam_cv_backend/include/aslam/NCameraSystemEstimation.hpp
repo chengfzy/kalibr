@@ -3,9 +3,7 @@
 
 namespace aslam {
 
-void createCameraSystemDesignVariables(NCameraSystem & cameraSystem,
-                                       bool estimateIntrinsics,
-                                       bool estimateExtrinsics);
+void createCameraSystemDesignVariables(NCameraSystem& cameraSystem, bool estimateIntrinsics, bool estimateExtrinsics);
 
 }  // namespace aslam
 

@@ -89,18 +89,18 @@
  */
 
 #ifdef WIN32
-# if defined (__MINGW32__)
-#  define SM_ISSUE_BREAK() DebugBreak();
-# else // MSVC
-#  define SM_ISSUE_BREAK() __debugbreak();
-# endif
+#if defined(__MINGW32__)
+#define SM_ISSUE_BREAK() DebugBreak();
+#else  // MSVC
+#define SM_ISSUE_BREAK() __debugbreak();
+#endif
 #elif defined(__powerpc64__)
-# define SM_ISSUE_BREAK() asm volatile ("tw 31,1,1");
+#define SM_ISSUE_BREAK() asm volatile("tw 31,1,1");
 #elif defined(__i386__) || defined(__ia64__) || defined(__x86_64__)
-# define SM_ISSUE_BREAK() asm("int $3");
+#define SM_ISSUE_BREAK() asm("int $3");
 #else
-# include <stdlib.h>
-# define SM_ISSUE_BREAK() abort();
+#include <stdlib.h>
+#define SM_ISSUE_BREAK() abort();
 #endif
 
 #ifndef NDEBUG
@@ -108,37 +108,37 @@
 #endif
 
 #ifdef SM_ASSERT_ENABLED
-#define SM_BREAK() \
-  do { \
-    SM_FATAL("BREAKPOINT HIT\n\tfile = %s\n\tline=%d\n", __FILE__, __LINE__); \
-    SM_ISSUE_BREAK() \
-  } while (0)
+#define SM_BREAK()                                                                \
+    do {                                                                          \
+        SM_FATAL("BREAKPOINT HIT\n\tfile = %s\n\tline=%d\n", __FILE__, __LINE__); \
+        SM_ISSUE_BREAK()                                                          \
+    } while (0)
 
-#define SM_ASSERT(cond) \
-  do { \
-    if (!(cond)) { \
-      SM_FATAL("ASSERTION FAILED\n\tfile = %s\n\tline = %d\n\tcond = %s\n", __FILE__, __LINE__, #cond); \
-      SM_ISSUE_BREAK() \
-    } \
-  } while (0)
+#define SM_ASSERT(cond)                                                                                       \
+    do {                                                                                                      \
+        if (!(cond)) {                                                                                        \
+            SM_FATAL("ASSERTION FAILED\n\tfile = %s\n\tline = %d\n\tcond = %s\n", __FILE__, __LINE__, #cond); \
+            SM_ISSUE_BREAK()                                                                                  \
+        }                                                                                                     \
+    } while (0)
 
-#define SM_ASSERT_MSG(cond, ...) \
-  do { \
-    if (!(cond)) { \
-      SM_FATAL("ASSERTION FAILED\n\tfile = %s\n\tline = %d\n\tcond = %s\n\tmessage = ", __FILE__, __LINE__, #cond); \
-      SM_FATAL(__VA_ARGS__); \
-      SM_FATAL("\n"); \
-      SM_ISSUE_BREAK(); \
-    } \
-  } while (0)
+#define SM_ASSERT_MSG(cond, ...)                                                                                  \
+    do {                                                                                                          \
+        if (!(cond)) {                                                                                            \
+            SM_FATAL("ASSERTION FAILED\n\tfile = %s\n\tline = %d\n\tcond = %s\n\tmessage = ", __FILE__, __LINE__, \
+                     #cond);                                                                                      \
+            SM_FATAL(__VA_ARGS__);                                                                                \
+            SM_FATAL("\n");                                                                                       \
+            SM_ISSUE_BREAK();                                                                                     \
+        }                                                                                                         \
+    } while (0)
 
 #define SM_ASSERT_CMD(cond, cmd) \
-  do { \
-    if (!cond) { \
-      cmd; \
-    } \
-  } while (0)
-
+    do {                         \
+        if (!cond) {             \
+            cmd;                 \
+        }                        \
+    } while (0)
 
 #else
 #define SM_BREAK()
@@ -147,4 +147,4 @@
 #define SM_ASSERT_CMD(cond, cmd)
 #endif
 
-#endif // SMCONSOLE_SMASSERT_H
+#endif  // SMCONSOLE_SMASSERT_H

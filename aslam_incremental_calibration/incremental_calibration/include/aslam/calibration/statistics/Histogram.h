@@ -24,14 +24,14 @@
 #define ASLAM_CALIBRATION_STATISTICS_HISTOGRAM_H
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    template <typename T, int M = 1> class Histogram;
-
-  }
+template <typename T, int M = 1>
+class Histogram;
 }
+}  // namespace aslam
 
 #include "aslam/calibration/statistics/Histogram1v.h"
 #include "aslam/calibration/statistics/HistogramMv.h"
 
-#endif // ASLAM_CALIBRATION_STATISTICS_HISTOGRAM_H
+#endif  // ASLAM_CALIBRATION_STATISTICS_HISTOGRAM_H

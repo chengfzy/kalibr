@@ -29,104 +29,104 @@
 #include "aslam/calibration/base/Timer.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The class Mutex implements mutex facilities.
-        \brief Mutex facilities
+/** The class Mutex implements mutex facilities.
+    \brief Mutex facilities
+  */
+class Mutex : protected Condition {
+    friend class Condition;
+
+  public:
+    /** \name Types definitions
+      @{
       */
-    class Mutex :
-      protected Condition {
-      friend class Condition;
-    public:
-      /** \name Types definitions
-        @{
-        */
-      /// Mutex for locking on scopes
-      struct ScopedLock {
+    /// Mutex for locking on scopes
+    struct ScopedLock {
       public:
         /// Constructor
         ScopedLock(Mutex& mutex);
         /// Destructor
         ~ScopedLock();
+
       protected:
         /// Mutex
         Mutex* mMutex;
-      };
-      /** @}
-        */
-
-      /** \name Constructors/Destructor
-        @{
-        */
-      /// Constructs mutex with parameter
-      Mutex(bool recursive = false);
-      /// Copy constructor
-      Mutex(const Mutex& other) = delete;
-      /// Assignment operator
-      Mutex& operator = (const Mutex& other) = delete;
-      /// Destructor
-      virtual ~Mutex();
-      /** @}
-        */
-
-      /** \name Accessors
-        @{
-        */
-      /// Access the number of locks of this mutex
-      size_t getNumLocks() const;
-      /** @}
-        */
-
-      /** \name Methods
-        @{
-        */
-     /// Lock the mutex
-      bool lock(double wait = Timer::eternal());
-      /// Unlock the mutex
-      void unlock();
-      /// Try to lock the mutex without blocking the calling thread
-      bool tryLock();
-      /// Wait for the mutex to unlock
-      bool waitUnlock(double seconds = Timer::eternal()) const;
-      /// Check if mutex is recursive
-      bool isRecursive() const;
-      /// Check if mutex is locked
-      bool isLocked() const;
-      /** @}
-        */
-
-    protected:
-      /** \name Protected methods
-        @{
-        */
-      /// Safely lock the mutex
-      virtual bool safeLock(double wait);
-      /// Safely unlock the mutex
-      virtual void safeUnlock();
-      /// Safely wait eternally
-      bool safeEternalWait(const Mutex& mutex) const;
-      /// Safely wait until a time has elapsed
-      bool safeWaitUntil(const Mutex& mutex, const Timestamp& time) const;
-      /** @}
-        */
-
-      /** \name Protected members
-        @{
-        */
-      /// Recursive mutex
-      bool mRecursive;
-      /// Number of locks for this mutex
-      size_t mNumLocks;
-      /// Mutex identifier
-      mutable pthread_mutex_t mIdentifier;
-      /// Owner thread
-      pthread_t mOwner;
-      /** @}
-        */
-
     };
+    /** @}
+     */
 
-  }
-}
+    /** \name Constructors/Destructor
+      @{
+      */
+    /// Constructs mutex with parameter
+    Mutex(bool recursive = false);
+    /// Copy constructor
+    Mutex(const Mutex& other) = delete;
+    /// Assignment operator
+    Mutex& operator=(const Mutex& other) = delete;
+    /// Destructor
+    virtual ~Mutex();
+    /** @}
+     */
 
-#endif // ASLAM_CALIBRATION_BASE_MUTEX_H
+    /** \name Accessors
+      @{
+      */
+    /// Access the number of locks of this mutex
+    size_t getNumLocks() const;
+    /** @}
+     */
+
+    /** \name Methods
+      @{
+      */
+    /// Lock the mutex
+    bool lock(double wait = Timer::eternal());
+    /// Unlock the mutex
+    void unlock();
+    /// Try to lock the mutex without blocking the calling thread
+    bool tryLock();
+    /// Wait for the mutex to unlock
+    bool waitUnlock(double seconds = Timer::eternal()) const;
+    /// Check if mutex is recursive
+    bool isRecursive() const;
+    /// Check if mutex is locked
+    bool isLocked() const;
+    /** @}
+     */
+
+  protected:
+    /** \name Protected methods
+      @{
+      */
+    /// Safely lock the mutex
+    virtual bool safeLock(double wait);
+    /// Safely unlock the mutex
+    virtual void safeUnlock();
+    /// Safely wait eternally
+    bool safeEternalWait(const Mutex& mutex) const;
+    /// Safely wait until a time has elapsed
+    bool safeWaitUntil(const Mutex& mutex, const Timestamp& time) const;
+    /** @}
+     */
+
+    /** \name Protected members
+      @{
+      */
+    /// Recursive mutex
+    bool mRecursive;
+    /// Number of locks for this mutex
+    size_t mNumLocks;
+    /// Mutex identifier
+    mutable pthread_mutex_t mIdentifier;
+    /// Owner thread
+    pthread_t mOwner;
+    /** @}
+     */
+};
+
+}  // namespace calibration
+}  // namespace aslam
+
+#endif  // ASLAM_CALIBRATION_BASE_MUTEX_H

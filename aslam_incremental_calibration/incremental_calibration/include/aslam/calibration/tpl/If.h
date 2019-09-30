@@ -26,24 +26,25 @@
 #include "aslam/calibration/tpl/Boolean.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The If structure defines the If template
-        \brief If template
-      */
-    template <typename C> struct If {
-    };
+/** The If structure defines the If template
+    \brief If template
+  */
+template <typename C>
+struct If {};
 
-    /** The IfThenElse structure defines the If-Then-Else template
-        \brief If template
-      */
-    template <> struct If<True> {
-    public:
-      /// Definition for true
-      typedef True Result;
-    };
+/** The IfThenElse structure defines the If-Then-Else template
+    \brief If template
+  */
+template <>
+struct If<True> {
+  public:
+    /// Definition for true
+    typedef True Result;
+};
 
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
-#endif // ASLAM_CALIBRATION_TPL_IF_H
+#endif  // ASLAM_CALIBRATION_TPL_IF_H

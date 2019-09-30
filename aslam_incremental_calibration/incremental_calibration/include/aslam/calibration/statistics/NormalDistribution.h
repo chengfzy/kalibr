@@ -24,14 +24,14 @@
 #define ASLAM_CALIBRATION_STATISTICS_NORMALDISTRIBUTION_H
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    template <int M = 1> class NormalDistribution;
-
-  }
+template <int M = 1>
+class NormalDistribution;
 }
+}  // namespace aslam
 
 #include "aslam/calibration/statistics/NormalDistribution1v.h"
 #include "aslam/calibration/statistics/NormalDistributionMv.h"
 
-#endif // ASLAM_CALIBRATION_STATISTICS_NORMALDISTRIBUTION_H
+#endif  // ASLAM_CALIBRATION_STATISTICS_NORMALDISTRIBUTION_H

@@ -31,43 +31,39 @@
 #include "aslam/calibration/exceptions/Exception.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The class OutOfBoundException represents any exceptions occuring when
-        trying to access unallocated memory.
-        \brief Out of bounds exception
+/** The class OutOfBoundException represents any exceptions occuring when
+    trying to access unallocated memory.
+    \brief Out of bounds exception
+  */
+template <typename X>
+class OutOfBoundException : public Exception {
+  public:
+    /** \name Constructors/destructor
+      @{
       */
-    template <typename X> class OutOfBoundException :
-      public Exception {
-    public:
-      /** \name Constructors/destructor
-        @{
-        */
-      /// Constructs exception from argument and string
-      OutOfBoundException(const X& argument, const std::string& msg, const
-        std::string& filename = " ", size_t line = 0, const std::string&
-        function = " ");
-      /// Constructs exception from argument and string
-      OutOfBoundException(const X& argument, const X& bound, const std::string&
-        msg, const std::string& filename = " ", size_t line = 0, const
-        std::string& function = " ");
-      /// Copy constructor
-      OutOfBoundException(const OutOfBoundException& other) throw();
-      /// Assignment operator
-      OutOfBoundException& operator = (const OutOfBoundException& other)
-        throw();
-      /// Destructor
-      virtual ~OutOfBoundException() throw();
-      /** @}
-        */
+    /// Constructs exception from argument and string
+    OutOfBoundException(const X& argument, const std::string& msg, const std::string& filename = " ", size_t line = 0,
+                        const std::string& function = " ");
+    /// Constructs exception from argument and string
+    OutOfBoundException(const X& argument, const X& bound, const std::string& msg, const std::string& filename = " ",
+                        size_t line = 0, const std::string& function = " ");
+    /// Copy constructor
+    OutOfBoundException(const OutOfBoundException& other) throw();
+    /// Assignment operator
+    OutOfBoundException& operator=(const OutOfBoundException& other) throw();
+    /// Destructor
+    virtual ~OutOfBoundException() throw();
+    /** @}
+     */
 
-    protected:
+  protected:
+};
 
-    };
-
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
 #include "aslam/calibration/exceptions/OutOfBoundException.tpp"
 
-#endif // ASLAM_CALIBRATION_EXCEPTIONS_OUTOFBOUNDEXCEPTION_H
+#endif  // ASLAM_CALIBRATION_EXCEPTIONS_OUTOFBOUNDEXCEPTION_H

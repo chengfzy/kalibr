@@ -24,44 +24,43 @@
 #define ASLAM_CALIBRATION_CORE_LINEAR_SOLVER_OPTIONS_H
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The structure LinearSolverOptions defines the options for the
-        LinearSolver class.
-        \brief Linear solver options
+/** The structure LinearSolverOptions defines the options for the
+    LinearSolver class.
+    \brief Linear solver options
+  */
+struct LinearSolverOptions {
+    /** \name Constructors/destructor
+      @{
       */
-    struct LinearSolverOptions {
-      /** \name Constructors/destructor
-        @{
-        */
-      /// Default constructor
-      LinearSolverOptions();
-      /** @}
-        */
+    /// Default constructor
+    LinearSolverOptions();
+    /** @}
+     */
 
-      /** \name Members
-        @{
-        */
-      /// Perform column scaling/normalization
-      bool columnScaling;
-      /// Epsilon for when to consider an element being zero in the norm
-      double epsNorm;
-      /// Epsilon for SVD numerical rank
-      double epsSVD;
-      /// Epsilon for QR tolerance computation
-      double epsQR;
-      /// Fixed tolerance for SVD numerical rank
-      double svdTol;
-      /// Fixed tolerance for QR
-      double qrTol;
-      /// Verbose mode
-      bool verbose;
-      /** @}
-        */
+    /** \name Members
+      @{
+      */
+    /// Perform column scaling/normalization
+    bool columnScaling;
+    /// Epsilon for when to consider an element being zero in the norm
+    double epsNorm;
+    /// Epsilon for SVD numerical rank
+    double epsSVD;
+    /// Epsilon for QR tolerance computation
+    double epsQR;
+    /// Fixed tolerance for SVD numerical rank
+    double svdTol;
+    /// Fixed tolerance for QR
+    double qrTol;
+    /// Verbose mode
+    bool verbose;
+    /** @}
+     */
+};
 
-    };
+}  // namespace calibration
+}  // namespace aslam
 
-  }
-}
-
-#endif // ASLAM_CALIBRATION_CORE_LINEAR_SOLVER_OPTIONS_H
+#endif  // ASLAM_CALIBRATION_CORE_LINEAR_SOLVER_OPTIONS_H

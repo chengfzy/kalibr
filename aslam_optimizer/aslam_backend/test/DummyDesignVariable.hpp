@@ -1,33 +1,27 @@
 #ifndef _DUMMYDESIGNVARIABLE_H_
 #define _DUMMYDESIGNVARIABLE_H_
 
-template<int MD = 3>
+template <int MD = 3>
 class DummyDesignVariable : public aslam::backend::DesignVariable {
-public:
-  DummyDesignVariable() {}
-  virtual ~DummyDesignVariable() {}
-protected:
-  /// \brief Revert the last state update.
-  virtual void revertUpdateImplementation() {}
+  public:
+    DummyDesignVariable() {}
+    virtual ~DummyDesignVariable() {}
 
-  /// \brief Update the design variable.
-  virtual void updateImplementation(const double* /* dp */, int /* size */) {}
+  protected:
+    /// \brief Revert the last state update.
+    virtual void revertUpdateImplementation() {}
 
-  /// \brief what is the number of dimensions of the perturbation variable.
-  virtual int minimalDimensionsImplementation() const {
-    return MD;
-  }
+    /// \brief Update the design variable.
+    virtual void updateImplementation(const double* /* dp */, int /* size */) {}
 
-  /// Returns the content of the design variable
-  virtual void getParametersImplementation(Eigen::MatrixXd& /* value */) const {
-  }
+    /// \brief what is the number of dimensions of the perturbation variable.
+    virtual int minimalDimensionsImplementation() const { return MD; }
 
-  /// Sets the content of the design variable
-  virtual void setParametersImplementation(const Eigen::MatrixXd& /* value */) {
-  }
+    /// Returns the content of the design variable
+    virtual void getParametersImplementation(Eigen::MatrixXd& /* value */) const {}
 
+    /// Sets the content of the design variable
+    virtual void setParametersImplementation(const Eigen::MatrixXd& /* value */) {}
 };
-
-
 
 #endif /* _DUMMYDESIGNVARIABLE_H_ */

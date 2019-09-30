@@ -8,34 +8,30 @@
 
 #include <string>
 
-
 class Serial {
+    int m_serialPort;  // file description for the serial port
 
-  int m_serialPort; // file description for the serial port
-  
-public:
+  public:
+    Serial() : m_serialPort(-1) {}
 
-  Serial() : m_serialPort(-1) {}
+    // open a serial port connection
+    void open(const std::string& port, int rate = 115200);
 
-  // open a serial port connection
-  void open(const std::string& port, int rate = 115200);
+    // read a single character
+    int read() const;
 
-  // read a single character
-  int read() const;
+    // read until special character up to a maximum number of bytes
+    std::string readBytesUntil(unsigned char until, int length = 300);
 
-  // read until special character up to a maximum number of bytes
-  std::string readBytesUntil(unsigned char until, int length = 300);
+    // send a string
+    void print(std::string str) const;
 
-  // send a string
-  void print(std::string str) const;
+    // send an integer
+    void print(int num) const;
 
-  // send an integer
-  void print(int num) const;
+    // send a double
+    void print(double num) const;
 
-  // send a double
-  void print(double num) const;
-
-  // send a float
-  void print(float num) const;
-
+    // send a float
+    void print(float num) const;
 };

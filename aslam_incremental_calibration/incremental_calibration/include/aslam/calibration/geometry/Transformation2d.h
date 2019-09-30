@@ -25,94 +25,90 @@
 #include "aslam/calibration/base/Serializable.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The Transformation2d class represents a transformation in 2d.
-        \brief 2d transformation
+/** The Transformation2d class represents a transformation in 2d.
+    \brief 2d transformation
+  */
+template <typename T>
+class Transformation<T, 2> : public virtual Serializable {
+  public:
+    // Required by Eigen for fixed-size matrices members
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    /** \name Constructors/destructor
+      @{
       */
-    template <typename T> class Transformation<T, 2> :
-      public virtual Serializable {
-    public:
-      // Required by Eigen for fixed-size matrices members
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    /// Default constructor
+    Transformation();
+    /// Constructs from a given transformation matrix
+    Transformation(const Eigen::Matrix<double, 3, 3>& transformationMatrix);
+    /// Constructs from rotation and translation
+    Transformation(T x, T y, T yaw);
+    /// Copy constructor
+    Transformation(const Transformation& other);
+    /// Assignment operator
+    Transformation& operator=(const Transformation& other);
+    /// Destructor
+    virtual ~Transformation();
+    /** @}
+     */
 
-      /** \name Constructors/destructor
-        @{
-        */
-      /// Default constructor
-      Transformation();
-      /// Constructs from a given transformation matrix
-      Transformation(const Eigen::Matrix<double, 3, 3>& transformationMatrix);
-      /// Constructs from rotation and translation
-      Transformation(T x, T y, T yaw);
-      /// Copy constructor
-      Transformation(const Transformation& other);
-      /// Assignment operator
-      Transformation& operator = (const Transformation& other);
-      /// Destructor
-      virtual ~Transformation();
-      /** @}
-        */
+    /** \name Accessors
+      @{
+      */
+    /// Sets the transformation matrix
+    void setTransformationMatrix(const Eigen::Matrix<double, 3, 3>& transformationMatrix);
+    /// Returns the transformation matrix
+    const Eigen::Matrix<double, 3, 3>& getTransformationMatrix();
+    /// Sets the transformation from translation and rotation
+    void setTransformation(T x, T y, T yaw);
+    /// Returns the inverse transformation
+    Transformation getInverse() const;
+    /** @}
+     */
 
-      /** \name Accessors
-        @{
-        */
-      /// Sets the transformation matrix
-      void setTransformationMatrix(const Eigen::Matrix<double, 3, 3>&
-        transformationMatrix);
-      /// Returns the transformation matrix
-      const Eigen::Matrix<double, 3, 3>& getTransformationMatrix();
-      /// Sets the transformation from translation and rotation
-      void setTransformation(T x, T y, T yaw);
-      /// Returns the inverse transformation
-      Transformation getInverse() const;
-      /** @}
-        */
+    /** \name Methods
+      @{
+      */
+    /// Inverse the transformation
+    const Transformation& inverse();
+    /// Transform a point
+    void transform(const Eigen::Matrix<T, 2, 1>& src, Eigen::Matrix<T, 2, 1>& dest) const;
+    /// Transform a point using operator
+    Eigen::Matrix<T, 2, 1> operator()(const Eigen::Matrix<T, 2, 1>& src) const;
+    /** @}
+     */
 
-      /** \name Methods
-        @{
-        */
-      /// Inverse the transformation
-      const Transformation& inverse();
-      /// Transform a point
-      void transform(const Eigen::Matrix<T, 2, 1>& src, Eigen::Matrix<T, 2, 1>&
-        dest) const;
-      /// Transform a point using operator
-      Eigen::Matrix<T, 2, 1> operator () (const Eigen::Matrix<T, 2, 1>& src)
-        const;
-      /** @}
-        */
+  protected:
+    /** \name Stream methods
+      @{
+      */
+    /// Reads from standard input
+    virtual void read(std::istream& stream);
+    /// Writes to standard output
+    virtual void write(std::ostream& stream) const;
+    /// Reads from a file
+    virtual void read(std::ifstream& stream);
+    /// Writes to a file
+    virtual void write(std::ofstream& stream) const;
+    /** @}
+     */
 
-    protected:
-      /** \name Stream methods
-        @{
-        */
-      /// Reads from standard input
-      virtual void read(std::istream& stream);
-      /// Writes to standard output
-      virtual void write(std::ostream& stream) const;
-      /// Reads from a file
-      virtual void read(std::ifstream& stream);
-      /// Writes to a file
-      virtual void write(std::ofstream& stream) const;
-      /** @}
-        */
+    /** \name Protected members
+      @{
+      */
+    /// Transformation matrix
+    Eigen::Matrix<double, 3, 3> mTransformationMatrix;
+    /// Rotation matrix
+    Eigen::Matrix<double, 3, 3> mRotationMatrix;
+    /// Translation matrix
+    Eigen::Matrix<double, 3, 3> mTranslationMatrix;
+    /** @}
+     */
+};
 
-      /** \name Protected members
-        @{
-        */
-      /// Transformation matrix
-      Eigen::Matrix<double, 3, 3> mTransformationMatrix;
-      /// Rotation matrix
-      Eigen::Matrix<double, 3, 3> mRotationMatrix;
-      /// Translation matrix
-      Eigen::Matrix<double, 3, 3> mTranslationMatrix;
-      /** @}
-        */
-
-    };
-
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
 #include "aslam/calibration/geometry/Transformation2d.tpp"

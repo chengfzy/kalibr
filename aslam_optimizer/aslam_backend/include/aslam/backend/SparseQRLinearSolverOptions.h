@@ -25,46 +25,44 @@
 #define ASLAM_BACKEND_SPARSE_QR_LINEAR_SOLVER_OPTIONS_H
 
 namespace aslam {
-  namespace backend {
+namespace backend {
 
-    /** The class SparseQRLinearSolverOptions contains specific options for the
-        sparse QR linear solver.
-        \brief Sparse QR linear solver options
+/** The class SparseQRLinearSolverOptions contains specific options for the
+    sparse QR linear solver.
+    \brief Sparse QR linear solver options
+  */
+class SparseQRLinearSolverOptions {
+  public:
+    /** \name Constructors/destructor
+      @{
       */
-    class SparseQRLinearSolverOptions {
-    public:
-      /** \name Constructors/destructor
-        @{
-        */
-      /// Default constructor
-      SparseQRLinearSolverOptions();
-      /// Copy constructor
-      SparseQRLinearSolverOptions(const SparseQRLinearSolverOptions& other);
-      /// Assignment operator
-      SparseQRLinearSolverOptions& operator =
-        (const SparseQRLinearSolverOptions& other);
-      /// Destructor
-      virtual ~SparseQRLinearSolverOptions();
-      /** @}
-        */
+    /// Default constructor
+    SparseQRLinearSolverOptions();
+    /// Copy constructor
+    SparseQRLinearSolverOptions(const SparseQRLinearSolverOptions& other);
+    /// Assignment operator
+    SparseQRLinearSolverOptions& operator=(const SparseQRLinearSolverOptions& other);
+    /// Destructor
+    virtual ~SparseQRLinearSolverOptions();
+    /** @}
+     */
 
-      /** \name Members
-        @{
-        */
-      /// Column normalization
-      bool colNorm;
-      /// Tolerance for QR
-      double qrTol;
-      /// Tolerance for a zero 2-norm column
-      double normTol;
-      /// Verbose mode
-      bool verbose;
-      /** @}
-        */
+    /** \name Members
+      @{
+      */
+    /// Column normalization
+    bool colNorm;
+    /// Tolerance for QR
+    double qrTol;
+    /// Tolerance for a zero 2-norm column
+    double normTol;
+    /// Verbose mode
+    bool verbose;
+    /** @}
+     */
+};
 
-    };
+}  // namespace backend
+}  // namespace aslam
 
-  }
-}
-
-#endif // ASLAM_BACKEND_SPARSE_QR_LINEAR_SOLVER_OPTIONS_H
+#endif  // ASLAM_BACKEND_SPARSE_QR_LINEAR_SOLVER_OPTIONS_H

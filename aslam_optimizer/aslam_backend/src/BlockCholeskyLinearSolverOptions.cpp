@@ -19,28 +19,25 @@
 #include "aslam/backend/BlockCholeskyLinearSolverOptions.h"
 
 namespace aslam {
-  namespace backend {
+namespace backend {
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-      BlockCholeskyLinearSolverOptions::BlockCholeskyLinearSolverOptions() {}
-      
-    BlockCholeskyLinearSolverOptions::BlockCholeskyLinearSolverOptions(
-        const BlockCholeskyLinearSolverOptions& /* other */) {
-    }
+BlockCholeskyLinearSolverOptions::BlockCholeskyLinearSolverOptions() {}
 
-    BlockCholeskyLinearSolverOptions&
-    BlockCholeskyLinearSolverOptions::operator =
-        (const BlockCholeskyLinearSolverOptions& other) {
-      if (this != &other) {
-      }
-      return *this;
-    }
+BlockCholeskyLinearSolverOptions::BlockCholeskyLinearSolverOptions(
+    const BlockCholeskyLinearSolverOptions& /* other */) {}
 
-    BlockCholeskyLinearSolverOptions::~BlockCholeskyLinearSolverOptions() {
+BlockCholeskyLinearSolverOptions& BlockCholeskyLinearSolverOptions::operator=(
+    const BlockCholeskyLinearSolverOptions& other) {
+    if (this != &other) {
     }
-
-  }
+    return *this;
 }
+
+BlockCholeskyLinearSolverOptions::~BlockCholeskyLinearSolverOptions() {}
+
+}  // namespace backend
+}  // namespace aslam

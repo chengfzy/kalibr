@@ -26,14 +26,14 @@
 #include <cstdlib>
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-template <typename T = double, int M = 2> class Transformation;
-
-  }
+template <typename T = double, int M = 2>
+class Transformation;
 }
+}  // namespace aslam
 
 #include "aslam/calibration/geometry/Transformation2d.h"
 #include "aslam/calibration/geometry/Transformation3d.h"
 
-#endif // ASLAM_CALIBRATION_GEOMETRY_TRANSFORMATION_H
+#endif  // ASLAM_CALIBRATION_GEOMETRY_TRANSFORMATION_H

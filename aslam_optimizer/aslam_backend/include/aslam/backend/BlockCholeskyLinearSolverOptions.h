@@ -25,33 +25,30 @@
 #define ASLAM_BACKEND_BLOCK_CHOLESKY_LINEAR_SOLVER_OPTIONS_H
 
 namespace aslam {
-  namespace backend {
+namespace backend {
 
-    /** The class BlockCholeskyLinearSolverOptions contains specific options for
-        the block Cholesky linear solver.
-        \brief Block Cholesky linear solver options
+/** The class BlockCholeskyLinearSolverOptions contains specific options for
+    the block Cholesky linear solver.
+    \brief Block Cholesky linear solver options
+  */
+class BlockCholeskyLinearSolverOptions {
+  public:
+    /** \name Constructors/destructor
+      @{
       */
-    class BlockCholeskyLinearSolverOptions {
-    public:
-      /** \name Constructors/destructor
-        @{
-        */
-      /// Default constructor
-      BlockCholeskyLinearSolverOptions();
-      /// Copy constructor
-      BlockCholeskyLinearSolverOptions(const BlockCholeskyLinearSolverOptions&
-        other);
-      /// Assignment operator
-      BlockCholeskyLinearSolverOptions& operator =
-        (const BlockCholeskyLinearSolverOptions& other);
-      /// Destructor
-      virtual ~BlockCholeskyLinearSolverOptions();
-      /** @}
-        */
+    /// Default constructor
+    BlockCholeskyLinearSolverOptions();
+    /// Copy constructor
+    BlockCholeskyLinearSolverOptions(const BlockCholeskyLinearSolverOptions& other);
+    /// Assignment operator
+    BlockCholeskyLinearSolverOptions& operator=(const BlockCholeskyLinearSolverOptions& other);
+    /// Destructor
+    virtual ~BlockCholeskyLinearSolverOptions();
+    /** @}
+     */
+};
 
-    };
+}  // namespace backend
+}  // namespace aslam
 
-  }
-}
-
-#endif // ASLAM_BACKEND_BLOCK_CHOLESKY_LINEAR_SOLVER_OPTIONS_H
+#endif  // ASLAM_BACKEND_BLOCK_CHOLESKY_LINEAR_SOLVER_OPTIONS_H

@@ -4,14 +4,13 @@
 namespace sm {
 namespace eigen {
 
-
 Eigen::VectorXd randn(unsigned dim) {
-  Eigen::VectorXd v(dim);
-  for(unsigned i = 0; i < dim; ++i) {
-    v[i] = sm::random::randn();
-  }
-  return v;
+    Eigen::VectorXd v(dim);
+    for (unsigned i = 0; i < dim; ++i) {
+        v[i] = sm::random::randn();
+    }
+    return v;
 }
 
-} // namespace eigen
-} // namespace sm
+}  // namespace eigen
+}  // namespace sm

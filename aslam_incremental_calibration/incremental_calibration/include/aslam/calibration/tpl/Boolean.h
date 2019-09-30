@@ -24,29 +24,29 @@
 #define ASLAM_CALIBRATION_TPL_BOOLEAN_H
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The False structure defines the false template
-        \brief False definition
-      */
-    struct False {
-    public:
-      /// False definition
-      typedef False Result;
-    };
+/** The False structure defines the false template
+    \brief False definition
+  */
+struct False {
+  public:
+    /// False definition
+    typedef False Result;
+};
 
-    /** The True structure defines the true template
-        \brief True definition
-      */
-    struct True {
-    public:
-      /// True definition
-      typedef True Result;
-      /// Numeric definition
-      typedef bool Numeric;
-    };
+/** The True structure defines the true template
+    \brief True definition
+  */
+struct True {
+  public:
+    /// True definition
+    typedef True Result;
+    /// Numeric definition
+    typedef bool Numeric;
+};
 
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
-#endif // ASLAM_CALIBRATION_TPL_BOOLEAN_H
+#endif  // ASLAM_CALIBRATION_TPL_BOOLEAN_H

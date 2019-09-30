@@ -22,13 +22,13 @@
 
 #include <numpy_eigen/boost_python_headers.hpp>
 
-//void exportVisionDataAssociation();
+// void exportVisionDataAssociation();
 void exportOptimizationProblem();
 void exportIncrementalEstimator();
 void exportLinearSolver();
 
 BOOST_PYTHON_MODULE(libincremental_calibration_python) {
-  exportOptimizationProblem();
-  exportIncrementalEstimator();
-  exportLinearSolver();
+    exportOptimizationProblem();
+    exportIncrementalEstimator();
+    exportLinearSolver();
 }

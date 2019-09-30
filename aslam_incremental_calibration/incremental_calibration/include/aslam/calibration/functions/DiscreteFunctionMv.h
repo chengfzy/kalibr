@@ -26,43 +26,41 @@
 #include "aslam/calibration/functions/Function.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The DiscreteFunctionMv class is an interface to the multivariate
-        discrete functions.
-        \brief Multivariate discrete function
+/** The DiscreteFunctionMv class is an interface to the multivariate
+    discrete functions.
+    \brief Multivariate discrete function
+  */
+template <typename Y, typename X, int M, int N>
+class DiscreteFunction : public virtual Function<Y, Eigen::Matrix<X, M, N> > {
+  public:
+    /// \cond
+    // Template parameters assertion
+    static_assert(M > 0 || M == Eigen::Dynamic, "M should be larger than 0!");
+    static_assert(N > 0 || N == Eigen::Dynamic, "N should be larger than 0!");
+    /// \endcond
+
+    /** \name Constructors/Destructor
+      @{
       */
-    template <typename Y, typename X, int M, int N>
-    class DiscreteFunction :
-      public virtual Function<Y, Eigen::Matrix<X, M, N> > {
-    public:
-      /// \cond
-      // Template parameters assertion
-      static_assert(M > 0 || M == Eigen::Dynamic, "M should be larger than 0!");
-      static_assert(N > 0 || N == Eigen::Dynamic, "N should be larger than 0!");
-      /// \endcond
+    /// Destructor
+    virtual ~DiscreteFunction();
+    /** @}
+     */
 
-      /** \name Constructors/Destructor
-        @{
-        */
-      /// Destructor
-      virtual ~DiscreteFunction();
-      /** @}
-        */
+    /** \name Types
+      @{
+      */
+    /// Domain type
+    typedef X DomainType;
+    /// Codomain type
+    typedef Y CodomainType;
+    /** @}
+     */
+};
 
-      /** \name Types
-        @{
-        */
-      /// Domain type
-      typedef X DomainType;
-      /// Codomain type
-      typedef Y CodomainType;
-      /** @}
-        */
-
-    };
-
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
 #include "aslam/calibration/functions/DiscreteFunctionMv.tpp"

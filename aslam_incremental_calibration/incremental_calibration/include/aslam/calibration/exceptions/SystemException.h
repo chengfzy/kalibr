@@ -31,35 +31,32 @@
 #include "aslam/calibration/exceptions/Exception.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The class SystemException represents system exceptions.
-        \brief System exceptions
+/** The class SystemException represents system exceptions.
+    \brief System exceptions
+  */
+class SystemException : public Exception {
+  public:
+    /** \name Constructors/Destructor
+      @{
       */
-    class SystemException :
-      public Exception {
-    public:
-      /** \name Constructors/Destructor
-        @{
-        */
-      /// Constructs exception
-      SystemException(int errNo, const std::string& msg = "", const
-        std::string& filename = " ", size_t line = 0, const std::string&
-        function = " ");
-      /// Copy constructor
-      SystemException(const SystemException& other) throw ();
-      /// Assignment operator
-      SystemException& operator = (const SystemException& other) throw();
-      /// Destructor
-      virtual ~SystemException() throw ();
-      /** @}
-        */
+    /// Constructs exception
+    SystemException(int errNo, const std::string& msg = "", const std::string& filename = " ", size_t line = 0,
+                    const std::string& function = " ");
+    /// Copy constructor
+    SystemException(const SystemException& other) throw();
+    /// Assignment operator
+    SystemException& operator=(const SystemException& other) throw();
+    /// Destructor
+    virtual ~SystemException() throw();
+    /** @}
+     */
 
-    protected:
+  protected:
+};
 
-    };
+}  // namespace calibration
+}  // namespace aslam
 
-  }
-}
-
-#endif // ASLAM_CALIBRATION_EXCEPTIONS_SYSTEMEXCEPTION_H
+#endif  // ASLAM_CALIBRATION_EXCEPTIONS_SYSTEMEXCEPTION_H

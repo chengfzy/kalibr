@@ -25,14 +25,14 @@
 #define ASLAM_CALIBRATION_STATISTICS_ESTIMATORML_H
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    template <typename D> class EstimatorML;
-
-  }
+template <typename D>
+class EstimatorML;
 }
+}  // namespace aslam
 
 #include "aslam/calibration/statistics/EstimatorMLNormal1v.h"
 #include "aslam/calibration/statistics/EstimatorMLNormalMv.h"
 
-#endif // ASLAM_CALIBRATION_STATISTICS_ESIMATORML_H
+#endif  // ASLAM_CALIBRATION_STATISTICS_ESIMATORML_H

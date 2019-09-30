@@ -26,27 +26,29 @@
 #include "aslam/calibration/tpl/Boolean.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The IsVoid structure determines if a type is void
-        \brief Void types definitions
-      */
-    template <typename T> struct IsVoid {
-    public:
-      /// Result for non-void types
-      typedef False Result;
-    };
+/** The IsVoid structure determines if a type is void
+    \brief Void types definitions
+  */
+template <typename T>
+struct IsVoid {
+  public:
+    /// Result for non-void types
+    typedef False Result;
+};
 
-    /** The IsVoid structure determines if a type is void
-        \brief Void types definitions
-      */
-    template <> struct IsVoid<void> {
-    public:
-      /// Result for void types
-      typedef True Result;
-    };
+/** The IsVoid structure determines if a type is void
+    \brief Void types definitions
+  */
+template <>
+struct IsVoid<void> {
+  public:
+    /// Result for void types
+    typedef True Result;
+};
 
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
-#endif // ASLAM_CALIBRATION_TPL_ISVOID_H
+#endif  // ASLAM_CALIBRATION_TPL_ISVOID_H

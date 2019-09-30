@@ -26,32 +26,35 @@
 #include "aslam/calibration/tpl/Boolean.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The Not structure defines the Not template
-        \brief Not template
-      */
-    template <typename A> struct Not;
+/** The Not structure defines the Not template
+    \brief Not template
+  */
+template <typename A>
+struct Not;
 
-    /** The Not structure defines the Not template
-        \brief Not template
-      */
-    template <> struct Not<False> {
-    public:
-      /// Defines not false
-      typedef True Result;
-    };
+/** The Not structure defines the Not template
+    \brief Not template
+  */
+template <>
+struct Not<False> {
+  public:
+    /// Defines not false
+    typedef True Result;
+};
 
-    /** The Not structure defines the Not template
-        \brief Not template
-      */
-    template <> struct Not<True> {
-    public:
-      /// Defines not true
-      typedef False Result;
-    };
+/** The Not structure defines the Not template
+    \brief Not template
+  */
+template <>
+struct Not<True> {
+  public:
+    /// Defines not true
+    typedef False Result;
+};
 
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
-#endif // ASLAM_CALIBRATION_TPL_NOT_H
+#endif  // ASLAM_CALIBRATION_TPL_NOT_H

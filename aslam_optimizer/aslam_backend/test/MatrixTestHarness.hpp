@@ -4,21 +4,19 @@
 #include <aslam/backend/Matrix.hpp>
 
 class MatrixTestHarness {
-public:
-  MatrixTestHarness(aslam::backend::Matrix* M);
-  virtual ~MatrixTestHarness();
+  public:
+    MatrixTestHarness(aslam::backend::Matrix* M);
+    virtual ~MatrixTestHarness();
 
-  void testDense();
+    void testDense();
 
-  void testRightMultiply();
+    void testRightMultiply();
 
-  void testLeftMultiply();
+    void testLeftMultiply();
 
-  void testAll();
+    void testAll();
 
-
-  aslam::backend::Matrix* matrix;
+    aslam::backend::Matrix* matrix;
 };
-
 
 #endif /* _MATRIXTESTHARNESS_H_ */

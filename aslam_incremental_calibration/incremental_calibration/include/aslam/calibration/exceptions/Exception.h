@@ -30,57 +30,55 @@
 #include <string>
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The class Exception represents the base class for all exceptions.
-        \brief Exception base class
+/** The class Exception represents the base class for all exceptions.
+    \brief Exception base class
+  */
+class Exception : public std::exception {
+  public:
+    /** \name Constructors/Destructor
+      @{
       */
-    class Exception :
-      public std::exception {
-    public:
-      /** \name Constructors/Destructor
-        @{
-        */
-      /// Constructs exception from message
-      Exception(const std::string& msg = "", const std::string&
-        filename = " ", size_t line = 0, const std::string& function = " ");
-      /// Copy constructor
-      Exception(const Exception& other) throw ();
-      /// Assignment operator
-      Exception& operator = (const Exception& other) throw();
-      /// Destructor
-      virtual ~Exception() throw ();
-      /** @}
-        */
+    /// Constructs exception from message
+    Exception(const std::string& msg = "", const std::string& filename = " ", size_t line = 0,
+              const std::string& function = " ");
+    /// Copy constructor
+    Exception(const Exception& other) throw();
+    /// Assignment operator
+    Exception& operator=(const Exception& other) throw();
+    /// Destructor
+    virtual ~Exception() throw();
+    /** @}
+     */
 
-      /** \name Accessors
-        @{
-        */
-      /// Access the exception string
-      virtual const char* what() const throw();
-      /** @}
-        */
+    /** \name Accessors
+      @{
+      */
+    /// Access the exception string
+    virtual const char* what() const throw();
+    /** @}
+     */
 
-    protected:
-      /** \name Protected members
-        @{
-        */
-      /// Message in the exception
-      std::string mMsg;
-      /// Filename where the exception occurs
-      std::string mFilename;
-      /// Function where the exception occurs
-      std::string mFunction;
-      /// Line number where the exception occurs
-      size_t mLine;
-      /// Output message
-      std::string mOutputMessage;
-      /** @}
-        */
+  protected:
+    /** \name Protected members
+      @{
+      */
+    /// Message in the exception
+    std::string mMsg;
+    /// Filename where the exception occurs
+    std::string mFilename;
+    /// Function where the exception occurs
+    std::string mFunction;
+    /// Line number where the exception occurs
+    size_t mLine;
+    /// Output message
+    std::string mOutputMessage;
+    /** @}
+     */
+};
 
-    };
+}  // namespace calibration
+}  // namespace aslam
 
-  }
-}
-
-#endif // ASLAM_CALIBRATION_EXCEPTIONS_EXCEPTION_H
+#endif  // ASLAM_CALIBRATION_EXCEPTIONS_EXCEPTION_H

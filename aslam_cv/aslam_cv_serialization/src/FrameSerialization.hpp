@@ -1,3 +1,1 @@
-namespace aslam {
-
-}  // namespace aslam
+namespace aslam {}  // namespace aslam

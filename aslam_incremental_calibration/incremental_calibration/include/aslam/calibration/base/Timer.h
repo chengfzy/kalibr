@@ -27,89 +27,87 @@
 #include "aslam/calibration/base/Timestamp.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The class Timer implements timer facilities.
-        \brief Timer facilities
+/** The class Timer implements timer facilities.
+    \brief Timer facilities
+  */
+class Timer : public virtual Serializable {
+  public:
+    /** \name Constructors/Destructor
+      @{
       */
-    class Timer :
-      public virtual Serializable {
-    public:
-      /** \name Constructors/Destructor
-        @{
-        */
-      /// Construct the time with parameter
-      Timer(bool start = false);
-      /// Copy constructor
-      Timer(const Timer& other);
-      /// Assignment operator
-      Timer& operator = (const Timer& other);
-      /// Destructor
-      virtual ~Timer();
-      /** @}
-        */
+    /// Construct the time with parameter
+    Timer(bool start = false);
+    /// Copy constructor
+    Timer(const Timer& other);
+    /// Assignment operator
+    Timer& operator=(const Timer& other);
+    /// Destructor
+    virtual ~Timer();
+    /** @}
+     */
 
-      /** \name Accessors
-        @{
-        */
-      /// Access the timer's measured period in seconds
-      double getPeriod() const;
-      /// Access the timer's measured frequency (equals 1.0 / period)
-      double getFrequency() const;
-      /// Access the timer's start time
-      const Timestamp& getStartTime() const;
-      /// Access the timer's time left for the specified period in seconds
-      double getLeft(double period) const;
+    /** \name Accessors
+      @{
+      */
+    /// Access the timer's measured period in seconds
+    double getPeriod() const;
+    /// Access the timer's measured frequency (equals 1.0 / period)
+    double getFrequency() const;
+    /// Access the timer's start time
+    const Timestamp& getStartTime() const;
+    /// Access the timer's time left for the specified period in seconds
+    double getLeft(double period) const;
 
-      /** @}
-        */
+    /** @}
+     */
 
-      /** \name Methods
-        @{
-        */
-      /// Start the timer
-      void start(bool reset = true);
-      /// Stop the time after the specified period has elapsed
-      void stop(double period = 0.0);
-      /// Reset the timer
-      void reset();
-      /// Wait for the specified period to elapse, but do not stop the timer
-      void wait(double period) const;
-      /// Sleep the specified period in seconds
-      static void sleep(double period);
-      /// Return a numeric value for an infinite period of time
-      static double eternal();
-      /** @}
-        */
+    /** \name Methods
+      @{
+      */
+    /// Start the timer
+    void start(bool reset = true);
+    /// Stop the time after the specified period has elapsed
+    void stop(double period = 0.0);
+    /// Reset the timer
+    void reset();
+    /// Wait for the specified period to elapse, but do not stop the timer
+    void wait(double period) const;
+    /// Sleep the specified period in seconds
+    static void sleep(double period);
+    /// Return a numeric value for an infinite period of time
+    static double eternal();
+    /** @}
+     */
 
-    protected:
-      /** \name Stream methods
-        @{
-        */
-      /// Reads from standard input
-      virtual void read(std::istream& stream);
-      /// Writes to standard output
-      virtual void write(std::ostream& stream) const;
-      /// Reads from a file
-      virtual void read(std::ifstream& stream);
-      /// Writes to a file
-      virtual void write(std::ofstream& stream) const;
-      /** @}
-        */
+  protected:
+    /** \name Stream methods
+      @{
+      */
+    /// Reads from standard input
+    virtual void read(std::istream& stream);
+    /// Writes to standard output
+    virtual void write(std::ostream& stream) const;
+    /// Reads from a file
+    virtual void read(std::ifstream& stream);
+    /// Writes to a file
+    virtual void write(std::ofstream& stream) const;
+    /** @}
+     */
 
-      /** \name Protected members
-        @{
-        */
-      /// Starting time of the timer
-      Timestamp mStartTime;
-      /// Period of the timer
-      double mPeriod;
-      /** @}
-        */
+    /** \name Protected members
+      @{
+      */
+    /// Starting time of the timer
+    Timestamp mStartTime;
+    /// Period of the timer
+    double mPeriod;
+    /** @}
+     */
+};
 
-    };
+}  // namespace calibration
+}  // namespace aslam
 
-  }
-}
-
-#endif // ASLAM_CALIBRATION_BASE_TIMER_H
+#endif  // ASLAM_CALIBRATION_BASE_TIMER_H

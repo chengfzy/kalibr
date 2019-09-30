@@ -26,15 +26,14 @@
 #include <cstdlib>
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    template <typename X, int M = 1, int N = 1>
-    class DiscreteDistribution;
-
-  }
+template <typename X, int M = 1, int N = 1>
+class DiscreteDistribution;
 }
+}  // namespace aslam
 
 #include "aslam/calibration/statistics/DiscreteDistribution1v.h"
 #include "aslam/calibration/statistics/DiscreteDistributionMv.h"
 
-#endif // ASLAM_CALIBRATION_STATISTICS_DISCRETEDISTRIBUTION_H
+#endif  // ASLAM_CALIBRATION_STATISTICS_DISCRETEDISTRIBUTION_H

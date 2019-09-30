@@ -15,34 +15,30 @@
 #define SMCONSOLE_SEVERITY_FATAL 10
 #define SMCONSOLE_SEVERITY_NONE 11
 
-
 namespace sm {
-    namespace logging {
-        
-        namespace levels
-        {
-            enum Level
-            {
-                All,
-                Finest,
-                Verbose,
-                Finer,
-                Trace,
-                Fine,
-                Debug,
-                Info,
-                Warn,
-                Error,
-                Fatal,
+namespace logging {
 
-                Count
-            };
-        }
+namespace levels {
+enum Level {
+    All,
+    Finest,
+    Verbose,
+    Finer,
+    Trace,
+    Fine,
+    Debug,
+    Info,
+    Warn,
+    Error,
+    Fatal,
 
-        typedef levels::Level Level;
+    Count
+};
+}
 
-    } // namespace logging
-} // namespace sm
+typedef levels::Level Level;
 
+}  // namespace logging
+}  // namespace sm
 
 #endif /* SM_LOGGING_LEVELS_HPP */

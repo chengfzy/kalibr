@@ -19,28 +19,23 @@
 #include "aslam/backend/DenseQRLinearSolverOptions.h"
 
 namespace aslam {
-  namespace backend {
+namespace backend {
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-      DenseQRLinearSolverOptions::DenseQRLinearSolverOptions() {}
-        
-      
-    DenseQRLinearSolverOptions::DenseQRLinearSolverOptions(
-        const DenseQRLinearSolverOptions& /* other */) {
-    }
+DenseQRLinearSolverOptions::DenseQRLinearSolverOptions() {}
 
-    DenseQRLinearSolverOptions& DenseQRLinearSolverOptions::operator =
-        (const DenseQRLinearSolverOptions& other) {
-      if (this != &other) {
-      }
-      return *this;
-    }
+DenseQRLinearSolverOptions::DenseQRLinearSolverOptions(const DenseQRLinearSolverOptions& /* other */) {}
 
-    DenseQRLinearSolverOptions::~DenseQRLinearSolverOptions() {
+DenseQRLinearSolverOptions& DenseQRLinearSolverOptions::operator=(const DenseQRLinearSolverOptions& other) {
+    if (this != &other) {
     }
-
-  }
+    return *this;
 }
+
+DenseQRLinearSolverOptions::~DenseQRLinearSolverOptions() {}
+
+}  // namespace backend
+}  // namespace aslam

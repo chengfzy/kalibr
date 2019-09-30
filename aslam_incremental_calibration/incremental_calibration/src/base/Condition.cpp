@@ -23,98 +23,86 @@
 #include "aslam/calibration/exceptions/SystemException.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-    Condition::Condition() {
-      pthread_cond_init(&mIdentifier, 0);
-    }
+Condition::Condition() { pthread_cond_init(&mIdentifier, 0); }
 
-    Condition::~Condition() {
-      const int ret = pthread_cond_destroy(&mIdentifier);
-      if (ret)
-        throw SystemException(ret,
-          "Condition::~Condition()::pthread_cond_destroy()");
-    }
+Condition::~Condition() {
+    const int ret = pthread_cond_destroy(&mIdentifier);
+    if (ret) throw SystemException(ret, "Condition::~Condition()::pthread_cond_destroy()");
+}
 
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
-    void Condition::signal(SignalType signalType) {
-      if (signalType == broadcast)
+void Condition::signal(SignalType signalType) {
+    if (signalType == broadcast)
         pthread_cond_broadcast(&mIdentifier);
-      else
+    else
         pthread_cond_signal(&mIdentifier);
-    }
+}
 
-    bool Condition::wait(Mutex& mutex, double seconds) const {
-      bool result = true;
-      if (seconds > 0.0) {
+bool Condition::wait(Mutex& mutex, double seconds) const {
+    bool result = true;
+    if (seconds > 0.0) {
         int ret = pthread_mutex_lock(&mutex.mIdentifier);
-        if (ret)
-          throw SystemException(ret, "Condition::wait()::pthread_mutex_lock()");
+        if (ret) throw SystemException(ret, "Condition::wait()::pthread_mutex_lock()");
         mutex.safeUnlock();
         result = safeWait(mutex, seconds);
         mutex.safeLock(Timer::eternal());
         ret = pthread_mutex_unlock(&mutex.mIdentifier);
-        if (ret)
-          throw SystemException(ret,
-            "Condition::wait()::pthread_mutex_unlock()");
-      }
-      return result;
+        if (ret) throw SystemException(ret, "Condition::wait()::pthread_mutex_unlock()");
     }
-
-    bool Condition::safeWait(const Mutex& mutex, double seconds) const {
-      bool result = true;
-      Thread* self = 0;
-      try {
-        self = &Threads::getInstance().getSelf();
-      }
-      catch (...) {
-        self = 0;
-      }
-      Thread::State threadState;
-      if (self) {
-        if (&mutex == &self->mMutex)
-          threadState = self->safeSetState(Thread::waiting);
-        else 
-          threadState = self->setState(Thread::waiting);
-      }
-      if (seconds == Timer::eternal())
-        result = safeEternalWait(mutex);
-      else if (seconds > 0.0)
-        result = safeWaitUntil(mutex, Timestamp(Timestamp::now() + seconds));
-      if (self) {
-        if (&mutex == &self->mMutex)
-          self->safeSetState(threadState);
-        else 
-          self->setState(threadState);
-      }
-      return result;
-    }
-
-    bool Condition::safeEternalWait(const Mutex& mutex) const {
-      bool result = true;
-      result = !pthread_cond_wait(&mIdentifier, &mutex.mIdentifier);
-      if (result && mutex.mNumLocks)
-        result = mutex.safeEternalWait(mutex);
-      return result;
-    }
-
-    bool Condition::safeWaitUntil(const Mutex& mutex, const Timestamp& time) 
-        const {
-      bool result = true;
-      timespec abstime = time;
-      result = !pthread_cond_timedwait(&mIdentifier, &mutex.mIdentifier,
-        &abstime);
-      if (result && mutex.mNumLocks)
-        result = mutex.safeWaitUntil(mutex, time);
-      return result;
-    }
-
-  }
+    return result;
 }
+
+bool Condition::safeWait(const Mutex& mutex, double seconds) const {
+    bool result = true;
+    Thread* self = 0;
+    try {
+        self = &Threads::getInstance().getSelf();
+    } catch (...) {
+        self = 0;
+    }
+    Thread::State threadState;
+    if (self) {
+        if (&mutex == &self->mMutex)
+            threadState = self->safeSetState(Thread::waiting);
+        else
+            threadState = self->setState(Thread::waiting);
+    }
+    if (seconds == Timer::eternal())
+        result = safeEternalWait(mutex);
+    else if (seconds > 0.0)
+        result = safeWaitUntil(mutex, Timestamp(Timestamp::now() + seconds));
+    if (self) {
+        if (&mutex == &self->mMutex)
+            self->safeSetState(threadState);
+        else
+            self->setState(threadState);
+    }
+    return result;
+}
+
+bool Condition::safeEternalWait(const Mutex& mutex) const {
+    bool result = true;
+    result = !pthread_cond_wait(&mIdentifier, &mutex.mIdentifier);
+    if (result && mutex.mNumLocks) result = mutex.safeEternalWait(mutex);
+    return result;
+}
+
+bool Condition::safeWaitUntil(const Mutex& mutex, const Timestamp& time) const {
+    bool result = true;
+    timespec abstime = time;
+    result = !pthread_cond_timedwait(&mIdentifier, &mutex.mIdentifier, &abstime);
+    if (result && mutex.mNumLocks) result = mutex.safeWaitUntil(mutex, time);
+    return result;
+}
+
+}  // namespace calibration
+}  // namespace aslam

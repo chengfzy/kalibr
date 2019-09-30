@@ -26,15 +26,14 @@
 #include <cstdlib>
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    template <typename X, int M = 1, int N = 1>
-    class ContinuousDistribution;
-
-  }
+template <typename X, int M = 1, int N = 1>
+class ContinuousDistribution;
 }
+}  // namespace aslam
 
 #include "aslam/calibration/statistics/ContinuousDistribution1v.h"
 #include "aslam/calibration/statistics/ContinuousDistributionMv.h"
 
-#endif // ASLAM_CALIBRATION_STATISTICS_CONTINUOUSDISTRIBUTION_H
+#endif  // ASLAM_CALIBRATION_STATISTICS_CONTINUOUSDISTRIBUTION_H

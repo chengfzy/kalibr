@@ -21,17 +21,15 @@
 #include "aslam/calibration/exceptions/BadArgumentException.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-    LogGammaFunction<size_t>::LogGammaFunction() {
-    }
+LogGammaFunction<size_t>::LogGammaFunction() {}
 
-    LogGammaFunction<size_t>::~LogGammaFunction() {
-    }
+LogGammaFunction<size_t>::~LogGammaFunction() {}
 
 /******************************************************************************/
 /* Stream operations                                                          */
@@ -41,15 +39,15 @@ namespace aslam {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-    double LogGammaFunction<size_t>::getValue(const VariableType& argument)
-        const {
-      if (argument)
+double LogGammaFunction<size_t>::getValue(const VariableType& argument) const {
+    if (argument)
         return LogFactorialFunction::getValue(argument - 1);
-      else throw BadArgumentException<size_t>(argument,
-        "LogGammaFunction<size_t>::getValue(): argument must be strictly "
-        "positive",
-        __FILE__, __LINE__);
-    }
-
-  }
+    else
+        throw BadArgumentException<size_t>(argument,
+                                           "LogGammaFunction<size_t>::getValue(): argument must be strictly "
+                                           "positive",
+                                           __FILE__, __LINE__);
 }
+
+}  // namespace calibration
+}  // namespace aslam

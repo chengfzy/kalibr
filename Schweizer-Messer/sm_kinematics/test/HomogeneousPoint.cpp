@@ -3,8 +3,7 @@
 
 #include "PointTestHarness.hpp"
 
-TEST(HomogeneousPointTestSuite, testHpoints)
-{
-  sm::PointTestHarness<sm::kinematics::HomogeneousPoint> harness(1e-6);
-  harness.testAll();
+TEST(HomogeneousPointTestSuite, testHpoints) {
+    sm::PointTestHarness<sm::kinematics::HomogeneousPoint> harness(1e-6);
+    harness.testAll();
 }

@@ -21,21 +21,20 @@
 #include <limits>
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-    LinearSolverOptions::LinearSolverOptions() :
-        columnScaling(false),
-        epsNorm(std::numeric_limits<double>::epsilon()),
-        epsSVD(std::numeric_limits<double>::epsilon()),
-        epsQR(std::numeric_limits<double>::epsilon()),
-        svdTol(-1.0),
-        qrTol(-1.0),
-        verbose(false) {
-    }
+LinearSolverOptions::LinearSolverOptions()
+    : columnScaling(false),
+      epsNorm(std::numeric_limits<double>::epsilon()),
+      epsSVD(std::numeric_limits<double>::epsilon()),
+      epsQR(std::numeric_limits<double>::epsilon()),
+      svdTol(-1.0),
+      qrTol(-1.0),
+      verbose(false) {}
 
-  }
-}
+}  // namespace calibration
+}  // namespace aslam

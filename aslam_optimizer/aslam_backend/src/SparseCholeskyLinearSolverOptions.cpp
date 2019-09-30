@@ -19,28 +19,25 @@
 #include "aslam/backend/SparseCholeskyLinearSolverOptions.h"
 
 namespace aslam {
-  namespace backend {
+namespace backend {
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-      SparseCholeskyLinearSolverOptions::SparseCholeskyLinearSolverOptions() {}
-      
-    SparseCholeskyLinearSolverOptions::SparseCholeskyLinearSolverOptions(
-        const SparseCholeskyLinearSolverOptions& /* other */) {
-    }
+SparseCholeskyLinearSolverOptions::SparseCholeskyLinearSolverOptions() {}
 
-    SparseCholeskyLinearSolverOptions&
-    SparseCholeskyLinearSolverOptions::operator =
-        (const SparseCholeskyLinearSolverOptions& other) {
-      if (this != &other) {
-      }
-      return *this;
-    }
+SparseCholeskyLinearSolverOptions::SparseCholeskyLinearSolverOptions(
+    const SparseCholeskyLinearSolverOptions& /* other */) {}
 
-    SparseCholeskyLinearSolverOptions::~SparseCholeskyLinearSolverOptions() {
+SparseCholeskyLinearSolverOptions& SparseCholeskyLinearSolverOptions::operator=(
+    const SparseCholeskyLinearSolverOptions& other) {
+    if (this != &other) {
     }
-
-  }
+    return *this;
 }
+
+SparseCholeskyLinearSolverOptions::~SparseCholeskyLinearSolverOptions() {}
+
+}  // namespace backend
+}  // namespace aslam

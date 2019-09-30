@@ -26,26 +26,26 @@
 #include <vector>
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** \name Methods
-      @{
-      */
-    /** 
-     * This function permutes an STL vector.
-     * \brief STL vector permutation
-     * 
-     * \param[in, out] container vector to be permuted
-     * \param[in] permutation permutation vector
-     */
-    template <typename T, typename I> void permute(std::vector<T>& container,
-      const std::vector<I>& permutation);
-    /** @}
-      */
+/** \name Methods
+  @{
+  */
+/**
+ * This function permutes an STL vector.
+ * \brief STL vector permutation
+ *
+ * \param[in, out] container vector to be permuted
+ * \param[in] permutation permutation vector
+ */
+template <typename T, typename I>
+void permute(std::vector<T>& container, const std::vector<I>& permutation);
+/** @}
+ */
 
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
 #include "aslam/calibration/algorithms/permute.tpp"
 
-#endif // ASLAM_CALIBRATION_ALGORITHMS_PERMUTE_H
+#endif  // ASLAM_CALIBRATION_ALGORITHMS_PERMUTE_H

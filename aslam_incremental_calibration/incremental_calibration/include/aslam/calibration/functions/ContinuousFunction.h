@@ -26,15 +26,14 @@
 #include <cstdlib>
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    template <typename Y, typename X, int M = 1, int N = 1>
-      class ContinuousFunction;
-
-  }
+template <typename Y, typename X, int M = 1, int N = 1>
+class ContinuousFunction;
 }
+}  // namespace aslam
 
 #include "aslam/calibration/functions/ContinuousFunction1v.h"
 #include "aslam/calibration/functions/ContinuousFunctionMv.h"
 
-#endif // ASLAM_CALIBRATION_FUNCTIONS_CONTINUOUSFUNCTION_H
+#endif  // ASLAM_CALIBRATION_FUNCTIONS_CONTINUOUSFUNCTION_H

@@ -7,17 +7,17 @@
 #include "helpers.hpp"
 
 void exportGridCalibration() {
+    using namespace boost::python;
+    using namespace aslam;
 
-  using namespace boost::python;
-  using namespace aslam;
-  
-  class_<GridCalibrationTargetDesignVariableContainer, boost::shared_ptr< GridCalibrationTargetDesignVariableContainer>, boost::noncopyable>
-    ( "GridCalibrationTargetDesignVariableContainer",
-      init<boost::shared_ptr<cameras::GridCalibrationTargetBase>, bool>("GridCalibrationTargetDesignVariableContainer(target, isEstimationActive)") )
-      .def("setPointActive", &GridCalibrationTargetDesignVariableContainer::setPointActive)
-      .def("isPointActive", &GridCalibrationTargetDesignVariableContainer::isPointActive)
-      .def("getPoint", &GridCalibrationTargetDesignVariableContainer::getPoint)
-      .def("getTarget", &GridCalibrationTargetDesignVariableContainer::getTarget)
-      .def("getDesignVariables", &getDesignVariablesWrap<GridCalibrationTargetDesignVariableContainer>);
-
+    class_<GridCalibrationTargetDesignVariableContainer,
+           boost::shared_ptr<GridCalibrationTargetDesignVariableContainer>, boost::noncopyable>(
+        "GridCalibrationTargetDesignVariableContainer",
+        init<boost::shared_ptr<cameras::GridCalibrationTargetBase>, bool>(
+            "GridCalibrationTargetDesignVariableContainer(target, isEstimationActive)"))
+        .def("setPointActive", &GridCalibrationTargetDesignVariableContainer::setPointActive)
+        .def("isPointActive", &GridCalibrationTargetDesignVariableContainer::isPointActive)
+        .def("getPoint", &GridCalibrationTargetDesignVariableContainer::getPoint)
+        .def("getTarget", &GridCalibrationTargetDesignVariableContainer::getTarget)
+        .def("getDesignVariables", &getDesignVariablesWrap<GridCalibrationTargetDesignVariableContainer>);
 }

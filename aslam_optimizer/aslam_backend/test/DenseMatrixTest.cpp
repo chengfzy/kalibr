@@ -4,12 +4,10 @@
 #include <numeric>
 #include "MatrixTestHarness.hpp"
 
-TEST(DenseMatrixTestSuite, testMatInterface)
-{
-  using namespace aslam::backend;
-  DenseMatrix M;
-  MatrixTestHarness mth(&M);
-  SCOPED_TRACE("");
-  mth.testAll();
+TEST(DenseMatrixTestSuite, testMatInterface) {
+    using namespace aslam::backend;
+    DenseMatrix M;
+    MatrixTestHarness mth(&M);
+    SCOPED_TRACE("");
+    mth.testAll();
 }
-

@@ -31,39 +31,36 @@
 #include "aslam/calibration/exceptions/Exception.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The class BadArgumentException represents any
-        exceptions occuring when the arguments passed to a function are invalid.
-        \brief Bad argument exception
+/** The class BadArgumentException represents any
+    exceptions occuring when the arguments passed to a function are invalid.
+    \brief Bad argument exception
+  */
+template <typename X>
+class BadArgumentException : public Exception {
+  public:
+    /** \name Constructors/destructor
+      @{
       */
-    template <typename X> class BadArgumentException :
-      public Exception {
-    public:
-      /** \name Constructors/destructor
-        @{
-        */
-      /// Constructs exception from argument and string
-      BadArgumentException(const X& argument, const std::string& msg, const
-        std::string& filename = " ", size_t line = 0, const std::string&
-        function = " ");
-      /// Copy constructor
-      BadArgumentException(const BadArgumentException& other) throw();
-      /// Assignment operator
-      BadArgumentException& operator = (const BadArgumentException& other)
-        throw();
-      /// Destructor
-      virtual ~BadArgumentException() throw();
-      /** @}
-        */
+    /// Constructs exception from argument and string
+    BadArgumentException(const X& argument, const std::string& msg, const std::string& filename = " ", size_t line = 0,
+                         const std::string& function = " ");
+    /// Copy constructor
+    BadArgumentException(const BadArgumentException& other) throw();
+    /// Assignment operator
+    BadArgumentException& operator=(const BadArgumentException& other) throw();
+    /// Destructor
+    virtual ~BadArgumentException() throw();
+    /** @}
+     */
 
-    protected:
+  protected:
+};
 
-    };
-
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
 #include "aslam/calibration/exceptions/BadArgumentException.tpp"
 
-#endif // ASLAM_CALIBRATION_EXCEPTIONS_BADARGUMENTEXCEPTION_H
+#endif  // ASLAM_CALIBRATION_EXCEPTIONS_BADARGUMENTEXCEPTION_H

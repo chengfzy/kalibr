@@ -31,21 +31,20 @@
     \brief Outer product functions
   */
 namespace OuterProduct {
-  /** \name Methods
-    @{
-    */
-  /// The compute function generates the outer product of 2 vectors
-  template <typename X, size_t M, size_t N>
-  Eigen::Matrix<X, M, N> compute(const Eigen::Matrix<X, M, 1>& v1,
-      const Eigen::Matrix<X, N, 1>& v2);
-  /// The compute function generates the self outer product of a vector
-  template <typename X, size_t M>
-  Eigen::Matrix<X, M, M> compute(const Eigen::Matrix<X, M, 1>& v);
-  /** @}
-    */
+/** \name Methods
+  @{
+  */
+/// The compute function generates the outer product of 2 vectors
+template <typename X, size_t M, size_t N>
+Eigen::Matrix<X, M, N> compute(const Eigen::Matrix<X, M, 1>& v1, const Eigen::Matrix<X, N, 1>& v2);
+/// The compute function generates the self outer product of a vector
+template <typename X, size_t M>
+Eigen::Matrix<X, M, M> compute(const Eigen::Matrix<X, M, 1>& v);
+/** @}
+ */
 
-}
+}  // namespace OuterProduct
 
 #include "aslam/calibration/utils/OuterProduct.tpp"
 
-#endif // ASLAM_CALIBRATION_UTILS_OUTERPRODUCT_H
+#endif  // ASLAM_CALIBRATION_UTILS_OUTERPRODUCT_H

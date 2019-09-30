@@ -31,36 +31,32 @@
 #include "aslam/calibration/exceptions/Exception.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The class NullPointerException represents null pointer exceptions.
-        \brief Null pointer exception
+/** The class NullPointerException represents null pointer exceptions.
+    \brief Null pointer exception
+  */
+class NullPointerException : public Exception {
+  public:
+    /** \name Constructors/Destructor
+      @{
       */
-    class NullPointerException :
-      public Exception {
-    public:
-      /** \name Constructors/Destructor
-        @{
-        */
-      /// Constructs exception from message
-      NullPointerException(const std::string& name = "", const std::string&
-        filename = " ", size_t line = 0, const std::string& function = " ");
-      /// Copy constructor
-      NullPointerException(const NullPointerException& other)
-        throw ();
-      /// Assignment operator
-      NullPointerException& operator = (const NullPointerException&
-        other) throw();
-      /// Destructor
-      virtual ~NullPointerException() throw ();
-      /** @}
-        */
+    /// Constructs exception from message
+    NullPointerException(const std::string& name = "", const std::string& filename = " ", size_t line = 0,
+                         const std::string& function = " ");
+    /// Copy constructor
+    NullPointerException(const NullPointerException& other) throw();
+    /// Assignment operator
+    NullPointerException& operator=(const NullPointerException& other) throw();
+    /// Destructor
+    virtual ~NullPointerException() throw();
+    /** @}
+     */
 
-    protected:
+  protected:
+};
 
-    };
+}  // namespace calibration
+}  // namespace aslam
 
-  }
-}
-
-#endif // ASLAM_CALIBRATION_EXCEPTIONS_NULLPOINTEREXCEPTION_H
+#endif  // ASLAM_CALIBRATION_EXCEPTIONS_NULLPOINTEREXCEPTION_H

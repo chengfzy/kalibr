@@ -4,8 +4,8 @@ void exportImageSynchronizer();
 void exportFrameBuilder();
 
 void exportCameraSystemClasses() {
-  exportCameraSystem();
-  exportMultiFrame();
-  exportImageSynchronizer();
-  exportFrameBuilder();
+    exportCameraSystem();
+    exportMultiFrame();
+    exportImageSynchronizer();
+    exportFrameBuilder();
 }

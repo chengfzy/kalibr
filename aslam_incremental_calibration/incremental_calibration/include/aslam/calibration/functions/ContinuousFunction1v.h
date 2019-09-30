@@ -24,44 +24,43 @@
 #include "aslam/calibration/functions/Function.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The ContinuousFunction1v class represents an interface to the univariate
-        continuous functions.
-        \brief Univariate continuous function
+/** The ContinuousFunction1v class represents an interface to the univariate
+    continuous functions.
+    \brief Univariate continuous function
+  */
+template <typename Y, typename X>
+class ContinuousFunction<Y, X> : public virtual Function<Y, X> {
+  public:
+    /** \name Types
+      @{
       */
-    template <typename Y, typename X> class ContinuousFunction<Y, X> :
-      public virtual Function<Y, X> {
-    public:
-      /** \name Types
-        @{
-        */
-      /// Domain type
-      typedef X DomainType;
-      /// Codomain type
-      typedef Y CodomainType;
-      /** @}
-        */
+    /// Domain type
+    typedef X DomainType;
+    /// Codomain type
+    typedef Y CodomainType;
+    /** @}
+     */
 
-      /** \name Constructors/Destructor
-        @{
-        */
-      /// Destructor
-      virtual ~ContinuousFunction();
-      /** @}
-        */
+    /** \name Constructors/Destructor
+      @{
+      */
+    /// Destructor
+    virtual ~ContinuousFunction();
+    /** @}
+     */
 
-      /** \name Accessors
-        @{
-        */
-      /// Access the function's number of variables
-      virtual size_t getNumVariables() const;
-      /** @}
-        */
+    /** \name Accessors
+      @{
+      */
+    /// Access the function's number of variables
+    virtual size_t getNumVariables() const;
+    /** @}
+     */
+};
 
-    };
-
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
 #include "aslam/calibration/functions/ContinuousFunction1v.tpp"

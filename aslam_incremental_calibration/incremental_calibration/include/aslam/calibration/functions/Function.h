@@ -27,46 +27,46 @@
 #include <cstdlib>
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The Function class is an interface to any kind of mathematical functions
-        \brief Function
+/** The Function class is an interface to any kind of mathematical functions
+    \brief Function
+  */
+template <typename Y, typename X>
+class Function {
+  public:
+    /** \name Types
+      @{
       */
-    template <typename Y, typename X> class Function {
-    public:
-      /** \name Types
-        @{
-        */
-      /// Domain
-      typedef X Domain;
-      /// Codomain
-      typedef Y Codomain;
-      /** @}
-        */
+    /// Domain
+    typedef X Domain;
+    /// Codomain
+    typedef Y Codomain;
+    /** @}
+     */
 
-      /** \name Constructors/Destructor
-        @{
-        */
-      /// Destructor
-      virtual ~Function();
-      /** @}
-        */
+    /** \name Constructors/Destructor
+      @{
+      */
+    /// Destructor
+    virtual ~Function();
+    /** @}
+     */
 
-      /** \name Accessors
-        @{
-        */
-      /// Access the function value for the given argument
-      virtual Y getValue(const X& argument) const = 0;
-      /// Access the function value for the given argument
-      virtual Y operator()(const X& argument) const;
-      /** @}
-        */
+    /** \name Accessors
+      @{
+      */
+    /// Access the function value for the given argument
+    virtual Y getValue(const X& argument) const = 0;
+    /// Access the function value for the given argument
+    virtual Y operator()(const X& argument) const;
+    /** @}
+     */
+};
 
-    };
-
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
 #include "aslam/calibration/functions/Function.tpp"
 
-#endif // ASLAM_CALIBRATION_FUNCTIONS_FUNCTION_H
+#endif  // ASLAM_CALIBRATION_FUNCTIONS_FUNCTION_H

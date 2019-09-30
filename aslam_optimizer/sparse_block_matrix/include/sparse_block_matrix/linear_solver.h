@@ -1,16 +1,16 @@
 // g2o - General Graph Optimization
 // Copyright (C) 2011 R. Kuemmerle, G. Grisetti, W. Burgard
-// 
+//
 // g2o is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published
 // by the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // g2o is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -27,12 +27,11 @@ namespace sparse_block_matrix {
  * A is assumed to be symmetric (only upper triangular block is stored) and positive-semi-definit.
  */
 template <typename MatrixType>
-class LinearSolver
-{
+class LinearSolver {
   public:
-  typedef MatrixType matrix_t; 
+    typedef MatrixType matrix_t;
 
-    LinearSolver() {};
+    LinearSolver(){};
     virtual ~LinearSolver() {}
 
     /**
@@ -51,21 +50,25 @@ class LinearSolver
      * Inverts the diagonal blocks of A
      * @returns false if not defined.
      */
-    virtual bool solveBlocks(double**&blocks, const SparseBlockMatrix<MatrixType>& A) { (void)blocks; (void) A; return false; }
-
+    virtual bool solveBlocks(double**& blocks, const SparseBlockMatrix<MatrixType>& A) {
+        (void)blocks;
+        (void)A;
+        return false;
+    }
 
     /**
      * Inverts the a block pattern of A in spinv
      * @returns false if not defined.
      */
-    virtual bool solvePattern(SparseBlockMatrix<MatrixXd>& spinv, const std::vector<std::pair<int, int> >& blockIndices, const SparseBlockMatrix<MatrixType>& A){
-      (void) spinv;
-      (void) blockIndices;
-      (void) A;
-      return false;
+    virtual bool solvePattern(SparseBlockMatrix<MatrixXd>& spinv, const std::vector<std::pair<int, int> >& blockIndices,
+                              const SparseBlockMatrix<MatrixType>& A) {
+        (void)spinv;
+        (void)blockIndices;
+        (void)A;
+        return false;
     }
 };
 
-} // end namespace
+}  // namespace sparse_block_matrix
 
 #endif

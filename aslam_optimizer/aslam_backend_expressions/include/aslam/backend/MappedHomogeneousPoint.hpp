@@ -1,64 +1,63 @@
 #ifndef ASLAM_BACKEND_MAPPED_HOMOGENEOUS_POINT_HPP
 #define ASLAM_BACKEND_MAPPED_HOMOGENEOUS_POINT_HPP
 
-#include "HomogeneousExpressionNode.hpp"
 #include "HomogeneousExpression.hpp"
+#include "HomogeneousExpressionNode.hpp"
 
 #include <aslam/backend/DesignVariable.hpp>
 
 namespace aslam {
-  namespace backend {
-    
-    class MappedHomogeneousPoint : public HomogeneousExpressionNode, public DesignVariable
-    {
-    public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      MappedHomogeneousPoint(double * p);
-      virtual ~MappedHomogeneousPoint();
+namespace backend {
 
-      /// \brief Revert the last state update.
-      virtual void revertUpdateImplementation();
+class MappedHomogeneousPoint : public HomogeneousExpressionNode, public DesignVariable {
+  public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    MappedHomogeneousPoint(double* p);
+    virtual ~MappedHomogeneousPoint();
 
-      /// \brief Update the design variable.
-      virtual void updateImplementation(const double * dp, int size);
+    /// \brief Revert the last state update.
+    virtual void revertUpdateImplementation();
 
-      /// \brief the size of an update step
-      virtual int minimalDimensionsImplementation() const;
+    /// \brief Update the design variable.
+    virtual void updateImplementation(const double* dp, int size);
 
-      HomogeneousExpression toExpression();
-    private:
-      virtual Eigen::Vector4d toHomogeneousImplementation() const;
+    /// \brief the size of an update step
+    virtual int minimalDimensionsImplementation() const;
 
-      virtual void evaluateJacobiansImplementation(JacobianContainer & outJacobians) const;
+    HomogeneousExpression toExpression();
 
-      virtual void evaluateJacobiansImplementation(JacobianContainer & outJacobians, const Eigen::MatrixXd & applyChainRule) const;
+  private:
+    virtual Eigen::Vector4d toHomogeneousImplementation() const;
 
-      virtual void getDesignVariablesImplementation(DesignVariable::set_t & designVariables) const;
+    virtual void evaluateJacobiansImplementation(JacobianContainer& outJacobians) const;
 
-      /// Returns the content of the design variable
-      virtual void getParametersImplementation(Eigen::MatrixXd& value) const;
+    virtual void evaluateJacobiansImplementation(JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
 
-      /// Sets the content of the design variable
-      virtual void setParametersImplementation(const Eigen::MatrixXd& value);
+    virtual void getDesignVariablesImplementation(DesignVariable::set_t& designVariables) const;
 
-      /// Computes the minimal distance in tangent space between the current value of the DV and xHat
-	  virtual void minimalDifferenceImplementation(const Eigen::MatrixXd& xHat, Eigen::VectorXd& outDifference) const;
+    /// Returns the content of the design variable
+    virtual void getParametersImplementation(Eigen::MatrixXd& value) const;
 
-	  /// Computes the minimal distance in tangent space between the current value of the DV and xHat and the jacobian
-	  virtual void minimalDifferenceAndJacobianImplementation(const Eigen::MatrixXd& xHat, Eigen::VectorXd& outDifference, Eigen::MatrixXd& outJacobian) const;
+    /// Sets the content of the design variable
+    virtual void setParametersImplementation(const Eigen::MatrixXd& value);
 
-    private:
-      /// \brief The current value of the design variable.
-      Eigen::Map<Eigen::Vector4d> _p;
+    /// Computes the minimal distance in tangent space between the current value of the DV and xHat
+    virtual void minimalDifferenceImplementation(const Eigen::MatrixXd& xHat, Eigen::VectorXd& outDifference) const;
 
-      /// \brief The previous version of the design variable.
-      Eigen::Vector4d _p_p;
+    /// Computes the minimal distance in tangent space between the current value of the DV and xHat and the jacobian
+    virtual void minimalDifferenceAndJacobianImplementation(const Eigen::MatrixXd& xHat, Eigen::VectorXd& outDifference,
+                                                            Eigen::MatrixXd& outJacobian) const;
 
+  private:
+    /// \brief The current value of the design variable.
+    Eigen::Map<Eigen::Vector4d> _p;
 
-    };
-    
-  } // namespace backend
-} // namespace aslam
+    /// \brief The previous version of the design variable.
+    Eigen::Vector4d _p_p;
+};
 
+}  // namespace backend
+}  // namespace aslam
 
 #endif /* ASLAM_BACKEND_HOMOGENEOUS_POINT_HPP */

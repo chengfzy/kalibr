@@ -5,5 +5,4 @@
 #include <aslam/cameras/GridCalibrationTargetCheckerboard.hpp>
 #include <aslam/cameras/GridCalibrationTargetCirclegrid.hpp>
 
-
 #endif /* ASLAM_TARGETS_HPP */

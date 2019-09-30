@@ -29,76 +29,75 @@
 #include "aslam/calibration/base/Timer.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    class Mutex;
+class Mutex;
 
-    /** The class Condition implements condition facilities.
-        \brief Condition facilities
+/** The class Condition implements condition facilities.
+    \brief Condition facilities
+  */
+class Condition {
+  public:
+    /** \name Types definitions
+      @{
       */
-    class Condition {
-    public:
-      /** \name Types definitions
-        @{
-        */
-      /// Signal type
-      enum SignalType {
+    /// Signal type
+    enum SignalType {
         /// Unicast signal
         unicast,
         /// Broadcast signal
         broadcast
-      };
-      /** @}
-        */
-
-      /** \name Constructors/Destructor
-        @{
-        */
-      /// Default constructor
-      Condition();
-      /// Copy constructor
-      Condition(const Condition& other) = delete;
-      /// Assignment operator
-      Condition& operator = (const Condition& other) = delete;
-      /// Destructor
-      virtual ~Condition();
-      /** @}
-        */
-
-      /** \name Methods
-        @{
-        */
-      /// Signal the condition
-      void signal(SignalType signalType = unicast);
-      /// Wait for the condition to be signaled
-      bool wait(Mutex& mutex, double seconds = Timer::eternal()) const;
-      /** @}
-        */
-
-    protected:
-      /** \name Protected methods
-        @{
-        */
-      /// Safely wait for the condition to be signaled
-      bool safeWait(const Mutex& mutex, double seconds) const;
-      /// Safely wait eternally for the condition to be signaled
-      bool safeEternalWait(const Mutex& mutex) const;
-      /// Safely wait until the specified time for the condition to be signaled
-      bool safeWaitUntil(const Mutex& mutex, const Timestamp& time) const;
-      /** @}
-        */
-
-      /** \name Protected members
-        @{
-        */
-      /// Condition identifier
-      mutable pthread_cond_t mIdentifier;
-      /** @}
-        */
-
     };
+    /** @}
+     */
 
-  }
-}
+    /** \name Constructors/Destructor
+      @{
+      */
+    /// Default constructor
+    Condition();
+    /// Copy constructor
+    Condition(const Condition& other) = delete;
+    /// Assignment operator
+    Condition& operator=(const Condition& other) = delete;
+    /// Destructor
+    virtual ~Condition();
+    /** @}
+     */
 
-#endif // ASLAM_CALIBRATION_BASE_CONDITION_H
+    /** \name Methods
+      @{
+      */
+    /// Signal the condition
+    void signal(SignalType signalType = unicast);
+    /// Wait for the condition to be signaled
+    bool wait(Mutex& mutex, double seconds = Timer::eternal()) const;
+    /** @}
+     */
+
+  protected:
+    /** \name Protected methods
+      @{
+      */
+    /// Safely wait for the condition to be signaled
+    bool safeWait(const Mutex& mutex, double seconds) const;
+    /// Safely wait eternally for the condition to be signaled
+    bool safeEternalWait(const Mutex& mutex) const;
+    /// Safely wait until the specified time for the condition to be signaled
+    bool safeWaitUntil(const Mutex& mutex, const Timestamp& time) const;
+    /** @}
+     */
+
+    /** \name Protected members
+      @{
+      */
+    /// Condition identifier
+    mutable pthread_cond_t mIdentifier;
+    /** @}
+     */
+};
+
+}  // namespace calibration
+}  // namespace aslam
+
+#endif  // ASLAM_CALIBRATION_BASE_CONDITION_H

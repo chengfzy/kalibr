@@ -23,20 +23,19 @@
 #ifndef ASLAM_CALIBRATION_TPL_ISINTEGER_H
 #define ASLAM_CALIBRATION_TPL_ISINTEGER_H
 
-#include "aslam/calibration/tpl/Not.h"
 #include "aslam/calibration/tpl/IsReal.h"
+#include "aslam/calibration/tpl/Not.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The IsInteger structure determines if a type is integer
-        \brief Integer types definitions
-      */
-    template <typename T> struct IsInteger :
-      public Not<typename IsReal<T>::Result> {
-    };
+/** The IsInteger structure determines if a type is integer
+    \brief Integer types definitions
+  */
+template <typename T>
+struct IsInteger : public Not<typename IsReal<T>::Result> {};
 
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
-#endif // ASLAM_CALIBRATION_TPL_ISINTEGER_H
+#endif  // ASLAM_CALIBRATION_TPL_ISINTEGER_H

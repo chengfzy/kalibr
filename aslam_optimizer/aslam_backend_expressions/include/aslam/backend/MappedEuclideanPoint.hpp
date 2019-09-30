@@ -1,65 +1,66 @@
 #ifndef ASLAM_BACKEND_MAPPED_EUCLIDEAN_POINT_HPP
 #define ASLAM_BACKEND_MAPPED_EUCLIDEAN_POINT_HPP
 
-#include "EuclideanExpressionNode.hpp"
-#include "EuclideanExpression.hpp"
 #include <aslam/backend/DesignVariable.hpp>
-
+#include "EuclideanExpression.hpp"
+#include "EuclideanExpressionNode.hpp"
 
 namespace aslam {
-  namespace backend {
-    
-    class MappedEuclideanPoint : public EuclideanExpressionNode, public DesignVariable
-    {
-    public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      MappedEuclideanPoint(double * p);
-      virtual ~MappedEuclideanPoint();
+namespace backend {
 
-      /// \brief Revert the last state update.
-      virtual void revertUpdateImplementation();
+class MappedEuclideanPoint : public EuclideanExpressionNode, public DesignVariable {
+  public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    MappedEuclideanPoint(double* p);
+    virtual ~MappedEuclideanPoint();
 
-      /// \brief Update the design variable.
-      virtual void updateImplementation(const double * dp, int size);
+    /// \brief Revert the last state update.
+    virtual void revertUpdateImplementation();
 
-      /// \brief the size of an update step
-      virtual int minimalDimensionsImplementation() const;
+    /// \brief Update the design variable.
+    virtual void updateImplementation(const double* dp, int size);
 
-      EuclideanExpression toExpression();
+    /// \brief the size of an update step
+    virtual int minimalDimensionsImplementation() const;
 
-        void set(const Eigen::Vector3d & p){ _p = p; _p_p = _p; }
-    private:
-      virtual Eigen::Vector3d toEuclideanImplementation() const;
+    EuclideanExpression toExpression();
 
-      virtual void evaluateJacobiansImplementation(JacobianContainer & outJacobians) const;
+    void set(const Eigen::Vector3d& p) {
+        _p = p;
+        _p_p = _p;
+    }
 
-      virtual void evaluateJacobiansImplementation(JacobianContainer & outJacobians, const Eigen::MatrixXd & applyChainRule) const;
+  private:
+    virtual Eigen::Vector3d toEuclideanImplementation() const;
 
-      virtual void getDesignVariablesImplementation(DesignVariable::set_t & designVariables) const;
+    virtual void evaluateJacobiansImplementation(JacobianContainer& outJacobians) const;
 
-      /// Returns the content of the design variable
-      virtual void getParametersImplementation(Eigen::MatrixXd& value) const;
+    virtual void evaluateJacobiansImplementation(JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
 
-      /// Sets the content of the design variable
-      virtual void setParametersImplementation(const Eigen::MatrixXd& value);
+    virtual void getDesignVariablesImplementation(DesignVariable::set_t& designVariables) const;
 
-      /// Computes the minimal distance in tangent space between the current value of the DV and xHat
-	  virtual void minimalDifferenceImplementation(const Eigen::MatrixXd& xHat, Eigen::VectorXd& outDifference) const;
+    /// Returns the content of the design variable
+    virtual void getParametersImplementation(Eigen::MatrixXd& value) const;
 
-	  /// Computes the minimal distance in tangent space between the current value of the DV and xHat and the jacobian
-	  virtual void minimalDifferenceAndJacobianImplementation(const Eigen::MatrixXd& xHat, Eigen::VectorXd& outDifference, Eigen::MatrixXd& outJacobian) const;
+    /// Sets the content of the design variable
+    virtual void setParametersImplementation(const Eigen::MatrixXd& value);
 
-      /// \brief The current value of the design variable.
-      Eigen::Map<Eigen::Vector3d> _p;
+    /// Computes the minimal distance in tangent space between the current value of the DV and xHat
+    virtual void minimalDifferenceImplementation(const Eigen::MatrixXd& xHat, Eigen::VectorXd& outDifference) const;
 
-      /// \brief The previous version of the design variable.
-      Eigen::Vector3d _p_p;
+    /// Computes the minimal distance in tangent space between the current value of the DV and xHat and the jacobian
+    virtual void minimalDifferenceAndJacobianImplementation(const Eigen::MatrixXd& xHat, Eigen::VectorXd& outDifference,
+                                                            Eigen::MatrixXd& outJacobian) const;
 
+    /// \brief The current value of the design variable.
+    Eigen::Map<Eigen::Vector3d> _p;
 
-    };
-    
-  } // namespace backend
-} // namespace aslam
+    /// \brief The previous version of the design variable.
+    Eigen::Vector3d _p_p;
+};
 
+}  // namespace backend
+}  // namespace aslam
 
 #endif /* ASLAM_BACKEND_EUCLIDEAN_POINT_HPP */

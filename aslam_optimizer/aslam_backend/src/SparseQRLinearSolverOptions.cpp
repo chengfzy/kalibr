@@ -21,40 +21,29 @@
 #include <SuiteSparseQR.hpp>
 
 namespace aslam {
-  namespace backend {
+namespace backend {
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-    SparseQRLinearSolverOptions::SparseQRLinearSolverOptions() :
-        colNorm(false),
-        qrTol(SPQR_DEFAULT_TOL),
-        normTol(1e-8),
-        verbose(false) {
-    }
+SparseQRLinearSolverOptions::SparseQRLinearSolverOptions()
+    : colNorm(false), qrTol(SPQR_DEFAULT_TOL), normTol(1e-8), verbose(false) {}
 
-    SparseQRLinearSolverOptions::SparseQRLinearSolverOptions(
-        const SparseQRLinearSolverOptions& other) :
-        colNorm(other.colNorm),
-        qrTol(other.qrTol),
-        normTol(other.normTol),
-        verbose(other.verbose) {
-    }
+SparseQRLinearSolverOptions::SparseQRLinearSolverOptions(const SparseQRLinearSolverOptions& other)
+    : colNorm(other.colNorm), qrTol(other.qrTol), normTol(other.normTol), verbose(other.verbose) {}
 
-    SparseQRLinearSolverOptions& SparseQRLinearSolverOptions::operator =
-        (const SparseQRLinearSolverOptions& other) {
-      if (this != &other) {
+SparseQRLinearSolverOptions& SparseQRLinearSolverOptions::operator=(const SparseQRLinearSolverOptions& other) {
+    if (this != &other) {
         colNorm = other.colNorm;
         qrTol = other.qrTol;
         normTol = other.normTol;
         verbose = other.verbose;
-      }
-      return *this;
     }
-
-    SparseQRLinearSolverOptions::~SparseQRLinearSolverOptions() {
-    }
-
-  }
+    return *this;
 }
+
+SparseQRLinearSolverOptions::~SparseQRLinearSolverOptions() {}
+
+}  // namespace backend
+}  // namespace aslam

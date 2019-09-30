@@ -8,7 +8,7 @@
 
 // MS compatible compilers support #pragma once
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
-# pragma once
+#pragma once
 #endif
 
 #include <boost/config.hpp>
@@ -30,31 +30,25 @@
 #include <boost/archive/basic_archive.hpp>
 #include <boost/detail/endian.hpp>
 
-
 namespace boost {
-    namespace archive {
-enum portable_binary_archive_flags {
-    endian_big        = 0x4000,
-    endian_little     = 0x8000
-};
+namespace archive {
+enum portable_binary_archive_flags { endian_big = 0x4000, endian_little = 0x8000 };
 
 //#if ( endian_big <= boost::archive::flags_last )
 //#error archive flags conflict
 //#endif
 
-inline void
-reverse_bytes(char size, char *address){
-    char * first = address;
-    char * last = first + size - 1;
-    for(;first < last;++first, --last){
+inline void reverse_bytes(char size, char *address) {
+    char *first = address;
+    char *last = first + size - 1;
+    for (; first < last; ++first, --last) {
         char x = *last;
         *last = *first;
         *first = x;
     }
 }
 
-    } // namespace archive
-} // namespace boost
+}  // namespace archive
+}  // namespace boost
 
-
-#endif // PORTABLE_BINARY_ARCHIVE_HPP
+#endif  // PORTABLE_BINARY_ARCHIVE_HPP

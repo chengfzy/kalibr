@@ -26,27 +26,29 @@
 #include "aslam/calibration/tpl/Boolean.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The And structure defines the and template
-        \brief And template
-      */
-    template <typename A, typename B> struct And {
-    public:
-      /// Defines and resulting to false
-      typedef False Result;
-    };
+/** The And structure defines the and template
+    \brief And template
+  */
+template <typename A, typename B>
+struct And {
+  public:
+    /// Defines and resulting to false
+    typedef False Result;
+};
 
-    /** The And structure defines the and template
-        \brief And template
-      */
-    template <> struct And<True, True> {
-    public:
-      /// Defines and resulting to true
-      typedef True Result;
-    };
+/** The And structure defines the and template
+    \brief And template
+  */
+template <>
+struct And<True, True> {
+  public:
+    /// Defines and resulting to true
+    typedef True Result;
+};
 
-  }
-}
+}  // namespace calibration
+}  // namespace aslam
 
-#endif // ASLAM_CALIBRATION_TPL_AND_H
+#endif  // ASLAM_CALIBRATION_TPL_AND_H

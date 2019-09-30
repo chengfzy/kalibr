@@ -30,74 +30,73 @@
 #include "aslam/calibration/base/Thread.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
-    /** The class Threads implements threads manager facilities.
-        \brief Threads manager facilities
+/** The class Threads implements threads manager facilities.
+    \brief Threads manager facilities
+  */
+class Threads : public Singleton<Threads> {
+    friend class Singleton<Threads>;
+    friend class Thread;
+
+  public:
+    /** \name Accessors
+      @{
       */
-    class Threads :
-      public Singleton<Threads> {
-      friend class Singleton<Threads>;
-      friend class Thread;
-    public:
-      /** \name Accessors
-        @{
-        */
-      /// Access the number of thread objects
-      size_t getNumThreads() const;
-      /// Access the thread object associated with the calling thread
-      Thread& getSelf() const;
-      /// Access the thread object associated with the specified identifier
-      Thread& get(const Thread::Identifier& identifier) const;
-      /** @}
-        */
+    /// Access the number of thread objects
+    size_t getNumThreads() const;
+    /// Access the thread object associated with the calling thread
+    Thread& getSelf() const;
+    /// Access the thread object associated with the specified identifier
+    Thread& get(const Thread::Identifier& identifier) const;
+    /** @}
+     */
 
-      /** \name Methods
-        @{
-        */
-      /// Interrupt all registered thread objects
-      void interrupt();
-      /** @}
-        */
+    /** \name Methods
+      @{
+      */
+    /// Interrupt all registered thread objects
+    void interrupt();
+    /** @}
+     */
 
-    protected:
-      /** \name Protected constructors/destructor
-        @{
-        */
-      /// Default constructor
-      Threads();
-      /// Copy constructor
-      Threads(const Threads& other) = delete;
-      /// Assignment operator
-      Threads& operator = (const Threads& other) = delete;
-      /// Destructor
-      virtual ~Threads();
-      /** @}
-        */
+  protected:
+    /** \name Protected constructors/destructor
+      @{
+      */
+    /// Default constructor
+    Threads();
+    /// Copy constructor
+    Threads(const Threads& other) = delete;
+    /// Assignment operator
+    Threads& operator=(const Threads& other) = delete;
+    /// Destructor
+    virtual ~Threads();
+    /** @}
+     */
 
-      /** \name Protected methods
-        @{
-        */
-      /// Register a thread
-      void registerThread(Thread& thread);
-      /// Unregister a thread
-      void unregisterThread(Thread& thread);
-      /** @}
-        */
+    /** \name Protected methods
+      @{
+      */
+    /// Register a thread
+    void registerThread(Thread& thread);
+    /// Unregister a thread
+    void unregisterThread(Thread& thread);
+    /** @}
+     */
 
-      /** \name Protected members
-        @{
-        */
-      /// Map between thread identifier and thread pointers
-      std::map<Thread::Identifier, Thread*> mInstances;
-      /// Mutex protecting the object
-      mutable pthread_mutex_t mMutex;
-      /** @}
-        */
+    /** \name Protected members
+      @{
+      */
+    /// Map between thread identifier and thread pointers
+    std::map<Thread::Identifier, Thread*> mInstances;
+    /// Mutex protecting the object
+    mutable pthread_mutex_t mMutex;
+    /** @}
+     */
+};
 
-    };
+}  // namespace calibration
+}  // namespace aslam
 
-  }
-}
-
-#endif // ASLAM_CALIBRATION_BASE_THREADS_H
+#endif  // ASLAM_CALIBRATION_BASE_THREADS_H

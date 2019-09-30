@@ -9,36 +9,27 @@ namespace aslam {
 namespace cameras {
 
 class NoMask {
- public:
+  public:
+    enum { DesignVariableDimension = 0 };
 
-  enum {
-    DesignVariableDimension = 0
-  };
+    NoMask();
+    NoMask(const sm::PropertyTree &);
+    ~NoMask();
 
-  NoMask();
-  NoMask(const sm::PropertyTree &);
-  ~NoMask();
+    template <typename K>
+    bool isValid(const K & /* k */) const {
+        return true;
+    }
+    bool isBinaryEqual(const NoMask &) const { return true; }
 
-  template<typename K>
-  bool isValid(const K & /* k */) const {
-    return true;
-  }
-  bool isBinaryEqual(const NoMask &) const {
-    return true;
-  }
+    // is the mask set? (i.e. mask data != NULL)
+    bool isSet() const { return false; }
 
-  // is the mask set? (i.e. mask data != NULL)
-  bool isSet () const { return false; }
+    /// \brief Compatibility with boost::serialization.
+    template <class Archive>
+    void serialize(Archive & /* ar */, const unsigned int /* version */) {}
 
-  /// \brief Compatibility with boost::serialization.
-  template<class Archive>
-  void serialize(Archive & /* ar */, const unsigned int /* version */) {
-  }
-
-  static NoMask getTestMask() {
-    return NoMask();
-  }
-
+    static NoMask getTestMask() { return NoMask(); }
 };
 
 }  // namespace cameras

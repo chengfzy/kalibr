@@ -19,140 +19,111 @@
 #include "aslam/calibration/statistics/EstimatorML.h"
 
 namespace aslam {
-  namespace calibration {
+namespace calibration {
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-    EstimatorML<NormalDistribution<1> >::EstimatorML() :
-        mNumPoints(0),
-        mValid(false),
-        mValuesSum(0),
-        mSquaredValuesSum(0) {
-    }
+EstimatorML<NormalDistribution<1> >::EstimatorML()
+    : mNumPoints(0), mValid(false), mValuesSum(0), mSquaredValuesSum(0) {}
 
-    EstimatorML<NormalDistribution<1> >::EstimatorML(const EstimatorML& other) :
-        mDistribution(other.mDistribution),
-        mNumPoints(other.mNumPoints),
-        mValid(other.mValid),
-        mValuesSum(other.mValuesSum),
-        mSquaredValuesSum(other.mSquaredValuesSum) {
-    }
+EstimatorML<NormalDistribution<1> >::EstimatorML(const EstimatorML& other)
+    : mDistribution(other.mDistribution),
+      mNumPoints(other.mNumPoints),
+      mValid(other.mValid),
+      mValuesSum(other.mValuesSum),
+      mSquaredValuesSum(other.mSquaredValuesSum) {}
 
-    EstimatorML<NormalDistribution<1> >&
-        EstimatorML<NormalDistribution<1> >::operator =
-        (const EstimatorML& other) {
-      if (this != &other) {
+EstimatorML<NormalDistribution<1> >& EstimatorML<NormalDistribution<1> >::operator=(const EstimatorML& other) {
+    if (this != &other) {
         mDistribution = other.mDistribution;
         mNumPoints = other.mNumPoints;
         mValid = other.mValid;
         mValuesSum = other.mValuesSum;
         mSquaredValuesSum = other.mSquaredValuesSum;
-      }
-      return *this;
     }
+    return *this;
+}
 
-    EstimatorML<NormalDistribution<1> >::~EstimatorML() {
-    }
+EstimatorML<NormalDistribution<1> >::~EstimatorML() {}
 
 /******************************************************************************/
 /* Streaming operations                                                       */
 /******************************************************************************/
 
-    void EstimatorML<NormalDistribution<1> >::read(std::istream& stream) {
-    }
+void EstimatorML<NormalDistribution<1> >::read(std::istream& stream) {}
 
-    void EstimatorML<NormalDistribution<1> >::write(std::ostream& stream)
-        const {
-      stream << "distribution: " << std::endl << mDistribution << std::endl
-        << "number of points: " << mNumPoints << std::endl
-        << "valid: " << mValid;
-    }
+void EstimatorML<NormalDistribution<1> >::write(std::ostream& stream) const {
+    stream << "distribution: " << std::endl
+           << mDistribution << std::endl
+           << "number of points: " << mNumPoints << std::endl
+           << "valid: " << mValid;
+}
 
-    void EstimatorML<NormalDistribution<1> >::read(std::ifstream& stream) {
-    }
+void EstimatorML<NormalDistribution<1> >::read(std::ifstream& stream) {}
 
-    void EstimatorML<NormalDistribution<1> >::write(std::ofstream& stream)
-        const {
-    }
+void EstimatorML<NormalDistribution<1> >::write(std::ofstream& stream) const {}
 
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
 
-    size_t EstimatorML<NormalDistribution<1> >::getNumPoints() const {
-      return mNumPoints;
-    }
+size_t EstimatorML<NormalDistribution<1> >::getNumPoints() const { return mNumPoints; }
 
-    bool EstimatorML<NormalDistribution<1> >::getValid() const {
-      return mValid;
-    }
+bool EstimatorML<NormalDistribution<1> >::getValid() const { return mValid; }
 
-    const NormalDistribution<1>&
-        EstimatorML<NormalDistribution<1> >::getDistribution() const {
-      return mDistribution;
-    }
+const NormalDistribution<1>& EstimatorML<NormalDistribution<1> >::getDistribution() const { return mDistribution; }
 
-    void EstimatorML<NormalDistribution<1> >::reset() {
-      mNumPoints = 0;
-      mValid = false;
-      mValuesSum = 0;
-      mSquaredValuesSum = 0;
-    }
+void EstimatorML<NormalDistribution<1> >::reset() {
+    mNumPoints = 0;
+    mValid = false;
+    mValuesSum = 0;
+    mSquaredValuesSum = 0;
+}
 
-    void EstimatorML<NormalDistribution<1> >::addPoint(const Point& point) {
-      mNumPoints++;
-      mValuesSum += point;
-      mSquaredValuesSum += point * point;
-      try {
+void EstimatorML<NormalDistribution<1> >::addPoint(const Point& point) {
+    mNumPoints++;
+    mValuesSum += point;
+    mSquaredValuesSum += point * point;
+    try {
         mValid = true;
         const double mean = mValuesSum / mNumPoints;
         mDistribution.setMean(mean);
         mDistribution.setVariance(mSquaredValuesSum / mNumPoints -
-          mValuesSum * mValuesSum * 2 / (mNumPoints * mNumPoints) +
-          mean * mean);
-      }
-      catch (...) {
+                                  mValuesSum * mValuesSum * 2 / (mNumPoints * mNumPoints) + mean * mean);
+    } catch (...) {
         mValid = false;
-      }
     }
+}
 
-    void EstimatorML<NormalDistribution<1> >::addPoints(const
-        ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
-      for (auto it = itStart; it != itEnd; ++it)
-        addPoint(*it);
-    }
+void EstimatorML<NormalDistribution<1> >::addPoints(const ConstPointIterator& itStart,
+                                                    const ConstPointIterator& itEnd) {
+    for (auto it = itStart; it != itEnd; ++it) addPoint(*it);
+}
 
-    void EstimatorML<NormalDistribution<1> >::addPoints(const Container&
-        points) {
-      addPoints(points.begin(), points.end());
-    }
+void EstimatorML<NormalDistribution<1> >::addPoints(const Container& points) {
+    addPoints(points.begin(), points.end());
+}
 
-    void EstimatorML<NormalDistribution<1> >::addPoints(const
-        ConstPointIterator& itStart, const ConstPointIterator& itEnd, const
-        Eigen::Matrix<double, Eigen::Dynamic, 1>& responsibilities) {
-      if (responsibilities.size() != itEnd - itStart)
-        return;
-      double mean = 0;
-      for (auto it = itStart; it != itEnd; ++it)
-        mean += responsibilities(it - itStart) * (*it);
-      double numPoints = responsibilities.sum();
-      mean /= numPoints;
-      double variance = 0;
-      for (auto it = itStart; it != itEnd; ++it)
-        variance += responsibilities(it - itStart) * (*it - mean) *
-          (*it - mean);
-      variance /= numPoints;
-      try {
+void EstimatorML<NormalDistribution<1> >::addPoints(const ConstPointIterator& itStart, const ConstPointIterator& itEnd,
+                                                    const Eigen::Matrix<double, Eigen::Dynamic, 1>& responsibilities) {
+    if (responsibilities.size() != itEnd - itStart) return;
+    double mean = 0;
+    for (auto it = itStart; it != itEnd; ++it) mean += responsibilities(it - itStart) * (*it);
+    double numPoints = responsibilities.sum();
+    mean /= numPoints;
+    double variance = 0;
+    for (auto it = itStart; it != itEnd; ++it) variance += responsibilities(it - itStart) * (*it - mean) * (*it - mean);
+    variance /= numPoints;
+    try {
         mValid = true;
         mDistribution.setMean(mean);
         mDistribution.setVariance(variance);
-      }
-      catch (...) {
+    } catch (...) {
         mValid = false;
-      }
     }
-
-  }
 }
+
+}  // namespace calibration
+}  // namespace aslam

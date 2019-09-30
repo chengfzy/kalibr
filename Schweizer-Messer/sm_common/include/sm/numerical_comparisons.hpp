@@ -9,10 +9,10 @@
 #ifndef SM_NUMERICALCOMPARISON_HPP_
 #define SM_NUMERICALCOMPARISON_HPP_
 
-#include <algorithm> // std::max
-#include <limits> // std::numeric_limits
-#include <cmath> // std::abs
-#include <stdexcept> // std::invalid_argument
+#include <algorithm>  // std::max
+#include <cmath>      // std::abs
+#include <limits>     // std::numeric_limits
+#include <stdexcept>  // std::invalid_argument
 #include "assert_macros.hpp"
 
 namespace sm {
@@ -41,11 +41,10 @@ namespace internal {
  * @param epsilon the precision (epsilon > 0).
  * @return the result of max(|a|, |b|) * epsilon.
  */
-template<typename ValueType_>
-static inline ValueType_ maxTimesEpsilon(const ValueType_ a, const ValueType_ b, const ValueType_ epsilon)
-{
-  SM_ASSERT_GT_DBG(std::invalid_argument, epsilon, 0.0, "This method is only valid for an epsilon greater than 0.");
-  return std::max(std::abs(a), std::abs(b)) * epsilon;
+template <typename ValueType_>
+static inline ValueType_ maxTimesEpsilon(const ValueType_ a, const ValueType_ b, const ValueType_ epsilon) {
+    SM_ASSERT_GT_DBG(std::invalid_argument, epsilon, 0.0, "This method is only valid for an epsilon greater than 0.");
+    return std::max(std::abs(a), std::abs(b)) * epsilon;
 }
 
 } /* namespace internal */
@@ -57,11 +56,11 @@ static inline ValueType_ maxTimesEpsilon(const ValueType_ a, const ValueType_ b,
  * @param[in] epsilon the relative error (optional, if not declared the precision of the datatype).
  * @return true if a and b are approximately equal, false otherwise.
  */
-template<typename ValueType_>
-static bool approximatelyEqual(const ValueType_ a, const ValueType_ b, ValueType_ epsilon = std::numeric_limits<ValueType_>::epsilon())
-{
-  SM_ASSERT_GT(std::invalid_argument, epsilon, 0.0, "This method is only valid for an epsilon greater than 0.");
-  return std::abs(a - b) <= internal::maxTimesEpsilon(a, b, epsilon);
+template <typename ValueType_>
+static bool approximatelyEqual(const ValueType_ a, const ValueType_ b,
+                               ValueType_ epsilon = std::numeric_limits<ValueType_>::epsilon()) {
+    SM_ASSERT_GT(std::invalid_argument, epsilon, 0.0, "This method is only valid for an epsilon greater than 0.");
+    return std::abs(a - b) <= internal::maxTimesEpsilon(a, b, epsilon);
 }
 
 /*!
@@ -71,11 +70,11 @@ static bool approximatelyEqual(const ValueType_ a, const ValueType_ b, ValueType
  * @param epsilon the relative error (optional, if not declared the precision of the datatype).
  * @return true if a definitely greater than b, false otherwise.
  */
-template<typename ValueType_>
-static bool definitelyGreaterThan(const ValueType_ a, const ValueType_ b, ValueType_ epsilon = std::numeric_limits<ValueType_>::epsilon())
-{
-  SM_ASSERT_GT(std::invalid_argument, epsilon, 0.0, "This method is only valid for an epsilon greater than 0.");
-  return (a - b) > internal::maxTimesEpsilon(a, b, epsilon);
+template <typename ValueType_>
+static bool definitelyGreaterThan(const ValueType_ a, const ValueType_ b,
+                                  ValueType_ epsilon = std::numeric_limits<ValueType_>::epsilon()) {
+    SM_ASSERT_GT(std::invalid_argument, epsilon, 0.0, "This method is only valid for an epsilon greater than 0.");
+    return (a - b) > internal::maxTimesEpsilon(a, b, epsilon);
 }
 
 /*!
@@ -85,11 +84,11 @@ static bool definitelyGreaterThan(const ValueType_ a, const ValueType_ b, ValueT
  * @param epsilon the relative error (optional, if not declared the precision of the datatype).
  * @return true if a definitely less than b, false otherwise.
  */
-template<typename ValueType_>
-static bool definitelyLessThan(const ValueType_ a, const ValueType_ b, ValueType_ epsilon = std::numeric_limits<ValueType_>::epsilon())
-{
-  SM_ASSERT_GT(std::invalid_argument, epsilon, 0.0, "This method is only valid for an epsilon greater than 0.");
-  return (b - a) > internal::maxTimesEpsilon(a, b, epsilon);
+template <typename ValueType_>
+static bool definitelyLessThan(const ValueType_ a, const ValueType_ b,
+                               ValueType_ epsilon = std::numeric_limits<ValueType_>::epsilon()) {
+    SM_ASSERT_GT(std::invalid_argument, epsilon, 0.0, "This method is only valid for an epsilon greater than 0.");
+    return (b - a) > internal::maxTimesEpsilon(a, b, epsilon);
 }
 
 } /* namespace sm */
