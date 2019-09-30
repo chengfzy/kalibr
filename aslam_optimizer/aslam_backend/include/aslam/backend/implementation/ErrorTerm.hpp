@@ -137,8 +137,7 @@ const typename ErrorTermFs<C>::inverse_covariance_t& ErrorTermFs<C>::sqrtInvR() 
     return _sqrtInvR;
 }
 
-/// \brief evaluate the squared error from the error vector and
-///        square root covariance matrix.
+/// \brief evaluate the squared error from the error vector and square root covariance matrix.
 template <int C>
 double ErrorTermFs<C>::evaluateChiSquaredError() const {
     error_t e = _sqrtInvR.transpose() * _error;
@@ -150,10 +149,14 @@ void ErrorTermFs<C>::getWeightedJacobians(JacobianContainer& outJc, bool useMEst
     // take a copy. \todo Don't take a copy.
     evaluateJacobians(outJc);
     outJc.applyChainRule(_sqrtInvR.transpose());
-    JacobianContainer::map_t::iterator it = outJc.begin();
+
+    // NOTE by CC: the robust kernel weight, if don't use robust kernel, the value will be 1.0
     double sqrtWeight = 1.0;
-    if (useMEstimator) sqrtWeight = sqrt(_mEstimatorPolicy->getWeight(getRawSquaredError()));
-    for (; it != outJc.end(); ++it) {
+    if (useMEstimator) {
+        sqrtWeight = sqrt(_mEstimatorPolicy->getWeight(getRawSquaredError()));
+    }
+
+    for (JacobianContainer::map_t::iterator it = outJc.begin(); it != outJc.end(); ++it) {
         it->second *= sqrtWeight * it->first->scaling();
     }
 }
@@ -161,7 +164,9 @@ void ErrorTermFs<C>::getWeightedJacobians(JacobianContainer& outJc, bool useMEst
 template <int C>
 void ErrorTermFs<C>::getWeightedError(Eigen::VectorXd& e, bool useMEstimator) const {
     double sqrtWeight = 1.0;
-    if (useMEstimator) sqrtWeight = sqrt(_mEstimatorPolicy->getWeight(getRawSquaredError()));
+    if (useMEstimator) {
+        sqrtWeight = sqrt(_mEstimatorPolicy->getWeight(getRawSquaredError()));
+    }
     e = _sqrtInvR.transpose() * _error * sqrtWeight;
 }
 

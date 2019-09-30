@@ -17,22 +17,18 @@
  ******************************************************************************/
 
 #include "aslam/calibration/core/LinearSolver.h"
-
-#include <cmath>
-
-#include <algorithm>
-#include <iostream>
-
 #include <SuiteSparseQR.hpp>
-
-#include <sm/PropertyTree.hpp>
-
+#include <algorithm>
 #include <aslam/backend/CompressedColumnMatrix.hpp>
-
+#include <cmath>
+#include <iostream>
+#include <sm/PropertyTree.hpp>
 #include "aslam/calibration/algorithms/linalg.h"
 #include "aslam/calibration/base/Timestamp.h"
 #include "aslam/calibration/exceptions/InvalidOperationException.h"
 #include "aslam/calibration/exceptions/OutOfBoundException.h"
+#include "sm/DebugInfo.h"
+using namespace std;
 
 namespace aslam {
 namespace calibration {
@@ -200,10 +196,31 @@ double LinearSolver::getNumericFactorizationTime() const {
 /******************************************************************************/
 
 void LinearSolver::buildSystem(size_t numThreads, bool useMEstimator) {
+    printInfo("LinearSolver::buildSystem()", DebugInfoType::Paragraph);
     _jacobianBuilder.buildSystem(numThreads, useMEstimator);
 }
 
 bool LinearSolver::solveSystem(Eigen::VectorXd& dx) {
+    using namespace std;
+    using namespace Eigen;
+    // printInfo("LinearSolver - Check Error Terms Info");
+    // for (size_t i = 0; i < _errorTerms.size(); ++i) {
+    //     double sqrtWeight = sqrt(_errorTerms[i]->getCurrentMEstimatorWeight());
+    //     VectorXd e, eWeight;
+    //     _errorTerms[i]->getWeightedError(e, false);
+    //     _errorTerms[i]->getWeightedError(eWeight, true);
+    //     double squaredError = sqrt(_errorTerms[i]->getSquaredError(true));
+    //     double squaredErrorWeight = sqrt(_errorTerms[i]->getSquaredError(false));
+    //     aslam::backend::JacobianContainer jac(_errorTerms[i]->dimension()), jacWeight(_errorTerms[i]->dimension());
+    //     _errorTerms[i]->getWeightedJacobians(jac, false);
+    //     _errorTerms[i]->getWeightedJacobians(jacWeight, true);
+    //     cout << "[" << i << "] sqrtWeight = " << sqrtWeight << ", |e| = " << e.norm() << ", |ew| = " <<
+    //     eWeight.norm()
+    //          << ", e1 = " << squaredError << ", e1w = " << squaredErrorWeight
+    //          << ", |Jac| = " << jac.asDenseMatrix().norm() << ", |JacW| = " << jacWeight.asDenseMatrix().norm() <<
+    //          endl;
+    // }
+
     aslam::backend::CompressedColumnMatrix<std::ptrdiff_t>& Jt = _jacobianBuilder.J_transpose();
     cholmod_sparse Jt_CS;
     Jt.getView(&Jt_CS);
@@ -230,6 +247,11 @@ bool LinearSolver::solveSystem(Eigen::VectorXd& dx) {
         if (_options.verbose) std::cerr << __PRETTY_FUNCTION__ << ": unknown exception" << std::endl;
         status = false;
     }
+
+    printInfo("LinearSolver::solveSystem()");
+    cout << "Jacobian size = " << J_CS->nrow << " X " << J_CS->ncol << ", |Jac| = " << Jt.toDense().norm() << endl;
+    cout << "e size = " << _e.size() << ", |e| = " << _e.norm() << endl;
+
     cholmod_l_free_sparse(&J_CS, &_cholmod);
     return status;
 }

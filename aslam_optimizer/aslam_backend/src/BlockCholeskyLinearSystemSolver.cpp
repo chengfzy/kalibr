@@ -4,6 +4,9 @@
 #include <aslam/backend/ErrorTerm.hpp>
 #include <sm/PropertyTree.hpp>
 
+#include "sm/DebugInfo.h"
+#include "Eigen/Dense"
+
 namespace aslam {
 namespace backend {
 BlockCholeskyLinearSystemSolver::BlockCholeskyLinearSystemSolver(const std::string& solver,
@@ -70,6 +73,22 @@ void BlockCholeskyLinearSystemSolver::buildSystem(size_t /* nThreads */, bool us
 }
 
 bool BlockCholeskyLinearSystemSolver::solveSystem(Eigen::VectorXd& outDx) {
+    using namespace std;
+    using namespace Eigen;
+    // printInfo("BlockCholeskyLinearSystemSolver - Check Error Terms Info");
+    // for (size_t i = 0; i < _errorTerms.size(); ++i) {
+    //     double sqrtWeight = sqrt(_errorTerms[i]->getCurrentMEstimatorWeight());
+    //     VectorXd e{0}, eWeight;
+    //     _errorTerms[i]->getWeightedError(e, false);
+    //     _errorTerms[i]->getWeightedError(eWeight, true);
+    //     aslam::backend::JacobianContainer jac(_errorTerms[i]->dimension()), jacWeight(_errorTerms[i]->dimension());
+    //     _errorTerms[i]->getWeightedJacobians(jac, false);
+    //     _errorTerms[i]->getWeightedJacobians(jacWeight, false);
+    //     cout << "[" << i << "] sqrtWeight = " << sqrtWeight << ", |e| = " << e.norm() << ", |ew| = " <<
+    //     eWeight.norm()
+    //          << ", |J| = " << jac.asDenseMatrix().norm() << ", |Jw| = " << jacWeight.asDenseMatrix().norm() << endl;
+    // }
+
     if (_useDiagonalConditioner) {
         Eigen::VectorXd d = _diagonalConditioner.cwiseProduct(_diagonalConditioner);
         // Augment the diagonal
@@ -81,6 +100,7 @@ bool BlockCholeskyLinearSystemSolver::solveSystem(Eigen::VectorXd& outDx) {
             rowBase += block.rows();
         }
     }
+
     // Solve the system
     outDx.resize(_H._M.rows());
     bool solutionSuccess = _solver->solve(_H._M, &outDx[0], &_rhs[0]);
@@ -98,6 +118,48 @@ bool BlockCholeskyLinearSystemSolver::solveSystem(Eigen::VectorXd& outDx) {
         // This seems to help when the CHOLMOD stuff gets into a bad state
         initSolver();
     }
+
+#if false
+    if (_H._M.rows() > 100) {
+        printInfo("BlockCholeskyLinearSystemSolver::solveSystem()");
+        cout << "Hessian size = " << _H._M.rows() << " X " << _H._M.cols() << ", block size = " << _H._M.bRows()
+             << " X " << _H._M.bCols();
+
+        if (_H._M.rows() > 3000 || _H._M.cols() > 3000) {
+            cout << endl;
+        } else {
+            cout << "|H| = " << _H._M.toDense().norm() << endl;
+        }
+
+        cout << "rhs size = " << _rhs.size() << ", |rhs| = " << _rhs.norm() << endl;
+        cout << "dx size = " << outDx.size() << ", |dx| = " << outDx.norm() << endl;
+        // int startRow = _H._M.rows() - 7;
+        // int startCol = startRow;
+        // Eigen::MatrixXd hBlock = _H._M.toDense().block(startRow, startCol, 6, 6);
+        // cout << "H[" << startRow << ":" << startRow + 6 << "] = " << endl << hBlock << endl;
+        // cout << "H[" << startRow << ":" << startRow + 6 << "]^-1 = " << endl << hBlock.inverse() << endl;
+
+        // last 3-2 block
+        int startBlockRow = _H._M.bRows() - 3;
+        int startBlockCol = _H._M.bCols() - 3;
+        int r0 = _H._M.rowBaseOfBlock(startBlockRow);
+        int r1 = _H._M.rowBaseOfBlock(startBlockRow + 2);
+        int c0 = _H._M.colBaseOfBlock(startBlockCol);
+        int c1 = _H._M.colBaseOfBlock(startBlockCol + 2);
+        Eigen::MatrixXd hBlock =
+            _H._M.slice(startBlockRow, startBlockRow + 2, startBlockCol, startBlockCol + 2)->toDense();
+        cout << "H[" << r0 << ":" << r1 << ", " << c0 << ":" << c1 << "] = " << endl << hBlock << endl;
+        cout << "H[" << r0 << ":" << r1 << ", " << c0 << ":" << c1 << "]^-1 = " << endl << hBlock.inverse() << endl;
+        printInfo("", DebugInfoType::Section, false);
+
+        // save hessian diagonal to file
+        // _H._M.saveToFile("/media/psf/Home/Documents/H.txt", false);
+
+        {
+            // some process to marginalize the (q, p) variable. the hessian block
+        }
+    }
+#endif
 
     return solutionSuccess;
 }

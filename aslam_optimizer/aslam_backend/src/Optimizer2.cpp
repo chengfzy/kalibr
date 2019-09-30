@@ -1,21 +1,24 @@
-#include <aslam/backend/Optimizer2.hpp>
-// std::partial_sum
-#include <aslam/backend/ErrorTerm.hpp>
-#include <numeric>
-// M.inverse()
 #include <sparse_block_matrix/linear_solver_cholmod.h>
 #include <sparse_block_matrix/linear_solver_dense.h>
 #include <Eigen/Dense>
+#include <aslam/backend/ErrorTerm.hpp>
+#include <aslam/backend/Optimizer2.hpp>
+#include <numeric>
 #include <sm/eigen/assert_macros.hpp>
+
 #ifndef QRSOLVER_DISABLED
 #include <sparse_block_matrix/linear_solver_spqr.h>
 #include <aslam/backend/SparseQrLinearSystemSolver.hpp>
 #endif
+
 #include <aslam/backend/BlockCholeskyLinearSystemSolver.hpp>
 #include <aslam/backend/DenseQrLinearSystemSolver.hpp>
 #include <aslam/backend/SparseCholeskyLinearSystemSolver.hpp>
 #include <aslam/backend/sparse_matrix_functions.hpp>
 #include <sm/PropertyTree.hpp>
+#include "sm/DebugInfo.h"
+
+using namespace std;
 
 namespace aslam {
 namespace backend {
@@ -166,6 +169,10 @@ return (crit1 && crit2 && crit3) || crit4;
 }*/
 
 SolutionReturnValue Optimizer2::optimize() {
+    printInfo("Optimizer2::optimize()");
+    cout << "LinearSystemSolver name = " << _solver->name() << endl;
+    cout << "TrustRegionPolicy name = " << _trustRegionPolicy->name() << endl;
+
     Timer timeGn("Optimizer2: build Hessian", true);
     Timer timeErr("Optimizer2: evaluate error", true);
     Timer timeSchur("Optimizer2: Schur complement", true);
@@ -196,12 +203,17 @@ SolutionReturnValue Optimizer2::optimize() {
     _trustRegionPolicy->optimizationStarting(_J);
 
     // Loop until convergence
+    printInfo("Loop until convergence", DebugInfoType::Paragraph, false);
+    int index = 0;
     while (
         srv.iterations < _options.maxIterations && srv.failedIterations < _options.maxIterations &&
         ((deltaX > _options.convergenceDeltaX && fabs(deltaJ) > _options.convergenceDeltaJ) || linearSolverFailure)) {
         timeSolve.start();
         bool solutionSuccess = _trustRegionPolicy->solveSystem(_J, previousIterationFailed, _options.nThreads, _dx);
         timeSolve.stop();
+
+        cout << "[" << index << ", " << srv.iterations << "] J = " << _J << ", dx size = " << _dx.size()
+             << ", |dx| = " << _dx.norm() << endl;
 
         if (!solutionSuccess) {
             _options.verbose&& std::cout << "[WARNING] System solution failed\n";
@@ -239,6 +251,12 @@ SolutionReturnValue Optimizer2::optimize() {
             _options.verbose && _trustRegionPolicy->printState(std::cout);
             _options.verbose&& std::cout << std::endl;
         }  // if the linear solver failed / else
+
+        // print the final result
+        // DesignVariable* d = _designVariables[0];
+        // aslam::backend::EuclideanPoint* p = dynamic_cast<aslam::backend::EuclideanPoint>(d);
+
+        ++index;
     }
 
     srv.JFinal = _p_J;
@@ -261,9 +279,21 @@ double Optimizer2::applyStateUpdate() {
     for (size_t i = 0; i < numDesignVariables(); i++) {
         DesignVariable* d = _designVariables[i];
         const int dbd = d->minimalDimensions();
+
+        if (_dx.size() - startIdx == 7 || _dx.size() - startIdx == 4) {
+            cout << "\tupdate [" << i << "," << startIdx << "] dsize = " << dbd;
+        }
+
         Eigen::VectorXd dxS = _dx.segment(startIdx, dbd);
         dxS *= d->scaling();
-        if (dbd > 0) d->update(&dxS[0], dbd);
+        if (dbd > 0) {
+            d->update(&dxS[0], dbd);
+        }
+
+        if (_dx.size() - startIdx == 7 || _dx.size() - startIdx == 4) {
+            cout << endl;
+        }
+
         startIdx += dbd;
     }
     // Track the maximum delta

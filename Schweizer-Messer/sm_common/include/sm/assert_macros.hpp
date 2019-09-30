@@ -15,6 +15,7 @@
 #include <stdexcept>
 #include <typeinfo>
 #include "source_file_pos.hpp"
+#include <iomanip>
 
 //! Macro for defining an exception with a given parent
 //  (std::runtime_error should be top parent)
@@ -96,7 +97,8 @@ inline void sm_assert_throw(bool assert_condition, std::string message, sm::sour
     if ((value) < (lowerBound) || (value) >= (upperBound)) {                                                           \
         std::stringstream sm_assert_stringstream;                                                                      \
         sm_assert_stringstream << "assert(" << #lowerBound << " <= " << #value << " < " << #upperBound << ") failed [" \
-                               << (lowerBound) << " <= " << (value) << " < " << (upperBound) << "]: " << message;      \
+                               << std::setprecision(12) << (lowerBound) << " <= " << (value) << " < " << (upperBound)  \
+                               << "]: " << message;                                                                    \
         sm::detail::sm_throw_exception<exceptionType>("[" #exceptionType "] ", __FUNCTION__, __FILE__, __LINE__,       \
                                                       sm_assert_stringstream.str());                                   \
     }

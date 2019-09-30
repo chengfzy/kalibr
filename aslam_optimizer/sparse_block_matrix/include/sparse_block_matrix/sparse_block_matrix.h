@@ -30,7 +30,7 @@
 #include "sparse_helper.h"
 
 namespace sparse_block_matrix {
-using namespace Eigen;
+
 /**
  * \brief Sparse matrix which using blocks
  *
@@ -47,7 +47,7 @@ using namespace Eigen;
  * block sizes than you have to use a dynamic-block matrix (default
  * template argument).
  */
-template <class MatrixType = MatrixXd>
+template <class MatrixType = Eigen::MatrixXd>
 class SparseBlockMatrix {
   public:
     //! this is the type of the elementary block, it is an Eigen::Matrix.
@@ -60,6 +60,7 @@ class SparseBlockMatrix {
     typedef typename std::remove_const<decltype(MatrixType().transpose().eval())>::type TransposedMatrixType;
 
     SM_DEFINE_EXCEPTION(Exception, std::runtime_error);
+
     SM_DEFINE_EXCEPTION(IndexException, Exception);
 
     //! columns of the matrix
@@ -187,7 +188,7 @@ class SparseBlockMatrix {
     //! dest = (*this) * src (Eigen::Vector) // returns dense
     void multiply(Eigen::VectorXd* dest, const Eigen::VectorXd& src) const;
 
-    void rightMultiply(VectorXd* dest, const VectorXd& src) const;
+    void rightMultiply(Eigen::VectorXd* dest, const Eigen::VectorXd& src) const;
 
     //! dest = M * (*this)
     void rightMultiply(double*& dest, const double* src) const;
@@ -252,6 +253,9 @@ class SparseBlockMatrix {
      */
     bool writeOctave(const char* filename, bool upperTriangle = true) const;
 
+    // write the diagonal matrix to file
+    void saveToFile(const std::string& filename, bool onlyDiagonal = true) const;
+
     //! Returns just a reference to *this (at the moment). But useful already to have more interface compatibility with
     //! Eigen dense matrices.
     inline SparseBlockMatrix& eval() { return *this; }
@@ -271,7 +275,7 @@ class SparseBlockMatrix {
 template <class MatrixType>
 std::ostream& operator<<(std::ostream&, const SparseBlockMatrix<MatrixType>& m);
 
-typedef SparseBlockMatrix<MatrixXd> SparseBlockMatrixXd;
+typedef SparseBlockMatrix<Eigen::MatrixXd> SparseBlockMatrixXd;
 
 }  // namespace sparse_block_matrix
 

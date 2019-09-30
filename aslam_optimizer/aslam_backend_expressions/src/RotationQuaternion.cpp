@@ -26,6 +26,8 @@ void RotationQuaternion::updateImplementation(const double* dp, int size) {
     Eigen::Map<const Eigen::Vector3d> dpv(dp);
     _q = sm::kinematics::updateQuat(_q, dpv);
     _C = sm::kinematics::quat2r(_q);
+
+    std::cout << ", q = " << _q.transpose();
 }
 
 int RotationQuaternion::minimalDimensionsImplementation() const { return 3; }

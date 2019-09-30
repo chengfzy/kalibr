@@ -1,5 +1,7 @@
 #include <aslam/backend/EuclideanPoint.hpp>
 #include <aslam/backend/HomogeneousExpression.hpp>
+#include "sm/DebugInfo.h"
+using namespace std;
 
 namespace aslam {
 namespace backend {
@@ -17,6 +19,8 @@ void EuclideanPoint::updateImplementation(const double* dp, int size) {
 
     Eigen::Map<const Eigen::Vector3d> dpv(dp);
     _p += dpv;
+
+    cout << ", p = " << _p.transpose();
 }
 
 /// \brief the size of an update step

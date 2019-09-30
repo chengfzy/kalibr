@@ -925,4 +925,28 @@ bool SparseBlockMatrix<MatrixType>::writeOctave(const char* filename, bool upper
     return fout.good();
 }
 
+// write the diagonal matrix to file
+template <class MatrixType>
+void SparseBlockMatrix<MatrixType>::saveToFile(const std::string& filename, bool onlyDiagonal) const {
+    using namespace std;
+    fstream fs(filename, ios::out);
+    for (size_t i = 0; i < _blockCols.size(); ++i) {
+        int c = i;
+        for (typename SparseBlockMatrix<MatrixType>::IntBlockMap::const_iterator it = _blockCols[i].begin();
+             it != _blockCols[i].end(); ++it) {
+            const int& r = it->first;
+            const MatrixType& m = *(it->second);
+            for (int cc = 0; cc < m.cols(); ++cc)
+                for (int rr = 0; rr < m.rows(); ++rr) {
+                    int aux_r = rowBaseOfBlock(r) + rr;
+                    int aux_c = colBaseOfBlock(c) + cc;
+                    if (!onlyDiagonal || (onlyDiagonal && aux_r == aux_c)) {
+                        fs << aux_r << ", " << aux_c << ", " << setprecision(12) << m(rr, cc) << endl;
+                    }
+                }
+        }
+    }
+    fs.close();
+}
+
 }  // namespace sparse_block_matrix
