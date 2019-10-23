@@ -49,10 +49,10 @@ class EuclideanExpression {
 
     boost::shared_ptr<EuclideanExpressionNode> root() { return _root; }
 
-  private:
     /// \todo make the default constructor private.
     EuclideanExpression();
 
+  private:
     friend class RotationExpression;
     friend class MatrixExpression;
 

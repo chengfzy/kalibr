@@ -5,7 +5,7 @@ namespace aslam {
 namespace splines {
 
 /// \brief this guy takes a copy.
-BSplinePoseDesignVariable::BSplinePoseDesignVariable(const bsplines::BSplinePose &bsplinePose)
+BSplinePoseDesignVariable::BSplinePoseDesignVariable(const bsplines::BSplinePose& bsplinePose)
     : _bsplinePose(bsplinePose) {
     // here is where the magic happens.
 
@@ -19,11 +19,11 @@ BSplinePoseDesignVariable::BSplinePoseDesignVariable(const bsplines::BSplinePose
 BSplinePoseDesignVariable::~BSplinePoseDesignVariable() {}
 
 /// \brief get the spline.
-const bsplines::BSplinePose &BSplinePoseDesignVariable::spline() { return _bsplinePose; }
+const bsplines::BSplinePose& BSplinePoseDesignVariable::spline() const { return _bsplinePose; }
 
 size_t BSplinePoseDesignVariable::numDesignVariables() { return _designVariables.size(); }
 
-aslam::backend::DesignVariableMappedVector<6> *BSplinePoseDesignVariable::designVariable(size_t i) {
+aslam::backend::DesignVariableMappedVector<6>* BSplinePoseDesignVariable::designVariable(size_t i) {
     SM_ASSERT_LT(aslam::Exception, i, _designVariables.size(), "Index out of bounds");
     return &_designVariables[i];
 }
@@ -32,11 +32,11 @@ Eigen::VectorXi BSplinePoseDesignVariable::getActiveDesignVariableIndices(double
     return _bsplinePose.localVvCoefficientVectorIndices(tk);
 }
 
-std::vector<aslam::backend::DesignVariable *> BSplinePoseDesignVariable::getDesignVariables(double tk) {
+std::vector<aslam::backend::DesignVariable*> BSplinePoseDesignVariable::getDesignVariables(double tk) {
     Eigen::VectorXi dvidxs = _bsplinePose.localVvCoefficientVectorIndices(tk);
-    std::vector<aslam::backend::DesignVariable *> dvs;
+    std::vector<aslam::backend::DesignVariable*> dvs;
     for (int i = 0; i < dvidxs.size(); ++i) {
-        dvs.push_back(const_cast<aslam::backend::DesignVariableMappedVector<6> *>(&_designVariables[dvidxs[i]]));
+        dvs.push_back(const_cast<aslam::backend::DesignVariableMappedVector<6>*>(&_designVariables[dvidxs[i]]));
     }
 
     return dvs;
@@ -44,7 +44,7 @@ std::vector<aslam::backend::DesignVariable *> BSplinePoseDesignVariable::getDesi
 
 aslam::backend::TransformationExpression BSplinePoseDesignVariable::transformation(double tk) {
     Eigen::VectorXi dvidxs = _bsplinePose.localVvCoefficientVectorIndices(tk);
-    std::vector<aslam::backend::DesignVariable *> dvs;
+    std::vector<aslam::backend::DesignVariable*> dvs;
     for (int i = 0; i < dvidxs.size(); ++i) {
         dvs.push_back(&_designVariables[dvidxs[i]]);
     }
@@ -57,7 +57,7 @@ aslam::backend::TransformationExpression BSplinePoseDesignVariable::transformati
 
 aslam::backend::RotationExpression BSplinePoseDesignVariable::orientation(double tk) {
     Eigen::VectorXi dvidxs = _bsplinePose.localVvCoefficientVectorIndices(tk);
-    std::vector<aslam::backend::DesignVariable *> dvs;
+    std::vector<aslam::backend::DesignVariable*> dvs;
     for (int i = 0; i < dvidxs.size(); ++i) {
         dvs.push_back(&_designVariables[dvidxs[i]]);
     }
@@ -69,7 +69,7 @@ aslam::backend::RotationExpression BSplinePoseDesignVariable::orientation(double
 
 aslam::backend::EuclideanExpression BSplinePoseDesignVariable::position(double tk) {
     Eigen::VectorXi dvidxs = _bsplinePose.localVvCoefficientVectorIndices(tk);
-    std::vector<aslam::backend::DesignVariable *> dvs;
+    std::vector<aslam::backend::DesignVariable*> dvs;
     for (int i = 0; i < dvidxs.size(); ++i) {
         dvs.push_back(&_designVariables[dvidxs[i]]);
     }
@@ -81,7 +81,7 @@ aslam::backend::EuclideanExpression BSplinePoseDesignVariable::position(double t
 
 aslam::backend::EuclideanExpression BSplinePoseDesignVariable::linearVelocity(double tk) {
     Eigen::VectorXi dvidxs = _bsplinePose.localVvCoefficientVectorIndices(tk);
-    std::vector<aslam::backend::DesignVariable *> dvs;
+    std::vector<aslam::backend::DesignVariable*> dvs;
     for (int i = 0; i < dvidxs.size(); ++i) {
         dvs.push_back(&_designVariables[dvidxs[i]]);
     }
@@ -93,7 +93,7 @@ aslam::backend::EuclideanExpression BSplinePoseDesignVariable::linearVelocity(do
 
 aslam::backend::EuclideanExpression BSplinePoseDesignVariable::linearAcceleration(double tk) {
     Eigen::VectorXi dvidxs = _bsplinePose.localVvCoefficientVectorIndices(tk);
-    std::vector<aslam::backend::DesignVariable *> dvs;
+    std::vector<aslam::backend::DesignVariable*> dvs;
     for (int i = 0; i < dvidxs.size(); ++i) {
         dvs.push_back(&_designVariables[dvidxs[i]]);
     }
@@ -106,7 +106,7 @@ aslam::backend::EuclideanExpression BSplinePoseDesignVariable::linearAcceleratio
 
 aslam::backend::EuclideanExpression BSplinePoseDesignVariable::linearAccelerationBodyFrame(double tk) {
     Eigen::VectorXi dvidxs = _bsplinePose.localVvCoefficientVectorIndices(tk);
-    std::vector<aslam::backend::DesignVariable *> dvs;
+    std::vector<aslam::backend::DesignVariable*> dvs;
     for (int i = 0; i < dvidxs.size(); ++i) dvs.push_back(&_designVariables[dvidxs[i]]);
     boost::shared_ptr<BSplineAccelerationBodyFrameExpressionNode> root(
         new BSplineAccelerationBodyFrameExpressionNode(&_bsplinePose, dvs, tk));
@@ -115,7 +115,7 @@ aslam::backend::EuclideanExpression BSplinePoseDesignVariable::linearAcceleratio
 
 aslam::backend::EuclideanExpression BSplinePoseDesignVariable::angularVelocityBodyFrame(double tk) {
     Eigen::VectorXi dvidxs = _bsplinePose.localVvCoefficientVectorIndices(tk);
-    std::vector<aslam::backend::DesignVariable *> dvs;
+    std::vector<aslam::backend::DesignVariable*> dvs;
     for (int i = 0; i < dvidxs.size(); ++i) {
         dvs.push_back(&_designVariables[dvidxs[i]]);
     }
@@ -128,7 +128,7 @@ aslam::backend::EuclideanExpression BSplinePoseDesignVariable::angularVelocityBo
 
 aslam::backend::EuclideanExpression BSplinePoseDesignVariable::angularAccelerationBodyFrame(double tk) {
     Eigen::VectorXi dvidxs = _bsplinePose.localVvCoefficientVectorIndices(tk);
-    std::vector<aslam::backend::DesignVariable *> dvs;
+    std::vector<aslam::backend::DesignVariable*> dvs;
     for (int i = 0; i < dvidxs.size(); ++i) {
         dvs.push_back(&_designVariables[dvidxs[i]]);
     }
@@ -166,12 +166,12 @@ void BSplinePoseDesignVariable::removeSegment() {
 }
 
 aslam::backend::TransformationExpression BSplinePoseDesignVariable::transformationAtTime(
-    const aslam::backend::ScalarExpression &time) {
+    const aslam::backend::ScalarExpression& time) {
     return transformationAtTime(time, 0.0, 0.0);
 }
 
 aslam::backend::TransformationExpression BSplinePoseDesignVariable::transformationAtTime(
-    const aslam::backend::ScalarExpression &time, double leftBuffer, double rightBuffer) {
+    const aslam::backend::ScalarExpression& time, double leftBuffer, double rightBuffer) {
     boost::shared_ptr<TransformationTimeOffsetExpressionNode> root(
         new TransformationTimeOffsetExpressionNode(this, time, leftBuffer, rightBuffer));
 

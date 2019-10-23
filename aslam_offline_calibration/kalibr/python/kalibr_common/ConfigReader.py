@@ -545,7 +545,6 @@ class CalibrationTargetParameters(ParametersBase):
 
     ###################################################
     # Accessors
-    ###################################################
     def checkTargetType(self, target_type):
         targetTypes = ['aprilgrid',
                        'checkerboard',

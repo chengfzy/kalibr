@@ -1,18 +1,26 @@
 # Import the numpy to Eigen type conversion.
-import roslib; roslib.load_manifest('numpy_eigen'); import numpy_eigen
-# Import the sm library
-import roslib; roslib.load_manifest('sm_python'); import sm
-# Import the aslam backend
-import roslib; roslib.load_manifest('aslam_backend'); import aslam_backend
-import roslib; roslib.load_manifest('aslam_cv_python'); import aslam_cv
-# Import the the C++ exports from your package library.
+import aslam_cv
+import aslam_backend
+import sm
+import numpy_eigen
 from libaslam_cv_backend_python import *
+import roslib
+roslib.load_manifest('numpy_eigen')
+# Import the sm library
+roslib.load_manifest('sm_python')
+# Import the aslam backend
+roslib.load_manifest('aslam_backend')
+roslib.load_manifest('aslam_cv_python')
+# Import the the C++ exports from your package library.
 # Import other files in the directory
 # from mypyfile import *
 
 # Now build some convenience wrappers
+
+
 class CameraModel(object):
     pass
+
 
 class Omni(CameraModel):
     geometry = aslam_cv.OmniCameraGeometry
@@ -24,6 +32,7 @@ class Omni(CameraModel):
     shutterType = aslam_cv.GlobalShutter
     frameType = aslam_cv.OmniFrame
 
+
 class DistortedOmni(CameraModel):
     geometry = aslam_cv.DistortedOmniCameraGeometry
     reprojectionError = DistortedOmniReprojectionError
@@ -33,6 +42,7 @@ class DistortedOmni(CameraModel):
     distortionType = aslam_cv.RadialTangentialDistortion
     shutterType = aslam_cv.GlobalShutter
     frameType = aslam_cv.DistortedOmniFrame
+
 
 class DistortedOmniRs(CameraModel):
     geometry = aslam_cv.DistortedOmniRsCameraGeometry
@@ -45,6 +55,7 @@ class DistortedOmniRs(CameraModel):
     shutterType = aslam_cv.RollingShutter
     frameType = aslam_cv.DistortedOmniRsFrame
 
+
 class DistortedPinhole(CameraModel):
     geometry = aslam_cv.DistortedPinholeCameraGeometry
     reprojectionError = DistortedPinholeReprojectionError
@@ -55,9 +66,12 @@ class DistortedPinhole(CameraModel):
     shutterType = aslam_cv.GlobalShutter
     frameType = aslam_cv.DistortedPinholeFrame
 
+
 class DistortedPinholeRs(CameraModel):
     geometry = aslam_cv.DistortedPinholeRsCameraGeometry
     reprojectionError = DistortedPinholeRsReprojectionError
+    # `ReprojectionErrorSimple` is `SimpleReprojectionError` in c++, the export name is defined in 
+    # `kalibr/aslam_cv/aslam_cv_backend_python/include/aslam/ExportReprojectionError.hpp`
     reprojectionErrorSimple = DistortedPinholeRsReprojectionErrorSimple
     reprojectionErrorAdaptiveCovariance = DistortedPinholeRsReprojectionErrorAdaptiveCovariance
     designVariable = DistortedPinholeRsCameraGeometryDesignVariable
@@ -65,6 +79,7 @@ class DistortedPinholeRs(CameraModel):
     distortionType = aslam_cv.RadialTangentialDistortion
     shutterType = aslam_cv.RollingShutter
     frameType = aslam_cv.DistortedPinholeRsFrame
+
 
 class EquidistantPinhole(CameraModel):
     geometry = aslam_cv.EquidistantDistortedPinholeCameraGeometry
@@ -75,6 +90,7 @@ class EquidistantPinhole(CameraModel):
     distortionType = aslam_cv.EquidistantDistortion
     shutterType = aslam_cv.GlobalShutter
     frameType = aslam_cv.EquidistantDistortedPinholeFrame
+
 
 class EquidistantPinholeRs(CameraModel):
     geometry = aslam_cv.EquidistantDistortedPinholeRsCameraGeometry
@@ -87,6 +103,7 @@ class EquidistantPinholeRs(CameraModel):
     shutterType = aslam_cv.RollingShutter
     frameType = aslam_cv.EquidistantPinholeRsFrame
 
+
 class FovPinhole(CameraModel):
     geometry = aslam_cv.FovDistortedPinholeCameraGeometry
     reprojectionError = FovDistortedPinholeReprojectionError
@@ -96,6 +113,7 @@ class FovPinhole(CameraModel):
     distortionType = aslam_cv.FovDistortion
     shutterType = aslam_cv.GlobalShutter
     frameType = aslam_cv.FovDistortedPinholeFrame
+
 
 class ExtendedUnified(CameraModel):
     geometry = aslam_cv.ExtendedUnifiedCameraGeometry
@@ -107,6 +125,7 @@ class ExtendedUnified(CameraModel):
     shutterType = aslam_cv.GlobalShutter
     frameType = aslam_cv.ExtendedUnifiedFrame
 
+
 class DoubleSphere(CameraModel):
     geometry = aslam_cv.DoubleSphereCameraGeometry
     reprojectionError = DoubleSphereReprojectionError
@@ -116,4 +135,3 @@ class DoubleSphere(CameraModel):
     distortionType = aslam_cv.NoDistortion
     shutterType = aslam_cv.GlobalShutter
     frameType = aslam_cv.DoubleSphereFrame
-

@@ -28,6 +28,7 @@ class Once(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
+
 def parseArgs():
     class KalibrArgParser(argparse.ArgumentParser):
         def error(self, message):
@@ -155,7 +156,7 @@ def main():
     # Parse the arguments
     parsed = parseArgs()
 
-    # logging modess
+    # logging modes
     if parsed.verbose:
         sm.setLoggingLevel(sm.LoggingLevel.Debug)
     else:

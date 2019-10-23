@@ -30,7 +30,7 @@ class IccCalibrator(object):
 
     def initDesignVariables(self, problem, poseSpline, noTimeCalibration, noChainExtrinsics=True,
                             estimateGravityLength=False, initialGravityEstimate=np.array([0.0, 9.81, 0.0])):
-        # Initialize the system pose spline (always attached to imu0) 
+        # Initialize the system pose spline (always attached to imu0)
         self.poseDv = asp.BSplinePoseDesignVariable(poseSpline)
         addSplineDesignVariables(problem, self.poseDv)
 
@@ -97,9 +97,9 @@ class IccCalibrator(object):
         print "\tTime offset padding: %f" % (timeOffsetPadding)
 
         ############################################
-        ## initialize camera chain
+        # initialize camera chain
         ############################################
-        # estimate the timeshift for all cameras to the main imu
+        # estimate the time shift for all cameras to the main imu
         self.noTimeCalibration = noTimeCalibration
         if not noTimeCalibration:
             for cam in self.CameraChain.camList:
@@ -111,7 +111,7 @@ class IccCalibrator(object):
         estimatedGravity = self.CameraChain.getEstimatedGravity()
 
         ############################################
-        ## init optimization problem
+        # init optimization problem
         ############################################
         # initialize a pose spline using the camera poses in the camera chain
         poseSpline = self.CameraChain.initializePoseSplineFromCameraChain(splineOrder, poseKnotsPerSecond,
@@ -129,7 +129,7 @@ class IccCalibrator(object):
                                  initialGravityEstimate=estimatedGravity)
 
         ############################################
-        ## add error terms
+        # add error terms
         ############################################
         # Add calibration target reprojection error terms for all camera in chain
         self.CameraChain.addCameraChainErrorTerms(problem, self.poseDv, blakeZissermanDf=blakeZisserCam,

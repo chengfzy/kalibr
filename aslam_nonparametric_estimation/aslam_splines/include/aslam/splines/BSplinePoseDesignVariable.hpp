@@ -21,12 +21,12 @@ class BSplinePoseDesignVariable {
     typedef aslam::backend::DesignVariableMappedVector<6> dv_t;
 
     /// \brief this guy takes a copy.
-    BSplinePoseDesignVariable(const bsplines::BSplinePose &bsplinePose);
+    BSplinePoseDesignVariable(const bsplines::BSplinePose& bsplinePose);
 
     virtual ~BSplinePoseDesignVariable();
 
     /// \brief get the spline.
-    const bsplines::BSplinePose &spline();
+    const bsplines::BSplinePose& spline() const;
 
     // \todo Return a Transformation expression, a Rotation expression, A Euclidean point expression, and lots of
     // VectorExpressions.
@@ -35,9 +35,9 @@ class BSplinePoseDesignVariable {
     aslam::backend::EuclideanExpression position(double tk);
 
     // Get a transformation expression where the time may change.
-    aslam::backend::TransformationExpression transformationAtTime(const aslam::backend::ScalarExpression &time,
+    aslam::backend::TransformationExpression transformationAtTime(const aslam::backend::ScalarExpression& time,
                                                                   double leftBuffer, double rightBuffer);
-    aslam::backend::TransformationExpression transformationAtTime(const aslam::backend::ScalarExpression &time);
+    aslam::backend::TransformationExpression transformationAtTime(const aslam::backend::ScalarExpression& time);
 
     // Fabio:
     aslam::backend::EuclideanExpression linearVelocity(double tk);
@@ -49,12 +49,12 @@ class BSplinePoseDesignVariable {
     aslam::backend::EuclideanExpression linearAccelerationBodyFrame(double tk);
 
     size_t numDesignVariables();
-    aslam::backend::DesignVariableMappedVector<6> *designVariable(size_t i);
+    aslam::backend::DesignVariableMappedVector<6>* designVariable(size_t i);
 
     // Luc:
     Eigen::VectorXi getActiveDesignVariableIndices(double tk);
     // Fabio:
-    std::vector<aslam::backend::DesignVariable *> getDesignVariables(double tk);
+    std::vector<aslam::backend::DesignVariable*> getDesignVariables(double tk);
 
     // Fabio:
     // add one Segment at the end of the PoseSpline

@@ -62,6 +62,8 @@ class IccCamera():
         self.setupCalibrationTarget(targetConfig, showExtraction=showCorners, showReproj=showReproj,
                                     imageStepping=showOneStep)
         multithreading = not (showCorners or showReproj or showOneStep)
+        # if debug, could only single thread
+        multithreading = False
         self.targetObservations = kc.extractCornersFromDataset(self.dataset, self.detector,
                                                                multithreading=multithreading)
 
@@ -147,6 +149,7 @@ class IccCamera():
                 omega_predicted = R_i_c * aopt.EuclideanExpression(
                     np.matrix(poseSpline.angularVelocityBodyFrame(tk)).transpose())
                 omega_measured = im.omega
+                print('t = {}, measured = {}, predict = {}'.format(tk, omega_measured, omega_predicted.toEuclidean()))
 
                 # error term
                 gerr = ket.GyroscopeError(omega_measured, im.omegaInvR, omega_predicted, bias)
@@ -154,12 +157,12 @@ class IccCamera():
 
         if problem.numErrorTerms() == 0:
             sm.logFatal(
-                "Failed to obtain orientation prior. "                         "Please make sure that your sensors are synchronized correctly.")
+                "Failed to obtain orientation prior. Please make sure that your sensors are synchronized correctly.")
             sys.exit(-1)
 
         # define the optimization
         options = aopt.Optimizer2Options()
-        options.verbose = False
+        options.verbose = True
         options.linearSolver = aopt.BlockCholeskyLinearSystemSolver()
         options.nThreads = 2
         options.convergenceDeltaX = 1e-4
@@ -180,6 +183,7 @@ class IccCamera():
         # overwrite the external rotation prior (keep the external translation prior)
         R_i_c = q_i_c_Dv.toRotationMatrix().transpose()
         self.T_extrinsic = sm.Transformation(sm.rt2Transform(R_i_c, self.T_extrinsic.t()))
+        print('\nestimated extrinsic = \n{}'.format(self.T_extrinsic.T()))
 
         # estimate gravity in the world coordinate frame as the mean specific force
         a_w = []
@@ -189,25 +193,24 @@ class IccCamera():
                 a_w.append(np.dot(poseSpline.orientation(tk), np.dot(R_i_c, - im.alpha)))
         mean_a_w = np.mean(np.asarray(a_w).T, axis=1)
         self.gravity_w = mean_a_w / np.linalg.norm(mean_a_w) * 9.80655
-        print "Gravity was intialized to", self.gravity_w, "[m/s^2]"
+        print "Gravity was initialized to", self.gravity_w, "[m/s^2]"
 
         # set the gyro bias prior (if we have more than 1 cameras use recursive average)
         b_gyro = bias.toEuclidean()
         imu.GyroBiasPriorCount += 1
-        imu.GyroBiasPrior = (
-                                    imu.GyroBiasPriorCount - 1.0) / imu.GyroBiasPriorCount * imu.GyroBiasPrior + 1.0 / imu.GyroBiasPriorCount * b_gyro
+        imu.GyroBiasPrior = (imu.GyroBiasPriorCount - 1.0) / imu.GyroBiasPriorCount * imu.GyroBiasPrior + \
+                            1.0 / imu.GyroBiasPriorCount * b_gyro
 
         # print result
         print "  Orientation prior camera-imu found as: (T_i_c)"
         print R_i_c
-        print "  Gyro bias prior found as: (b_gyro)"
-        print b_gyro
+        print("  Gyro bias prior found as: {}".format(b_gyro))
 
-    # return an etimate of gravity in the world coordinate frame as perceived by this camera
+    # return an estimate of gravity in the world coordinate frame as perceived by this camera
     def getEstimatedGravity(self):
         return self.gravity_w
 
-    # estimates the timeshift between the camearas and the imu using a crosscorrelation approach
+    # estimates the timeshift between the cameras and the imu using a cross correlation approach
     #
     # approach: angular rates are constant on a fixed body independent of location
     #          using only the norm of the gyro outputs and assuming that the biases are small
@@ -241,11 +244,11 @@ class IccCamera():
                 omega_predicted_norm = np.hstack((omega_predicted_norm, np.linalg.norm(omega_predicted.toEuclidean())))
 
         if len(omega_predicted_norm) == 0 or len(omega_measured_norm) == 0:
-            sm.logFatal(
-                "The time ranges of the camera and IMU do not overlap. "                         "Please make sure that your sensors are synchronized correctly.")
+            sm.logFatal("The time ranges of the camera and IMU do not overlap. "
+                        "Please make sure that your sensors are synchronized correctly.")
             sys.exit(-1)
 
-        # get the time shift
+        # get the time shift, the coorelation between angular velocity of IMU and camera
         corr = np.correlate(omega_predicted_norm, omega_measured_norm, "full")
         discrete_shift = corr.argmax() - (np.size(omega_measured_norm) - 1)
 
@@ -273,7 +276,7 @@ class IccCamera():
         self.timeshiftCamToImuPrior = shift
 
         print "  Time shift camera to imu (t_imu = t_cam + shift):"
-        print self.timeshiftCamToImuPrior
+        print('time shift = {}'.format(self.timeshiftCamToImuPrior))
 
     # initialize a pose spline using camera poses (pose spline = T_wb)
     def initPoseSplineFromCamera(self, splineOrder=6, poseKnotsPerSecond=100, timeOffsetPadding=0.02):
@@ -292,6 +295,7 @@ class IccCamera():
         # Add 2 seconds on either end to allow the spline to slide during optimization
         times = np.hstack((times[0] - (timeOffsetPadding * 2.0), times, times[-1] + (timeOffsetPadding * 2.0)))
         curve = np.hstack((curve[:, 0], curve, curve[:, -1]))
+        print('curve shape: {}'.format(curve.shape))
 
         # Make sure the rotation vector doesn't flip
         for i in range(1, curve.shape[1]):
@@ -384,6 +388,7 @@ class IccCamera():
             for pidx in range(0, imageCornerPoints.shape[1]):
                 # add all target points
                 targetPoint = np.insert(targetCornerPoints.transpose()[pidx], 3, 1)
+
                 p = T_c_w * aopt.HomogeneousExpression(targetPoint)
 
                 # build and append the error term
@@ -402,7 +407,7 @@ class IccCamera():
             # update progress bar
             iProgress.sample()
 
-        print "\r  Added {0} camera error terms                      ".format(len(self.targetObservations))
+        print("\r  Added {0} camera error terms".format(len(self.targetObservations)))
         self.allReprojectionErrors = allReprojectionErrors
 
 
@@ -441,6 +446,7 @@ class IccCameraChain():
         self.chainConfig = chainConfig
 
         # find and store time between first and last image over all cameras
+        # don't used later, ignore it
         self.findCameraTimespan()
 
         # use stereo calibration guess if no baselines are provided
@@ -475,6 +481,8 @@ class IccCameraChain():
 
                 if tEndCam.toSec() > tEnd.toSec():
                     tEnd = tEndCam
+
+        print('time span = [{}, {}]'.format(tStart.toSec(), tEnd.toSec()))
 
         self.timeStart = tStart
         self.timeStart = tEnd
@@ -642,8 +650,8 @@ class IccImu(object):
         self.imuData = imu
 
         if len(self.imuData) > 1:
-            print "\r  Read %d imu readings over %.1f seconds                   " % (
-                len(imu), imu[-1].stamp.toSec() - imu[0].stamp.toSec())
+            print "\r  Read {:d} imu readings over {:.1f} seconds". \
+                format(len(imu), imu[-1].stamp.toSec() - imu[0].stamp.toSec())
         else:
             sm.logFatal("Could not find any IMU messages. Please check the dataset.")
             sys.exit(-1)
