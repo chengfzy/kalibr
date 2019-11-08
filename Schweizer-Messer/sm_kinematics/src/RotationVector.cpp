@@ -3,8 +3,6 @@
 namespace sm {
 namespace kinematics {
 
-RotationVector::~RotationVector() {}
-
 Eigen::Matrix3d RotationVector::parametersToRotationMatrix(const Eigen::Vector3d& parameters,
                                                            Eigen::Matrix3d* S) const {
     Eigen::Matrix3d C;

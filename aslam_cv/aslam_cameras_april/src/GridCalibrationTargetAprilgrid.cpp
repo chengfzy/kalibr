@@ -27,7 +27,7 @@ namespace cameras {
 ///   ^      0-------1  2-------3
 ///   |-->x
 GridCalibrationTargetAprilgrid::GridCalibrationTargetAprilgrid(size_t tagRows, size_t tagCols, double tagSize,
-                                                               double tagSpacing, const AprilgridOptions &options)
+                                                               double tagSpacing, const AprilgridOptions& options)
     : GridCalibrationTargetBase(2 * tagRows, 2 * tagCols),  // 4 points per tag
       _tagSize(tagSize),
       _tagSpacing(tagSpacing),
@@ -89,8 +89,8 @@ void GridCalibrationTargetAprilgrid::createGridPoints() {
 }
 
 /// \brief extract the calibration target points from an image and write to an observation
-bool GridCalibrationTargetAprilgrid::computeObservation(const cv::Mat &image, Eigen::MatrixXd &outImagePoints,
-                                                        std::vector<bool> &outCornerObserved) const {
+bool GridCalibrationTargetAprilgrid::computeObservation(const cv::Mat& image, Eigen::MatrixXd& outImagePoints,
+                                                        std::vector<bool>& outCornerObserved) const {
     bool success = true;
 
     // detect the tags
@@ -116,10 +116,14 @@ bool GridCalibrationTargetAprilgrid::computeObservation(const cv::Mat &image, Ei
         }
 
         // also remove tags that are flagged as bad
-        if (iter->good != 1) remove |= true;
+        if (!iter->good) {
+            remove |= true;
+        }
 
         // also remove if the tag ID is out-of-range for this grid (faulty detection)
-        if (iter->id >= (int)size() / 4) remove |= true;
+        if (iter->id >= (int)size() / 4) {
+            remove |= true;
+        }
 
         // delete flagged tags
         if (remove) {

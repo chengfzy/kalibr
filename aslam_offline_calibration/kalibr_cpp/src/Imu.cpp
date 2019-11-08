@@ -28,11 +28,10 @@ Imu::Imu(const std::string& bagFile, const ImuParameters& imuParams, const ros::
     cout << format("\tTopic: {}", imuParams.topic) << endl;
     cout << format("\tTime: [{}, {}]", startTime, endTime) << endl;
 
-    // read imu data
+    // read IMU data and add to IMU measurements
     Bag bag(bagFile);
     View view(bag, TopicQuery(imuParams.topic), ros::Time(startTime), ros::Time(endTime));
     cout << format("bag message size = {}, t = [{}, {}]", view.size(), view.getBeginTime(), view.getEndTime()) << endl;
-
     Matrix3d accR = imuParams.getAccNoiseDiscrete() * imuParams.getAccNoiseDiscrete() * Matrix3d::Identity();
     Matrix3d gyroR = imuParams.getGyroNoiseDiscrete() * imuParams.getGyroNoiseDiscrete() * Matrix3d::Identity();
     for (auto it = view.begin(); it != view.end(); ++it) {
@@ -48,8 +47,8 @@ Imu::Imu(const std::string& bagFile, const ImuParameters& imuParams, const ros::
 }
 
 void Imu::initBiasSpline(const bsplines::BSplinePose& poseSpline, int splineOrder, int biasKnotsPerSecond) {
-    double start = poseSpline.t_min();
-    double end = poseSpline.t_max();
+    double start = poseSpline.tMin();
+    double end = poseSpline.tMax();
     int knots = round((end - start) * biasKnotsPerSecond);
     cout << Section(format("Initializing the bias Splines with {} knots", knots)) << endl;
 
@@ -106,7 +105,7 @@ void Imu::addAccelerometerErrorTerms(calibration::OptimizationProblem& problem,
     size_t skipedNum{0};
     for (auto& v : data) {
         double t = v.stamp.toSec();
-        if (poseDesignVariable->spline().t_min() < t && t < poseDesignVariable->spline().t_max()) {
+        if (poseDesignVariable->spline().tMin() < t && t < poseDesignVariable->spline().tMax()) {
             RotationExpression Rbw = poseDesignVariable->orientation(t).inverse();
             EuclideanExpression aw = poseDesignVariable->linearAcceleration(t);
             EuclideanExpression bi = accBiasDesignVar->toEuclideanExpression(t, 0);
@@ -146,7 +145,7 @@ void Imu::addGyroscopeErrorTerms(calibration::OptimizationProblem& problem,
     size_t skipedNum{0};
     for (auto& v : data) {
         double t = v.stamp.toSec();
-        if (poseDesignVariable->spline().t_min() < t && t < poseDesignVariable->spline().t_max()) {
+        if (poseDesignVariable->spline().tMin() < t && t < poseDesignVariable->spline().tMax()) {
             EuclideanExpression wb = poseDesignVariable->angularVelocityBodyFrame(t);
             EuclideanExpression bi = gyroBiasDesignVar->toEuclideanExpression(t, 0);
             RotationExpression Rib = qIBDesignVar->toExpression();

@@ -312,12 +312,12 @@ TransformationTimeOffsetExpressionNode::TransformationTimeOffsetExpressionNode(
     : _spline(bspline), _time(time) {
     double initTime = time.toScalar();
 
-    if (bufferTmax + initTime > _spline->spline().t_max())
+    if (bufferTmax + initTime > _spline->spline().tMax())
         _bufferRight = _spline->spline().numValidTimeSegments() - 1;
     else
         _bufferRight = _spline->spline().segmentIndex(initTime + bufferTmax);
 
-    if (initTime - bufferTmin < _spline->spline().t_min())
+    if (initTime - bufferTmin < _spline->spline().tMin())
         _bufferLeft = 0;
     else
         _bufferLeft = _spline->spline().segmentIndex(initTime - bufferTmin);

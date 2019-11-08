@@ -4,18 +4,18 @@
 #include <boost/tuple/tuple.hpp>
 #include <sm/kinematics/transformations.hpp>
 
-namespace bsplines {
 using namespace sm::kinematics;
+using namespace bsplines;
 
-BSplinePose::BSplinePose(int splineOrder, const RotationalKinematics::Ptr &rotationalKinematics)
+BSplinePose::BSplinePose(int splineOrder, const RotationalKinematics::Ptr& rotationalKinematics)
     : BSpline(splineOrder), rotation_(rotationalKinematics) {}
 
 BSplinePose::~BSplinePose() {}
 
 Eigen::Matrix4d BSplinePose::transformation(double tk) const { return curveValueToTransformation(eval(tk)); }
 
-Eigen::Matrix4d BSplinePose::transformationAndJacobian(double tk, Eigen::MatrixXd *J,
-                                                       Eigen::VectorXi *coefficientIndices) const {
+Eigen::Matrix4d BSplinePose::transformationAndJacobian(double tk, Eigen::MatrixXd* J,
+                                                       Eigen::VectorXi* coefficientIndices) const {
     Eigen::MatrixXd JS;
     Eigen::VectorXd p;
     p = evalDAndJacobian(tk, 0, &JS, coefficientIndices);
@@ -30,8 +30,8 @@ Eigen::Matrix4d BSplinePose::transformationAndJacobian(double tk, Eigen::MatrixX
     return T;
 }
 
-Eigen::Matrix3d BSplinePose::orientationAndJacobian(double tk, Eigen::MatrixXd *J,
-                                                    Eigen::VectorXi *coefficientIndices) const {
+Eigen::Matrix3d BSplinePose::orientationAndJacobian(double tk, Eigen::MatrixXd* J,
+                                                    Eigen::VectorXi* coefficientIndices) const {
     Eigen::Matrix3d C;
     Eigen::MatrixXd JS;
     Eigen::VectorXd p;
@@ -49,8 +49,8 @@ Eigen::Matrix3d BSplinePose::orientationAndJacobian(double tk, Eigen::MatrixXd *
     return C;
 }
 
-Eigen::Matrix3d BSplinePose::inverseOrientationAndJacobian(double tk, Eigen::MatrixXd *J,
-                                                           Eigen::VectorXi *coefficientIndices) const {
+Eigen::Matrix3d BSplinePose::inverseOrientationAndJacobian(double tk, Eigen::MatrixXd* J,
+                                                           Eigen::VectorXi* coefficientIndices) const {
     Eigen::Matrix3d C;
     Eigen::MatrixXd JS;
     Eigen::VectorXd p;
@@ -68,8 +68,8 @@ Eigen::Matrix3d BSplinePose::inverseOrientationAndJacobian(double tk, Eigen::Mat
     return C;
 }
 
-Eigen::Matrix4d BSplinePose::inverseTransformationAndJacobian(double tk, Eigen::MatrixXd *J,
-                                                              Eigen::VectorXi *coefficientIndices) const {
+Eigen::Matrix4d BSplinePose::inverseTransformationAndJacobian(double tk, Eigen::MatrixXd* J,
+                                                              Eigen::VectorXi* coefficientIndices) const {
     // std::cout << __FUNCTION__ << "()\n";
     // ASRL_THROW(std::runtime_error,"Not Implemented");
     Eigen::MatrixXd JS;
@@ -101,8 +101,8 @@ Eigen::Matrix4d BSplinePose::inverseTransformation(double tk) const {
     return T;
 }
 
-Eigen::Vector4d BSplinePose::transformVectorAndJacobian(double tk, const Eigen::Vector4d &v_tk, Eigen::MatrixXd *J,
-                                                        Eigen::VectorXi *coefficientIndices) const {
+Eigen::Vector4d BSplinePose::transformVectorAndJacobian(double tk, const Eigen::Vector4d& v_tk, Eigen::MatrixXd* J,
+                                                        Eigen::VectorXi* coefficientIndices) const {
     Eigen::MatrixXd JT;
     Eigen::Matrix4d T_n_vk = transformationAndJacobian(tk, &JT, coefficientIndices);
     Eigen::Vector4d v_n = T_n_vk * v_tk;
@@ -114,8 +114,10 @@ Eigen::Vector4d BSplinePose::transformVectorAndJacobian(double tk, const Eigen::
     return v_n;
 }
 
+// Position at certain time. p = x[:3]
 Eigen::Vector3d BSplinePose::position(double tk) const { return eval(tk).head<3>(); }
 
+// Orientation at certain time, phi = x[3:], R = Exp(phi)
 Eigen::Matrix3d BSplinePose::orientation(double tk) const {
     return rotation_->parametersToRotationMatrix(eval(tk).tail<3>());
 }
@@ -124,24 +126,28 @@ Eigen::Matrix3d BSplinePose::inverseOrientation(double tk) const {
     return rotation_->parametersToRotationMatrix(eval(tk).tail<3>()).transpose();
 }
 
+// v_W = dp/dt
 Eigen::Vector3d BSplinePose::linearVelocity(double tk) const { return evalD(tk, 1).head<3>(); }
 
+// v_B = R_BW * v_W = R_WB^T * dp/dt
 Eigen::Vector3d BSplinePose::linearVelocityBodyFrame(double tk) const {
     Eigen::VectorXd r = evalD(tk, 0);
     Eigen::Matrix3d C_wb = rotation_->parametersToRotationMatrix(r.tail<3>());
     return C_wb.transpose() * evalD(tk, 1).head<3>();
 }
 
+// a_W = dp^2/dt^2
 Eigen::Vector3d BSplinePose::linearAcceleration(double tk) const { return evalD(tk, 2).head<3>(); }
 
+// a_B = R_BW * a_W = R_WB^T * dp^2/dt^2
 Eigen::Vector3d BSplinePose::linearAccelerationBodyFrame(double tk) const {
     Eigen::VectorXd r = evalD(tk, 0);
     Eigen::Matrix3d C_wb = rotation_->parametersToRotationMatrix(r.tail<3>());
     return C_wb.transpose() * evalD(tk, 2).head<3>();
 }
 
-Eigen::Vector3d BSplinePose::linearAccelerationAndJacobian(double tk, Eigen::MatrixXd *J,
-                                                           Eigen::VectorXi *coefficientIndices) const {
+Eigen::Vector3d BSplinePose::linearAccelerationAndJacobian(double tk, Eigen::MatrixXd* J,
+                                                           Eigen::VectorXi* coefficientIndices) const {
     Eigen::Vector3d a = evalDAndJacobian(tk, 2, J, coefficientIndices).head<3>();
     if (J) {
         J->conservativeResize(3, J->cols());
@@ -174,8 +180,8 @@ Eigen::Vector3d BSplinePose::angularVelocityBodyFrame(double tk) const {
 }
 
 // \omega_b_{w,b} (angular velocity of the world frame as seen from the body frame, expressed in the body frame)
-Eigen::Vector3d BSplinePose::angularVelocityBodyFrameAndJacobian(double tk, Eigen::MatrixXd *J,
-                                                                 Eigen::VectorXi *coefficientIndices) const {
+Eigen::Vector3d BSplinePose::angularVelocityBodyFrameAndJacobian(double tk, Eigen::MatrixXd* J,
+                                                                 Eigen::VectorXi* coefficientIndices) const {
     Eigen::Vector3d omega;
     Eigen::Vector3d p;
     Eigen::Vector3d pdot;
@@ -206,14 +212,14 @@ Eigen::Vector3d BSplinePose::angularVelocityBodyFrameAndJacobian(double tk, Eige
 }
 
 // \omega_w_{b,w} (angular velocity of the body frame as seen from the world frame, expressed in the world frame)
-Eigen::Vector3d BSplinePose::angularVelocityAndJacobian(double tk, Eigen::MatrixXd *J,
-                                                        Eigen::VectorXi *coefficientIndices) const {
+Eigen::Vector3d BSplinePose::angularVelocityAndJacobian(double tk, Eigen::MatrixXd* J,
+                                                        Eigen::VectorXi* coefficientIndices) const {
     Eigen::Vector3d omega;
     Eigen::Vector3d p;
     Eigen::Vector3d pdot;
     Eigen::MatrixXd Jp;
     Eigen::MatrixXd Jpdot;
-    p = evalDAndJacobian(tk, 0, &Jp, NULL).tail<3>();
+    p = evalDAndJacobian(tk, 0, &Jp, nullptr).tail<3>();
     pdot = evalDAndJacobian(tk, 1, &Jpdot, coefficientIndices).tail<3>();
 
     // Rearrange the spline jacobian matrices. Now Jpdot is the
@@ -224,6 +230,7 @@ Eigen::Vector3d BSplinePose::angularVelocityAndJacobian(double tk, Eigen::Matrix
     // std::cout << "Jpdot\n" << Jpdot << std::endl;
 
     Eigen::Matrix<double, 3, 6> Jo;
+    // FixMe by CC: seems like lost the minus "-"?
     omega = rotation_->angularVelocityAndJacobian(p, pdot, &Jo);
 
     // std::cout << "Jo:\n" << Jo << std::endl;
@@ -248,8 +255,8 @@ Eigen::Vector3d BSplinePose::angularAccelerationBodyFrame(double tk) const {
 }
 
 // \omega_dot_b_{w,b} (angular acceleration of the world frame as seen from the body frame, expressed in the body frame)
-Eigen::Vector3d BSplinePose::angularAccelerationBodyFrameAndJacobian(double tk, Eigen::MatrixXd *J,
-                                                                     Eigen::VectorXi *coefficientIndices) const {
+Eigen::Vector3d BSplinePose::angularAccelerationBodyFrameAndJacobian(double tk, Eigen::MatrixXd* J,
+                                                                     Eigen::VectorXi* coefficientIndices) const {
     Eigen::Vector3d omega;
     Eigen::Vector3d p;
     Eigen::Vector3d pdot;
@@ -278,8 +285,8 @@ Eigen::Vector3d BSplinePose::angularAccelerationBodyFrameAndJacobian(double tk, 
 
 // \omega_dot_w_{b,w} (angular acceleration of the body frame as seen from the world frame, expressed in the world
 // frame)
-Eigen::Vector3d BSplinePose::angularAccelerationAndJacobian(double tk, Eigen::MatrixXd *J,
-                                                            Eigen::VectorXi *coefficientIndices) const {
+Eigen::Vector3d BSplinePose::angularAccelerationAndJacobian(double tk, Eigen::MatrixXd* J,
+                                                            Eigen::VectorXi* coefficientIndices) const {
     Eigen::Vector3d omega;
     Eigen::Vector3d p;
     Eigen::Vector3d pdot;
@@ -294,6 +301,7 @@ Eigen::Vector3d BSplinePose::angularAccelerationAndJacobian(double tk, Eigen::Ma
     Jpdot.block(0, 0, 3, Jpdot.cols()) = Jp.block(3, 0, 3, Jp.cols());
 
     Eigen::Matrix<double, 3, 6> Jo;
+    // FixMe by CC: seems like lost the minus "-"?
     omega = rotation_->angularVelocityAndJacobian(p, pdot, &Jo);
     if (J) {
         *J = Jo * Jpdot;
@@ -302,26 +310,47 @@ Eigen::Vector3d BSplinePose::angularAccelerationAndJacobian(double tk, Eigen::Ma
     return omega;
 }
 
-void BSplinePose::initPoseSpline(double t0, double t1, const Eigen::Matrix4d &T_n_t0, const Eigen::Matrix4d &T_n_t1) {
+void BSplinePose::initPoseSpline(double t0, double t1, const Eigen::Matrix4d& T_n_t0, const Eigen::Matrix4d& T_n_t1) {
     Eigen::VectorXd v0 = transformationToCurveValue(T_n_t0);
     Eigen::VectorXd v1 = transformationToCurveValue(T_n_t1);
 
     initSpline(t0, t1, v0, v1);
 }
 
-void BSplinePose::addPoseSegment(double tk, const Eigen::Matrix4d &T_n_tk) {
+void BSplinePose::initPoseSpline2(const Eigen::VectorXd& times, const Eigen::Matrix<double, 6, Eigen::Dynamic>& poses,
+                                  int numSegments, double lambda) {
+    initSpline2(times, poses, numSegments, lambda);
+}
+
+void BSplinePose::initPoseSpline3(const Eigen::VectorXd& times, const Eigen::Matrix<double, 6, Eigen::Dynamic>& poses,
+                                  int numSegments, double lambda) {
+    initSpline3(times, poses, numSegments, lambda);
+}
+
+void BSplinePose::initPoseSplineSparse(const Eigen::VectorXd& times,
+                                       const Eigen::Matrix<double, 6, Eigen::Dynamic>& poses, int numSegments,
+                                       double lambda) {
+    initSplineSparse(times, poses, numSegments, lambda);
+}
+
+void BSplinePose::initPoseSplineSparseKnots(const Eigen::VectorXd& times, const Eigen::MatrixXd& interpolationPoints,
+                                            const Eigen::VectorXd& knots, double lambda) {
+    initSplineSparseKnots(times, interpolationPoints, knots, lambda);
+}
+
+void BSplinePose::addPoseSegment(double tk, const Eigen::Matrix4d& T_n_tk) {
     Eigen::VectorXd vk = transformationToCurveValue(T_n_tk);
 
     addCurveSegment(tk, vk);
 }
 
-void BSplinePose::addPoseSegment2(double tk, const Eigen::Matrix4d &T_n_tk, double lambda) {
+void BSplinePose::addPoseSegment2(double tk, const Eigen::Matrix4d& T_n_tk, double lambda) {
     Eigen::VectorXd vk = transformationToCurveValue(T_n_tk);
 
     addCurveSegment2(tk, vk, lambda);
 }
 
-Eigen::Matrix4d BSplinePose::curveValueToTransformation(const Eigen::VectorXd &c) const {
+Eigen::Matrix4d BSplinePose::curveValueToTransformation(const Eigen::VectorXd& c) const {
     SM_ASSERT_EQ_DBG(Exception, c.size(), 6, "The curve value is an unexpected size!");
     Eigen::Matrix4d T = Eigen::Matrix4d::Identity();
     T.topLeftCorner<3, 3>() = rotation_->parametersToRotationMatrix(c.tail<3>());
@@ -330,7 +359,17 @@ Eigen::Matrix4d BSplinePose::curveValueToTransformation(const Eigen::VectorXd &c
     return T;
 }
 
-Eigen::Matrix4d BSplinePose::curveValueToTransformationAndJacobian(const Eigen::VectorXd &p, Eigen::MatrixXd *J) const {
+Eigen::VectorXd BSplinePose::transformationToCurveValue(const Eigen::Matrix4d& T) const {
+    Eigen::VectorXd c(6);
+    c.head<3>() = T.topRightCorner<3, 1>();
+    c.tail<3>() = rotation_->rotationMatrixToParameters(T.topLeftCorner<3, 3>());
+
+    return c;
+}
+
+RotationalKinematics::Ptr BSplinePose::rotation() const { return rotation_; }
+
+Eigen::Matrix4d BSplinePose::curveValueToTransformationAndJacobian(const Eigen::VectorXd& p, Eigen::MatrixXd* J) const {
     SM_ASSERT_EQ_DBG(Exception, p.size(), 6, "The curve value is an unexpected size!");
     Eigen::Matrix4d T = Eigen::Matrix4d::Identity();
     Eigen::Matrix3d S;
@@ -345,35 +384,3 @@ Eigen::Matrix4d BSplinePose::curveValueToTransformationAndJacobian(const Eigen::
 
     return T;
 }
-
-Eigen::VectorXd BSplinePose::transformationToCurveValue(const Eigen::Matrix4d &T) const {
-    Eigen::VectorXd c(6);
-    c.head<3>() = T.topRightCorner<3, 1>();
-    c.tail<3>() = rotation_->rotationMatrixToParameters(T.topLeftCorner<3, 3>());
-
-    return c;
-}
-
-void BSplinePose::initPoseSpline2(const Eigen::VectorXd &times, const Eigen::Matrix<double, 6, Eigen::Dynamic> &poses,
-                                  int numSegments, double lambda) {
-    initSpline2(times, poses, numSegments, lambda);
-}
-
-void BSplinePose::initPoseSpline3(const Eigen::VectorXd &times, const Eigen::Matrix<double, 6, Eigen::Dynamic> &poses,
-                                  int numSegments, double lambda) {
-    initSpline3(times, poses, numSegments, lambda);
-}
-
-void BSplinePose::initPoseSplineSparse(const Eigen::VectorXd &times,
-                                       const Eigen::Matrix<double, 6, Eigen::Dynamic> &poses, int numSegments,
-                                       double lambda) {
-    initSplineSparse(times, poses, numSegments, lambda);
-}
-
-void BSplinePose::initPoseSplineSparseKnots(const Eigen::VectorXd &times, const Eigen::MatrixXd &interpolationPoints,
-                                            const Eigen::VectorXd knots, double lambda) {
-    initSplineSparseKnots(times, interpolationPoints, knots, lambda);
-}
-
-RotationalKinematics::Ptr BSplinePose::rotation() const { return rotation_; }
-}  // namespace bsplines

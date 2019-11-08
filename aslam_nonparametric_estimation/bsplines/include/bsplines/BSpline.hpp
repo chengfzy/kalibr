@@ -40,7 +40,7 @@ class BiVector {
     const Eigen::VectorXd localBi_;
 
   public:
-    BiVector(int startIndex, const Eigen::VectorXd &localBi, double endValue)
+    BiVector(int startIndex, const Eigen::VectorXd& localBi, const double& endValue)
         : startIndex_(startIndex), endValue_(endValue), localBi_(localBi){};
 
     double operator()(int i, int j = 0) const {
@@ -58,297 +58,305 @@ class BiVector {
 };
 
 /**
- * @class BSpline
+ * @brief A class to facilitate state estimation for vehicles in 3D space using B-Splines
  *
- * A class to facilitate state estimation for vechicles in 3D space using B-Splines
+ * NOTE by CC:
+ * (1) The B-Spline definition in the class is some different to wiki and MTU course
+ *  (a) Basic function N[i,0](u) = 1 in TUM, B[i,1](t) = 1 in this definition
+ *  (b) Basic function N[i,p](u) is a degree p polynomial in u, but B[i,k](t) is k-1 polynomial in this definition
+ *  (c) m = n + p + 1 for MTU, m = n + k for this. And control points(coefficient) number is n+1, knots number is m+1,
+ * spline degree is p
+ * (2) Some terminology in this class
+ *  (a) Spline degree: k
+ *  (b) Polynomial degree: k - 1
+ *  (c) m = n + k for this definition. To distinguish the knots number for open and clamped curve, I denote m + 1 for
+ * the knots number of open curve, and m1 + 1 for clamped one, they have the relation m1 = m + 2(k-1)
+ *  (d) Valid time segment: m
+ *  (e) Knots numbers: m1 + 1 = m + 2(k - 1) + 1 = m + 2k - 1
+ *  (f) Coefficient matrix, the same mean of control points matrix
+ *  (g) Coefficient number: n + 1
+ * (3) When evaluating the B-Spline value at t, only part of control points(ie, coefficient matrix) will active in the
+ * calculation, Vk = {V[i-k+1], V[i-k+2],..., V[i]}. The matrix of Vk in code is called local parameters.
  *
+ * I am more familiar with MTU course definition. So, although I have add some comment to this class, but
+ * maybe they are not quite correct.
+ * Some function about integral I could understand yet.
  */
 class BSpline {
   public:
     /**
-     * @class Exception
-     *
-     * A base class for BSpline exceptions.
-     *
+     * @brief A base class for BSpline exceptions
      */
     SM_DEFINE_EXCEPTION(Exception, std::runtime_error);
 
     /**
-     * Create a spline of the specified order. The resulting B-spline will
-     * be a series of piecewise polynomials of degree splineOrder - 1.
-     *
-     * @param splineOrder The order of the spline.
+     * @brief Create a spline of the specified order. The resulting B-spline will be a series of piecewise polynomials
+     * of degree splineOrder - 1.
+     * @param splineOrder   The order of the spline
      */
-    BSpline(int splineOrder);
+    explicit BSpline(int splineOrder);
 
     /**
      * A destructor.
-     *
      */
-    ~BSpline();
+    ~BSpline() = default;
 
     /**
-     *
+     * @brief Get the order of the spline
      * @return The order of the spline
      */
-    int splineOrder() const;
+    inline int splineOrder() const { return splineOrder_; }
 
     /**
-     *
-     * @return The degree of polynomial used by the spline.
+     * @brief Get the degree of polynomial used by the spline
+     * @return The degree of polynomial used by the spline
      */
-    int polynomialDegree() const;
+    inline int polynomialDegree() const { return splineOrder_ - 1; }
 
     /**
-     *
-     * @return the minimum number of knots required to have at least one valid time segment.
-     */
-    int minimumKnotsRequired() const;
-
-    /**
-     * @param numTimeSegments the number of time segments required
-     * @return the number of coefficients required for a specified number of valid time segments.
+     * @brief Get the number of coefficients required for a specified number of valid time segments
+     * @param numTimeSegments The number of time segments required
+     * @return The number of coefficients required for a specified number of valid time segments
      */
     int numCoefficientsRequired(int numTimeSegments) const;
 
     /**
-     * @param numTimeSegments the number of time segments required
-     * @return the number of knots required for a specified number of valid time segments.
+     * @brief Get the minimum number of knots required to have at least one valid time segment
+     * @return The minimum number of knots required to have at least one valid time segment
+     */
+    int minimumKnotsRequired() const;
+
+    /**
+     * @brief Get the number of knots required for a specified number of valid time segments
+     * @param numTimeSegments The number of time segments required
+     * @return The number of knots required for a specified number of valid time segments
      */
     int numKnotsRequired(int numTimeSegments) const;
 
     /**
-     *
-     * @param numKnots the number of knots.
-     * @return the number of valid time segments for a given number of knots.
+     * @brief Get the number of valid time segments for a given number of knots
+     * @param numKnots  The number of knots.
+     * @return The number of valid time segments
      */
     int numValidTimeSegments(int numKnots) const;
 
     /**
-     *
-     * @return the number of valid time segments for a given for the current knot sequence.
+     * @brief Get the number of valid time segments for a given for the current knot sequence
+     * @return The number of valid time segments for a given for the current knot sequence
      */
     int numValidTimeSegments() const;
 
     /**
-     * Return the basis matrix active on the \f$i^{\textup{th}}\f$ time segment.
-     *
-     * @param i The index of the time segment.
-     *
-     * @return The basis matrix active on the time segment.
+     * @brief Get the basic matrix active on the i-th time segment
+     * @param i The index of the time segment
+     * @return The basic matrix active on the i-th time segment
      */
-    const Eigen::MatrixXd &basisMatrix(int i) const;
+    const Eigen::MatrixXd& basisMatrix(int i) const;
 
     /**
-     *
-     * @return the time interval that the spline is well-defined on [t_min(), t_max()]
+     * @brief Get the minimum time that the spline is well-defined on
+     * @return The minimum time that the spline is well-defined on
+     */
+    const double& tMin() const;
+
+    /**
+     * @brief Get the maximum time that the spline is well-defined on. Because B-spline are defined on half-open
+     * intervals, the spline curve is well defined up to but not including this time.
+     * @return The minimum time that the spline is well-defined on
+     */
+    const double& tMax() const;
+
+    /**
+     * @brief Get the time interval that the spline is well-defined on [tMin, tMax)
+     * @return The time interval that the spline is well-defined on [tMin, tMax)
      */
     std::pair<double, double> timeInterval() const;
 
     /**
-     * Return the time interval of a single spline segment.
-     *
+     * @brief Get the time interval of a single spline segment
      * @param i The index of the time segment
-     *
-     * @return the time interval of the ith spline segment.
+     * @return The time interval of the i-th spline segment
      */
     std::pair<double, double> timeInterval(int i) const;
 
     /**
-     * Set the knots and coefficients of the spline. Each column of the coefficient matrix
-     * is interpreted as a single, vector-valued spline coefficient.
-     *
-     * @param knots        A non-decreasing knot sequence.
-     * @param coefficients A set of spline coefficients.
+     * @brief Set the knots and coefficients of the spline, each column of the coefficient matrix is interpreted as a
+     * single, vector-valued spline coefficient
+     * @param knots         A non-decreasing knot sequence
+     * @param coefficients  A set of spline coefficients
      */
-    void setKnotsAndCoefficients(const std::vector<double> &knots, const Eigen::MatrixXd &coefficients);
+    void setKnotsAndCoefficients(const std::vector<double>& knots, const Eigen::MatrixXd& coefficients);
 
     /**
-     * Set the knots and coefficients of the spline. Each column of the coefficient matrix
-     * is interpreted as a single, vector-valued spline coefficient.
-     *
-     * @param knots        A non-decreasing knot sequence.
-     * @param coefficients A set of spline coefficients.
+     * @brief Set the knots and coefficients of the spline, each column of the coefficient matrix is interpreted as a
+     * single, vector-valued spline coefficient.
+     * @param knots         A non-decreasing knot sequence
+     * @param coefficients  A set of spline coefficients
      */
-    void setKnotVectorAndCoefficients(const Eigen::VectorXd &knots, const Eigen::MatrixXd &coefficients);
+    void setKnotVectorAndCoefficients(const Eigen::VectorXd& knots, const Eigen::MatrixXd& coefficients);
 
     /**
-     * Sets the coefficient matrix from the stacked vector of coefficients.
-     *
-     * @param coefficients The stacked vector of coefficients.
+     * @brief Set the coefficient matrix
+     * @param coefficients Coefficient matrix
      */
-    void setCoefficientVector(const Eigen::VectorXd &coefficients);
+    void setCoefficientMatrix(const Eigen::MatrixXd& coefficients);
 
     /**
-     *
-     * @return The stacked vector of coefficients.
+     * @brief Sets the coefficient matrix from the stacked vector of coefficients
+     * @param coefficients The stacked vector of coefficients
      */
-    Eigen::VectorXd coefficientVector();
+    void setCoefficientVector(const Eigen::VectorXd& coefficients);
 
     /**
-     * Sets the matrix of coefficients.
-     *
-     * @param coefficients
+     * @brief Get the knot vector
+     * @return Knot vector
      */
-    void setCoefficientMatrix(const Eigen::MatrixXd &coefficients);
+    inline const std::vector<double>& knots() const { return knots_; }
 
     /**
-     * @return the current knot vector.
-     */
-    const std::vector<double> knots() const;
-
-    /**
-     * @return the current knot vector.
+     * @brief Get the knot vector with a column matrix
+     * @return Knot vector with a column matrix
      */
     Eigen::VectorXd knotVector() const;
 
     /**
-     * @return the current spline coefficient matrix. Each column of the coefficient matrix
-     * is interpreted as a single, vector-valued spline coefficient.
+     * @brief Get the coefficient matrix, each column of the coefficient matrix is interpreted as a single,
+     * vector-valued spline coefficient.
+     * @return Coefficient matrix
      */
-    const Eigen::MatrixXd &coefficients() const;
+    inline const Eigen::MatrixXd& coefficients() const { return coefficients_; }
 
     /**
-     *
+     * @brief Get the stacked vector of coefficients
+     * @return Stacked vector of coefficients
+     */
+    Eigen::VectorXd coefficientVector();
+
+    /**
+     * @brief Get the number of total coefficients the spline currently uses
      * @return The number of total coefficients the spline currently uses
      */
     int numCoefficients() const;
 
+    int coefficientVectorLength() const;
+
     /**
-     * This is equivalent to spline.coefficients().cols()
-     *
+     * @brief This is equivalent to spline.coefficients().cols()  = n
      * @return The number of vector-valued coefficient columns the spline currently uses
      */
     int numVvCoefficients() const;
 
     /**
-     *
-     * @return The minimum time that the spline is well-defined on.
-     */
-    double t_min() const;
-
-    /**
-     *
-     * @return The maximum time that the spline is well-defined on. Because B-splines
-     *         are defined on half-open intervals, the spline curve is well defined up
-     *         to but not including this time.
-     */
-    double t_max() const;
-
-    /**
-     * Evaluate the spline curve at the time t.
-     *
-     * @param t The time to evaluate the spline curve
-     *
-     * @return The value of the spline curve at the time t.
-     */
-    Eigen::VectorXd eval(double t) const;
-
-    /**
-     * Evaluate the derivative of the spline curve at time t.
-     *
-     * @param t The time to evaluate the spline derivative.
-     * @param derivativeOrder The order of the derivative. This must be >= 0
-     *
-     * @return The value of the derivative of the spline curve evaluated at t.
-     */
-    Eigen::VectorXd evalD(double t, int derivativeOrder) const;
-
-    /**
-     * Evaluate the derivative of the spline curve at time t and retrieve the Jacobian
-     * of the value with respect to small changes in the paramter vector. The Jacobian
-     * only refers to the local parameter vector. The indices of the local parameters with
-     * respect to the full paramter vector can be retrieved using localCoefficientVectorIndices().
-     *
-     * @param t The time to evaluate the spline derivative.
-     * @param derivativeOrder The order of the derivative. This must be >= 0
-     *
-     * @return The value of the derivative of the spline curve evaluated at t and the Jacobian.
-     */
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd> evalDAndJacobian(double t, int derivativeOrder) const;
-
-    /**
-     * Evaluate the derivative of the spline curve at time t and retrieve the Jacobian
-     * of the value with respect to small changes in the paramter vector. The Jacobian
-     * only refers to the local parameter vector.
-     *
-     * @param t The time to evaluate the spline derivative.
-     * @param derivativeOrder The order of the derivative. This must be >= 0
-     * @param a pointer to the Jacobian matrix to fill in
-     * @param a pointer to an int vector that will be filled with the local coefficient indices
-     *
-     * @return The value of the derivative of the spline curve evaluated at t.
-     */
-    Eigen::VectorXd evalDAndJacobian(double t, int derivativeOrder, Eigen::MatrixXd *Jacobian,
-                                     Eigen::VectorXi *coefficientIndices) const;
-
-    /**
-     * Get the local basis matrix evaluated at the time \f$ t \f$.
-     * For vector-valued spline coefficients of dimension \f$ D \f$
-     * and a B-spline of order $S$, this matrix will be \f$ D \times SD \f$
-     *
-     * @param t The time to evaluate the local basis matrix.
-     * @param derivativeOrder The derivative order to return (0 is no derivative)
-     *
-     * @return The local basis matrix evaluated at time \f$ t \f$
-     */
-    Eigen::MatrixXd Phi(double t, int derivativeOrder = 0) const;
-
-    /**
-     * Get the local basis matrix evaluated at the time \f$ t \f$.
-     * For vector-valued spline coefficients of dimension \f$ D \f$
-     * and a B-spline of order $S$, this matrix will be \f$ D \times SD \f$
-     *
-     * @param t The time to evaluate the local basis matrix.
-     * @param derivativeOrder The derivative order to return (0 is no derivative)
-     *
-     * @return The local basis matrix evaluated at time \f$ t \f$
-     */
-    Eigen::MatrixXd localBasisMatrix(double t, int derivativeOrder = 0) const;
-
-    /**
-     * Get the local coefficient matrix evaluated at the time \f$ t \f$.
-     * For vector-valued spline coefficients of dimension \f$ D \f$
-     * and a B-spline of order $S$, this matrix will be \f$ D \times S \f$.
-     * Each column of the resulting matrix corresponds to a single vector-valued
-     * coefficient.
-     *
-     * @param t The time being queried
-     *
-     * @return The local coefficient matrix active at time \f$ t \f$
-     */
-    Eigen::MatrixXd localCoefficientMatrix(double t) const;
-
-    /**
-     * Return a map to a single coefficient column.
-     * This allows the user to pass around what is essentially a pointer
-     * to a single column in the coefficient matrix.
-     *
-     * @param i The column of the coefficient matrix to return. \f$ 0 \le i < \f$ coefficients().cols()
-     *
-     * @return A map to column i of the coefficient matrix.
-     */
-    Eigen::Map<Eigen::VectorXd> vvCoefficientVector(int i);
-
-    /**
-     * Return a map to a single coefficient column.
-     * This allows the user to pass around what is essentially a pointer
-     * to a single column in the coefficient matrix.
-     *
-     * @param i The column of the coefficient matrix to return. \f$ 0 \le i < \f$ coefficients().cols()
-     *
+     * @brief Get a map to a single coefficient column. This allows the user to pass around what is essentially a
+     * pointer to a single column in the coefficient matrix.
+     * @param i The column of the coefficient matrix to return. 0 < i < coefficients().cols() = n
      * @return A map to column i of the coefficient matrix.
      */
     Eigen::Map<const Eigen::VectorXd> vvCoefficientVector(int i) const;
 
     /**
-     * Return a map to a single coefficient column.
-     * This allows the user to pass around what is essentially a pointer
-     * to a single column in the coefficient matrix.
-     *
-     * @param i The column of the coefficient matrix to return. \f$ 0 \le i < \f$ coefficients().cols()
-     *
+     * @brief Get a map to a single coefficient column. This allows the user to pass around what is essentially a
+     * pointer to a single column in the coefficient matrix.
+     * @param i The column of the coefficient matrix to return. 0 < i < coefficients().cols() = n
      * @return A map to column i of the coefficient matrix.
+     */
+    Eigen::Map<Eigen::VectorXd> vvCoefficientVector(int i);
+
+    /**
+     * @brief Evaluate the spline curve at time t
+     * @param t The time to evaluate the spline curve
+     * @return The value of the spline curve at the time t
+     */
+    Eigen::VectorXd eval(double t) const;
+
+    /**
+     * @brief Evaluate the derivative of the spline curve at time t
+     * @param t                 The time to evaluate the spline derivative
+     * @param derivativeOrder   The order of the derivative. This must be >= 0
+     * @return The value of the derivative of the spline curve evaluated at t
+     */
+    Eigen::VectorXd evalD(double t, int derivativeOrder) const;
+
+    /**
+     * @brief Evaluate the derivative of the spline curve at time t and retrieve the Jacobian of the value with respect
+     * to small changed in the parameter vector(control points, coefficient matrix). The Jacobian only refers to the
+     * local parameter vector (part of coefficient matrix). The indices of the local parameters with respect to the full
+     * parameter vector can be retrieved using localCoefficientVectorIndices()
+     * @param t                 The time to evaluate the spline derivative
+     * @param derivativeOrder   The order of the derivative. This must be >= 0
+     * @return The value of the derivative of the spline curve evaluated at t and the Jacobian
+     */
+    std::pair<Eigen::VectorXd, Eigen::MatrixXd> evalDAndJacobian(double t, int derivativeOrder) const;
+
+    /**
+     * @brief Evaluate the derivative of the spline curve at time t and retrieve the Jacobian of the value with respect
+     * to small changed in the parameter vector(control points, coefficient matrix). The Jacobian only refers to the
+     * local parameter vector (part of coefficient matrix)
+     * @param t                     The time to evaluate the spline derivative
+     * @param derivativeOrder       The order of the derivative. This must be >= 0
+     * @param jacobian              A pointer to the Jacobian matrix to fill in
+     * @param coefficientIndices    A pointer to an int vector that will be filled with the local coefficient indices
+     * (which index is activated for calculating Jacobian matrix)
+     * @return The value of the derivative of the spline curve evaluated at t
+     */
+    Eigen::VectorXd evalDAndJacobian(double t, int derivativeOrder, Eigen::MatrixXd* jacobian,
+                                     Eigen::VectorXi* coefficientIndices) const;
+
+    /**
+     * @brief Get the local basic matrix evaluated at the time t. For vector-valued spline coefficients of dimension n1,
+     * and a B-Spline of order k, this matrix will be n1 x (k*n1).
+     *
+     * Evaluating the B-spline at time t, eval(t,O) is equivalent to evaluating Phi(t,O) * localCoefficientVector(t)
+     *
+     * @param t                 The time to evaluate the local basis matrix.
+     * @param derivativeOrder   The derivative order to return (0 is no derivative)
+     * @return  The local basis matrix evaluated at time t
+     */
+    Eigen::MatrixXd Phi(double t, int derivativeOrder = 0) const;
+
+    /**
+     * @brief Get the local basic matrix evaluated at the time t. For vector-valued spline coefficients of dimension n1,
+     * and a B-Spline of order k, this matrix will be n1 x (k*n1).
+     *
+     * Evaluating the B-spline at time t, eval(t,O) is equivalent to evaluating Phi(t,O) * localCoefficientVector(t)
+     *
+     * @param t                 The time to evaluate the local basis matrix.
+     * @param derivativeOrder   The derivative order to return (0 is no derivative)
+     * @return  The local basis matrix evaluated at time t
+     */
+    Eigen::MatrixXd localBasisMatrix(double t, int derivativeOrder = 0) const;
+
+    /**
+     * @brief Get the local coefficient matrix evaluated at the time t. For vector-valued spline coefficients of
+     * dimension n1, and a B-Spline of order k, this matrix will be n1 x k
+     * @param t The time being queried
+     * @return The local coefficient matrix active at time t
+     */
+    Eigen::MatrixXd localCoefficientMatrix(double t) const;
+
+    /**
+     * @brief Get the local coefficient vector evaluated at the time t. For vector-valued spline coefficients of
+     * dimension n1, and a B-Spline of order k, this vector will be k*n1 x 1. Evaluating the B-spline at time t,
+     * eval(t,O) is equivalent to evaluating Phi(t,O) * localCoefficientVector(t)
+     * @param t The time being queried
+     * @return The local coefficient vector active at time t
+     */
+    Eigen::VectorXd localCoefficientVector(double t) const;
+
+    /**
+     * @brief Get the local coefficient vector for segment i
+     * @param segmentIdx The segment index
+     * @return The local coefficient vector active on time segment i
+     */
+    Eigen::VectorXd segmentCoefficientVector(int segmentIdx) const;
+
+    /**
+     * @brief Return a map to a single coefficient column.
+     *
+     * This allows the user to pass around what is essentially a pointer to a single column in the coefficient matrix
+     * @tparam D    The dimension of vector-valued spline coefficients n1
+     * @param i     The column of the coefficient matrix to return. 0 <= i < n = coefficients().cols()
+     * @return  A map to column i of the coefficient matrix
      */
     template <int D>
     Eigen::Map<Eigen::Matrix<double, D, 1> > fixedSizeVvCoefficientVector(int i) {
@@ -359,13 +367,12 @@ class BSpline {
     }
 
     /**
-     * Return a map to a single coefficient column.
-     * This allows the user to pass around what is essentially a pointer
-     * to a single column in the coefficient matrix.
+     * @brief Return a map to a single coefficient column, const version.
      *
-     * @param i The column of the coefficient matrix to return. \f$ 0 \le i < \f$ coefficients().cols()
-     *
-     * @return A map to column i of the coefficient matrix.
+     * This allows the user to pass around what is essentially a pointer to a single column in the coefficient matrix
+     * @tparam D    The dimension of vector-valued spline coefficients n1
+     * @param i     The column of the coefficient matrix to return. 0 <= i < n = coefficients().cols()
+     * @return  A map to column i of the coefficient matrix
      */
     template <int D>
     Eigen::Map<const Eigen::Matrix<double, D, 1> > fixedSizeVvCoefficientVector(int i) const {
@@ -376,72 +383,47 @@ class BSpline {
     }
 
     /**
-     * Get the local coefficient vector evaluated at the time \f$ t \f$.
-     * For vector-valued spline coefficients of dimension \f$ D \f$
-     * and a B-spline of order $S$, this vector will be \f$ SD \times 1 \f$
-     * Evaluating the B-spline at time t, eval(t,O) is equivalent to evaluating
-     * Phi(t,O) * localCoefficientVector(t)
-     *
+     * @brief Get the indices of the local coefficients active at time t. Only part of control points(coefficient
+     * matrix) is activated in evaluating B-Spline at t, ie, Vk = { V[i-k+1], V[i-k+2], ... , V[i] }, the indices is the
+     * index of every element of Vk with respect to the coefficient matrix, ie, [(i-k+1) * n1, (i+1) * n1)
      * @param t The time being queried
-     *
-     * @return The local coefficient vector active at time \f$ t \f$
-     */
-    Eigen::VectorXd localCoefficientVector(double t) const;
-
-    /**
-     * Get the local coefficient vector for segment i
-     *
-     * @param segmentIdx the segment index
-     *
-     * @return The local coefficient vector active on time segment i
-     */
-    Eigen::VectorXd segmentCoefficientVector(int segmentIdx) const;
-
-    /**
-     * Update the local coefficient vector
-     *
-     * @param t The time used to select the local coefficients.
-     * @param c The local coefficient vector.
-     */
-    void setLocalCoefficientVector(double t, const Eigen::VectorXd &c);
-
-    /**
-     * Get the indices of the local coefficients active at time t.
-     *
-     * @param t The time being queried.
-     *
-     * @return The indices of the local coefficients active at time t.
+     * @return The indices of the local coefficients active at time t
      */
     Eigen::VectorXi localCoefficientVectorIndices(double t) const;
 
     /**
-     * Get the indices of the local coefficients active on segment i
-     *
-     * @param segmentIdx The segment being queried.
-     *
-     * @return The indices of the local coefficients active on this segment.
+     * @brief Get the indices of the local coefficients active on segment i
+     * @param segmentIdx The segment being queried
+     * @return The indices of the local coefficients active on this segment
      */
     Eigen::VectorXi segmentCoefficientVectorIndices(int segmentIdx) const;
 
     /**
-     * Get the indices of the local vector-valued coefficients active at time t.
-     *
-     * @param t The time being queried.
-     *
-     * @return The indices of the local vector-valued coefficients active at time t.
+     * @brief Get the indices of the local vector-valued coefficients active at time t. Only part of control
+     * points(coefficient matrix) is activated in evaluating B-Spline at t, ie, Vk = { V[i-k+1], V[i-k+2], ... , V[i] },
+     * the indices is the row index of Vj with respect to the coefficient matrix. ie, [i-k+1, i+1)
+     * @param t The time being queried
+     * @return The indices of the local vector-valued coefficients active at time t
      */
     Eigen::VectorXi localVvCoefficientVectorIndices(double t) const;
 
     /**
-     * Get the indices of the local vector-valued coefficients active on segment i
-     *
-     * @param segmentIdx The segment being queried.
-     *
-     * @return The indices of the local vector-valued coefficients active on this segment.
+     * @brief Get the indices of the local vector-valued coefficients active on segment i
+     * @param segmentIdx The segment being queried
+     * @return The indices of the local vector-valued coefficients active at time t
      */
     Eigen::VectorXi segmentVvCoefficientVectorIndices(int segmentIdx) const;
 
-    int coefficientVectorLength() const;
+    /**
+     * @brief Update the local coefficient vector
+     * @param t The time used to select the local coefficients.
+     * @param c The local coefficient vector
+     */
+    void setLocalCoefficientVector(double t, const Eigen::VectorXd& c);
+
+    // NOTE by CC: I cannot understand below 4 init spline methods right now. Maybe it need B-Spline curve fitting and
+    // interpolation background knowledge, and the conversion between B-Spline and Bezier. Furthermore, the lambda
+    // meaning is also problem.
 
     /**
      * Initialize a spline from two times and two positions. The spline will be initialized to
@@ -450,23 +432,23 @@ class BSpline {
      * \f$\dot{\mathbf b}(t_0) = \frac{\mathbf{p_1} - \mathbf p_0}{t_1 - t_0}\f$, and
      * \f$\dot{\mathbf b}(t_1) = \frac{\mathbf{p_1} - \mathbf p_0}{t_1 - t_0}\f$.
      *
-     * @param t_0 The start of the time interval.
-     * @param t_1 The end of the time interval
-     * @param p_0 The position at the start of the time interval.
-     * @param p_1 The position at the end of the time interval.
+     * @param t0 The start of the time interval.
+     * @param t1 The end of the time interval
+     * @param p0 The position at the start of the time interval.
+     * @param p1 The position at the end of the time interval.
      */
-    void initSpline(double t_0, double t_1, const Eigen::VectorXd &p_0, const Eigen::VectorXd &p_1);
+    void initSpline(double t0, double t1, const Eigen::VectorXd& p0, const Eigen::VectorXd& p1);
 
-    void initSpline2(const Eigen::VectorXd &times, const Eigen::MatrixXd &interpolationPoints, int numSegments,
+    void initSpline2(const Eigen::VectorXd& times, const Eigen::MatrixXd& interpolationPoints, int numSegments,
                      double lambda);
 
-    void initSpline3(const Eigen::VectorXd &times, const Eigen::MatrixXd &interpolationPoints, int numSegments,
+    void initSpline3(const Eigen::VectorXd& times, const Eigen::MatrixXd& interpolationPoints, int numSegments,
                      double lambda);
 
-    void initSplineSparse(const Eigen::VectorXd &times, const Eigen::MatrixXd &interpolationPoints, int numSegments,
+    void initSplineSparse(const Eigen::VectorXd& times, const Eigen::MatrixXd& interpolationPoints, int numSegments,
                           double lambda);
 
-    void initSplineSparseKnots(const Eigen::VectorXd &times, const Eigen::MatrixXd &interpolationPoints,
+    void initSplineSparseKnots(const Eigen::VectorXd& times, const Eigen::MatrixXd& interpolationPoints,
                                const Eigen::VectorXd knots, double lambda);
 
     /**
@@ -481,7 +463,7 @@ class BSpline {
      * @param t The time of the point to interpolate. This must be greater than t_max()
      * @param p The point to interpolate at time t.
      */
-    void addCurveSegment(double t, const Eigen::VectorXd &p);
+    void addCurveSegment(const double& t, const Eigen::VectorXd& p);
 
     /**
      * Add a curve segment that interpolates the point p, ending at time t.
@@ -496,13 +478,12 @@ class BSpline {
      * @param p The point to interpolate at time t.
      * @param lambda a smoothness parameter. Higher for more smooth.
      */
-    void addCurveSegment2(double t, const Eigen::VectorXd &p, double lambda);
+    void addCurveSegment2(const double& t, const Eigen::VectorXd& p, const double& lambda);
 
     /**
-     * Removes a curve segment from the left by removing one knot and one coefficient vector.
-     * After calling this function, the curve will have one fewer segment. The new minimum
-     * time will be timeInterval(0).first
-     *
+     * @brief Removes a curve segment from the left by removing one knot and one coefficient vector.
+     * After calling this function, the curve will have one fewer segment. The new minimum time will be
+     * timeInterval(0).first
      */
     void removeCurveSegment();
 
@@ -535,7 +516,7 @@ class BSpline {
      *
      */
     Eigen::VectorXd getLocalBiVector(double t) const;
-    void getLocalBiInto(double t, Eigen::VectorXd &ret) const;
+    void getLocalBiInto(double t, Eigen::VectorXd& ret) const;
 
     /**
      * Get the cumulative (tilde) b_i(t) for i in localVvCoefficientVectorIndices (@see
@@ -552,130 +533,130 @@ class BSpline {
         return Eigen::CwiseNullaryOp<BiVector, Eigen::VectorXd>(numValidTimeSegments(), 1,
                                                                 BiVector(segmentIndex(t), getLocalBiVector(t), 0));
     }
+
     Eigen::CwiseNullaryOp<BiVector, Eigen::VectorXd> getCumulativeBiVector(double t) const {
         return Eigen::CwiseNullaryOp<BiVector, Eigen::VectorXd>(
             numValidTimeSegments(), 1, BiVector(segmentIndex(t), getLocalCumulativeBiVector(t), 1));
     }
 
-    Eigen::MatrixXd segmentIntegral(int segmentIdx, const Eigen::MatrixXd &W, int derivativeOrder) const;
+    Eigen::MatrixXd segmentIntegral(int segmentIdx, const Eigen::MatrixXd& W, int derivativeOrder) const;
 
-    Eigen::MatrixXd segmentQuadraticIntegral(const Eigen::MatrixXd &W, int segmentIdx, int derivativeOrder) const;
-    Eigen::MatrixXd segmentQuadraticIntegralDiag(const Eigen::VectorXd &Wdiag, int segmentIdx,
+    Eigen::MatrixXd segmentQuadraticIntegral(const Eigen::MatrixXd& W, int segmentIdx, int derivativeOrder) const;
+    Eigen::MatrixXd segmentQuadraticIntegralDiag(const Eigen::VectorXd& Wdiag, int segmentIdx,
                                                  int derivativeOrder) const;
-    Eigen::MatrixXd curveQuadraticIntegral(const Eigen::MatrixXd &W, int derivativeOrder) const;
-    Eigen::MatrixXd curveQuadraticIntegralDiag(const Eigen::VectorXd &Wdiag, int derivativeOrder) const;
+    Eigen::MatrixXd curveQuadraticIntegral(const Eigen::MatrixXd& W, int derivativeOrder) const;
+    Eigen::MatrixXd curveQuadraticIntegralDiag(const Eigen::VectorXd& Wdiag, int derivativeOrder) const;
 
-    sparse_block_matrix::SparseBlockMatrix<Eigen::MatrixXd> curveQuadraticIntegralSparse(const Eigen::MatrixXd &W,
+    sparse_block_matrix::SparseBlockMatrix<Eigen::MatrixXd> curveQuadraticIntegralSparse(const Eigen::MatrixXd& W,
                                                                                          int derivativeOrder) const;
     sparse_block_matrix::SparseBlockMatrix<Eigen::MatrixXd> curveQuadraticIntegralDiagSparse(
-        const Eigen::VectorXd &Wdiag, int derivativeOrder) const;
+        const Eigen::VectorXd& Wdiag, int derivativeOrder) const;
 
-    void initConstantSpline(double t_min, double t_max, int numSegments, const Eigen::VectorXd &constant);
+    void initConstantSpline(double t_min, double t_max, int numSegments, const Eigen::VectorXd& constant);
 
   private:
     /**
-     * An internal function to find the segment of the knot sequence
-     * that the time t falls in. The function returns the
-     * value \f$ u = \frac{t - t_i}{t_{i+1} - t_i} \f$ and the index \f$i\f$
-     *
-     * @param t The time being queried.
-     *
-     * @return A pair with the first value \f$ u = \frac{t - t_i}{t_{i+1} - t_i} \f$ and the second value the index
-     * \f$i\f$
+     * @brief Check the knot sequence is valid, it will throw an exception if it's not valid
+     * @param knots The knot sequence to verify
      */
-    std::pair<double, int> computeUAndTIndex(double t) const;
+    void verifyKnotSequence(const std::vector<double>& knots);
 
     /**
-     * An internal function to find the segment of the knot sequence
-     * that the time t falls in. The function returns the width of the
-     * knot segment \f$ \Delta t_i = t_{i+1} - t_i \f$ and the index \f$i\f$
-     *
-     * @param t The time being queried.
-     *
-     * @return A pair with the first value \f$ \Delta t_i = t_{i+1} - t_i \f$ and the second value the index \f$i\f$
-     */
-    std::pair<double, int> computeTIndex(double t) const;
-
-    /**
-     * Compute the vector \f$ \mathbf u(t) \f$ for a spline of
-     * order \f$ S \f$, this is an \f$ S \times 1 \f$ vector.
-     *
-     * At derivative order 0 (no derivative), this vector is
-     * \f$ \mathbf u(t) = \left [ 1 \; u(t) \; u(t)^2 \; \dots \; u(t)^{S-1} \right ]^T \f$
-     *
-     * For higher derivative order \f$ M \f$, the vector returned is
-     * \f$ \mathbf u^{(M)}(t) = \frac{\partial^{(M)}\mathbf u(t)}{\partial t^{(M)}}
-     *
-     * @param uval the value \f$ u(t) \f$
-     * @param segmentIndex
-     * @param derivativeOrder
-     *
-     * @return
-     */
-    Eigen::VectorXd computeU(double uval, int segmentIndex, int derivativeOrder) const;
-
-    int basisMatrixIndexFromStartingKnotIndex(int startingKnotIndex) const;
-    int startingKnotIndexFromBasisMatrixIndex(int basisMatrixIndex) const;
-    const Eigen::MatrixXd &basisMatrixFromKnotIndex(int knotIndex) const;
-
-    /**
-     * Throws an exception if the knot sequence is not non-decreasing.
-     *
-     * @param knots The knot sequence to verify.
-     */
-    void verifyKnotSequence(const std::vector<double> &knots);
-
-    /**
-     * Initialize the basis matrices based on the current knot sequence.
-     * There is one basis matrix for each valid time segment defined by the spline.
+     * @brief Initialize the basis matrices based on the current knot sequence. There is one basis matrix for each valid
+     * time segment defined by the spline.
      *
      * Implemented using the recursive basis matrix algorithm from
      * Qin, Kaihuai, General matrix representations for B-splines, The Visual Computer (2000) 16:177–186
-     *
      */
     void initializeBasisMatrices();
 
     /**
-     * The recursive function used to implement the recursive basis matrix algorithm from
-     * Qin, Kaihuai, General matrix representations for B-splines, The Visual Computer (2000) 16:177–186
+     * @brief The recursive function to calculate basis matrix M.
+     *           [ M_{k-1}(i) ]        [      0       ]
+     *  M_k(i) = [            ] * A +  [              ] * B = M1 * A + M2 * B
+     *           [     0      ]        [ [ M_{k-1}(i) ]
      *
-     * @param k The order of the matrix requested.
-     * @param i The time segment of the basis matrix
+     *  M_1(i) = [1]
+     *  size of A and B: (k-1) X k
      *
-     * @return
+     * Ref: Qin, Kaihuai, General matrix representations for B-splines, The Visual Computer (2000) 16:177–186.
+     *
+     * @param k The degree(order) of the matrix
+     * @param i The time segment index
+     * @return  Basic matrix
      */
     Eigen::MatrixXd M(int k, int i);
 
     /**
-     * A helper function for producing the M matrices. Defined in
-     * Qin, Kaihuai, General matrix representations for B-splines, The Visual Computer (2000) 16:177–186
+     * @brief A helper function to calculate d0 for producing th basic matrix M.
+     *  d(0,j) = (t[i] - t[j]) / (t[j+k-1] - t[j]).
+     * Defined in Qin, Kaihuai, General matrix representations for B-splines, The Visual Computer (2000) 16:177–186.
      *
+     * @param k Spline degree(order)
+     * @param i Time segment index
+     * @param j Time segment index
+     * @return  Value d0
      */
-    double d_0(int k, int i, int j);
+    double d0(int k, int i, int j);
 
     /**
-     * A helper function for producing the M matrices. Defined in
-     * Qin, Kaihuai, General matrix representations for B-splines, The Visual Computer (2000) 16:177–186
+     * @brief A helper function to calculate d1 for producing the M matrices.
+     *  d(1,j) = (t[i+1] - t[i]) / (t[j+k-1] - t[j]).
+     * Defined in Qin, Kaihuai, General matrix representations for B-splines, The Visual Computer (2000) 16:177–186.
      *
+     * @param k Spline degree(order)
+     * @param i Time segment index
+     * @param j Time segment index
+     * @return  Value d1
      */
-    double d_1(int k, int i, int j);
+    double d1(int k, int i, int j);
 
-    /// The order of the spline.
-    int splineOrder_;
+    /**
+     * @brief An internal function to find the segment of the knot sequence that the time t falls in. The function
+     * returns the value u = (t - t[i]) / (t[i+1] - t[i]) and the index i
+     * @param t The time being queried
+     * @return A pair with the first value u = (t - t[i]) / (t[i+1] - t[i]) and the second value the index i
+     */
+    std::pair<double, int> computeUAndTIndex(double t) const;
 
-    /// The knot sequence used by the B-spline.
-    std::vector<double> knots_;
+    /**
+     * @brief An internal function to find the segment of the knot sequence that the time t falls in. The function
+     * returns the width of the knot segment dt = t[i+1] - t[i] and the index i
+     * @param t The time being queried
+     * @return  The pair with the first value dt = t[i+1] -t[i] and the second value the index i
+     */
+    std::pair<double, int> computeTIndex(double t) const;
 
-    /// The coefficient matrix used by the B-Spline. Each column can be seen as a
-    /// single vector-valued spline coefficient.
-    /// This is stored explicityl in column major order to ensure that each column (i.e.
-    /// a single vector-valued spline coefficient) is stored in contiguous memory. This
-    /// allows one to, for example, map a single spline coefficient using the Eigen::Map type.
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> coefficients_;
-    // Eigen::MatrixXd coefficients_;
+    /**
+     * @brief Compute the vector U for a spline of order k, this is an k X 1 vector.
+     *
+     * At derivative order 0 (no derivative), this vector is U(t) = [1, u(t), u(t)^2, ... , u(t)^{k-1}]^T.
+     *
+     * For higher derivative order n, the vector is U^{(n)}(t) = d^n U(t) / dt^{n}
+     * @param u                 The value u(t)
+     * @param segmentIndex      The index of t
+     * @param derivativeOrder   Derivative order
+     * @return The vector of U
+     */
+    Eigen::VectorXd computeU(double u, int segmentIndex, int derivativeOrder) const;
 
-    /// The basis matrices for each time segment the B-spline is defined over.
+    int basisMatrixIndexFromStartingKnotIndex(int startingKnotIndex) const;
+    int startingKnotIndexFromBasisMatrixIndex(int basisMatrixIndex) const;
+    const Eigen::MatrixXd& basisMatrixFromKnotIndex(int knotIndex) const;
+
+  private:
+    int splineOrder_;            // The order of the spline
+    std::vector<double> knots_;  // The knot sequence used by the B-spline
+    // The basis matrices for each time segment the B-spline is defined over
     std::vector<Eigen::MatrixXd> basisMatrices_;
+
+    // The coefficient matrix(control points) used by the B-Spline. Each column can be seen as a single vector-valued
+    // spline coefficient. This is stored explicitly in column major order to ensure that each column (i.e. a single
+    // vector-valued spline coefficient) is stored in contiguous memory. This allows one to, for example, map a single
+    // spline coefficient using the Eigen::Map type.
+    // NOTE by CC: the control points is V = {V_0, V_1,.., V_n], consider Vj is size of n1 x 1, then the size of V is
+    // n1 x n
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> coefficients_;
 };
 
 }  // namespace bsplines

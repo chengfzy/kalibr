@@ -20,7 +20,7 @@ file(GLOB_RECURSE FILE_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/include/*.*)
 file(GLOB_RECURSE FILE_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.*")
 include_directories(./include)
 add_executable(ImuCameraCalibration ${FILE_INCLUDES} ${FILE_SRCS})
-target_link_libraries(ImuCameraCalibration ${catkin_LIBRARIES} fmt::fmt-header-only glog)
+target_link_libraries(ImuCameraCalibration ${catkin_LIBRARIES} fmt::fmt-header-only glog gflags)
 
 ##################################
 # tests

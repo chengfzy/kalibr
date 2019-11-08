@@ -1,20 +1,20 @@
-#include <fmt/format.h>
-#include <fmt/ranges.h>
 #include <iostream>
-#include <vector>
 #include "cc/Calibrator.h"
 #include "cc/Heading.hpp"
+
+#include <gflags/gflags.h>
 
 using namespace std;
 using namespace Eigen;
 using namespace fmt;
 using namespace cc;
 
+DEFINE_string(bagFile, "/home/jeffery/Documents/ROS/MyKalibrWorkSpace/data/test/data01.bag", "bag file");
+
 int main(int argc, char* argv[]) {
     // load and set parameters
     cout << Section("Load and Set Parameters");
     // ROS
-    string bagFile{"/home/jeffery/Documents/ROS/MyKalibrWorkSpace/data/test/data01.bag"};
     // double startTime{1568798143.76}, endTime{1568798153.76};
     double startTime{1568797000.69}, endTime{1568798317.18};
     // IMU parameters
@@ -50,8 +50,8 @@ int main(int argc, char* argv[]) {
 
     // init
     cout << Section("Initialization");
-    Imu imu(bagFile, imuParameters, ros::Time(startTime), ros::Time(endTime));
-    Camera camera(bagFile, cameraParameters, targetParameters, ros::Time(startTime), ros::Time(endTime));
+    Imu imu(FLAGS_bagFile, imuParameters, ros::Time(startTime), ros::Time(endTime));
+    Camera camera(FLAGS_bagFile, cameraParameters, targetParameters, ros::Time(startTime), ros::Time(endTime));
     Calibrator calibrator(camera, imu);
     calibrator.buildProblem();
 

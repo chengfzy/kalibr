@@ -39,7 +39,7 @@ Camera::Camera(const string& bagFile, const CameraParameters& cameraParams, cons
     cout << format("\tTopic: {}", cameraParams.topic) << endl;
     cout << format("\tTime: [{}, {}]", startTime, endTime) << endl;
 
-    // init rosbag reader
+    // init ros bag reader
     Bag bag(bagFile);
     View view(bag, TopicQuery(cameraParams.topic), ros::Time(startTime), ros::Time(endTime));
     cout << format("bag message size = {}, t = [{}, {}]", view.size(), view.getBeginTime(), view.getEndTime()) << endl;
@@ -180,7 +180,7 @@ void Camera::findTimeShiftCameraImuPrior(const Imu& imu) {
     vector<double> predictGyroNorm;
     for (auto& m : imu.data) {
         double tk = m.stamp.toSec();
-        if (poseSpline.t_min() < tk && tk < poseSpline.t_max()) {
+        if (poseSpline.tMin() < tk && tk < poseSpline.tMax()) {
             // get IMU measurements and spline from camera
             const Vector3d& measure = m.gyro;
             backend::EuclideanExpression predict(poseSpline.angularVelocityBodyFrame(tk));
@@ -230,10 +230,10 @@ void Camera::findOrientationPriorCameraToImu(Imu& imu) {
 
     // initialize a pose spline using the camera poses
     bsplines::BSplinePose poseSpline = initPoseSplineFromCamera(6, 100, 0.0);
-    cout << format("pose spline time = [{:.10f}, {:.10f}]", poseSpline.t_min(), poseSpline.t_max()) << endl;
+    cout << format("pose spline time = [{:.10f}, {:.10f}]", poseSpline.tMin(), poseSpline.tMax()) << endl;
     for (auto& m : imu.data) {
         double tk = m.stamp.toSec();
-        if (poseSpline.t_min() < tk && tk < poseSpline.t_max()) {
+        if (poseSpline.tMin() < tk && tk < poseSpline.tMax()) {
             backend::EuclideanExpression gyroPredict =
                 qIC->toExpression() * backend::EuclideanExpression(poseSpline.angularVelocityBodyFrame(tk));
             problem->addErrorTerm(boost::make_shared<kalibr_errorterms::GyroscopeError>(m.gyro, m.gyroInvR, gyroPredict,
@@ -279,7 +279,7 @@ void Camera::findOrientationPriorCameraToImu(Imu& imu) {
     vector<Vector3d> aw;
     for (auto& m : imu.data) {
         double tk = m.stamp.toSec();
-        if (poseSpline.t_min() < tk && tk < poseSpline.t_max()) {
+        if (poseSpline.tMin() < tk && tk < poseSpline.tMax()) {
             aw.emplace_back(-poseSpline.orientation(tk) * Ric * m.acc);
         }
     }
@@ -323,8 +323,8 @@ void Camera::addErrorTerms(aslam::calibration::OptimizationProblem& problem,
 
         // as we are applying an initial time shift outside the optimization, so we need to make sure that we don't add
         // data outside the spline definition
-        if (frameTimeScalar <= poseDesignVariable->spline().t_min() ||
-            frameTimeScalar >= poseDesignVariable->spline().t_max()) {
+        if (frameTimeScalar <= poseDesignVariable->spline().tMin() ||
+            frameTimeScalar >= poseDesignVariable->spline().tMax()) {
             continue;
         }
 

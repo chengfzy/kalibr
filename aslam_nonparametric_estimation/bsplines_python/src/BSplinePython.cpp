@@ -66,8 +66,8 @@ void import_bspline_python() {
         .def("knots", &BSpline::knotVector, "returns the current knot sequence")
         .def("coefficients", &BSpline::coefficients, "returns the current coefficient matrix",
              return_value_policy<copy_const_reference>())
-        .def("t_min", &BSpline::t_min, "The minimum time that the spline is well-defined on")
-        .def("t_max", &BSpline::t_max, "The maximum time that the spline is well-defined on")
+        .def("t_min", &BSpline::tMin, "The minimum time that the spline is well-defined on")
+        .def("t_max", &BSpline::tMax, "The maximum time that the spline is well-defined on")
         .def("eval", &BSpline::eval, "Evaluate the spline curve at a point in time")
         .def("evalD", &BSpline::evalD, "Evaluate a spline curve derivative at a point in time")
         .def("Phi", &BSpline::Phi, "Evaluate the local basis matrix at a point in time")
@@ -128,7 +128,7 @@ void import_bspline_python() {
         .def("curveQuadraticIntegralDiagSparse", &BSpline::curveQuadraticIntegralDiagSparse, "")
         .def("coefficientVectorLength", &BSpline::coefficientVectorLength, "")
         .def("initConstantSpline", &BSpline::initConstantSpline,
-             "initConstantSpline(double t_min, double t_max, int numSegments, const Eigen::VectorXd & constant")
+             "initConstantSpline(double tMin, double tMax, int numSegments, const Eigen::VectorXd & constant")
         .def("numVvCoefficients", &BSpline::numVvCoefficients, "numVvCoefficients()");
 
     //.def("", &BSpline::, "")

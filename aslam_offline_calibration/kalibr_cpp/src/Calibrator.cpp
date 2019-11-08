@@ -19,9 +19,9 @@ Calibrator::Calibrator(const cc::Camera& camera, const cc::Imu& imu) : camera(ca
 void Calibrator::buildProblem(int splineOrder, int poseKnotsPerSecond, int biasKnotsPerSecond, bool doPoseMotionError,
                               const double& mrTranslationVariance, const double& mrRotationVariance,
                               bool doBiasMotionError, int blakeZisserCam, const double& huberAccel,
-                              const double& huberGyro, bool noTimeCalibration, bool noChainExtrinsics,
-                              int maxIterations, const double& gyroNoiseScale, const double& accelNoiseScale,
-                              const double& timeOffsetPadding, bool verbose) {
+                              const double& huberGyro, bool noTimeCalibration, bool, int maxIterations,
+                              const double& gyroNoiseScale, const double& accelNoiseScale,
+                              const double& timeOffsetPadding, bool) {
     cout << Section("Build Problem");
     cout << format("\tSpline order: {}", splineOrder) << endl;
     cout << format("\tPose knots per second: {}", poseKnotsPerSecond) << endl;
@@ -116,7 +116,7 @@ void Calibrator::printErrorStatistics() {
     // evaluate reprojection error
     VectorXd reprojectNormalErrors(camera.reprojectionErrors.size());
     VectorXd reprojectErrors(camera.reprojectionErrors.size());
-    for (size_t i = 0; i < camera.reprojectionErrors.size(); i++) {
+    for (size_t i = 0; i < camera.reprojectionErrors.size(); ++i) {
         reprojectNormalErrors[i] = sqrt(camera.reprojectionErrors[i]->evaluateError());
         reprojectErrors[i] = camera.reprojectionErrors[i]->error().norm();
     }
@@ -130,7 +130,7 @@ void Calibrator::printErrorStatistics() {
     // evaluate gyroscope error
     VectorXd gyroNormalErrors(imu.gyroErrors.size());
     VectorXd gyroErrors(imu.gyroErrors.size());
-    for (size_t i = 0; i < gyroNormalErrors.size(); i++) {
+    for (size_t i = 0; i < gyroNormalErrors.size(); ++i) {
         gyroNormalErrors[i] = sqrt(imu.gyroErrors[i]->evaluateError());
         gyroErrors[i] = imu.gyroErrors[i]->error().norm();
     }
@@ -142,7 +142,7 @@ void Calibrator::printErrorStatistics() {
     // evaluate acceleration error
     VectorXd accNormalErrors(imu.accErrors.size());
     VectorXd accErrors(imu.accErrors.size());
-    for (size_t i = 0; i < accNormalErrors.size(); i++) {
+    for (size_t i = 0; i < accNormalErrors.size(); ++i) {
         accNormalErrors[i] = sqrt(imu.accErrors[i]->evaluateError());
         accErrors[i] = imu.accErrors[i]->error().norm();
     }
@@ -163,7 +163,7 @@ void Calibrator::printErrorStatistics() {
          << endl;
 }
 
-void Calibrator::printResult(bool withCov) {
+void Calibrator::printResult(bool) {
     cout << Section("Calibration Result");
     cout << "Transforation T_cam0_imu0 (imu0 to cam0, Tci):" << endl;
     cout << camera.getResultTransformationImuToCam().T() << endl;
