@@ -42,7 +42,7 @@ void portable_binary_oarchive::save_impl(const boost::intmax_t l, const char /* 
         ll = -l;
     else
         ll = l;
-    char *cptr = reinterpret_cast<char *>(&ll);
+    char* cptr = reinterpret_cast<char*>(&ll);
 #ifdef BOOST_BIG_ENDIAN
     cptr += (sizeof(boost::intmax_t) - size);
     if (m_flags & endian_little) reverse_bytes(size, cptr);

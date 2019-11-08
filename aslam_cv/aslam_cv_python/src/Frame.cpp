@@ -10,33 +10,33 @@
 using namespace boost::python;
 using namespace aslam;
 
-Eigen::Matrix<boost::uint8_t, Eigen::Dynamic, Eigen::Dynamic> getImage(FrameBase *frame) {
-    const cv::Mat &from = frame->image();
+Eigen::Matrix<boost::uint8_t, Eigen::Dynamic, Eigen::Dynamic> getImage(FrameBase* frame) {
+    const cv::Mat& from = frame->image();
     Eigen::Matrix<boost::uint8_t, Eigen::Dynamic, Eigen::Dynamic> to(from.rows, from.cols);
     cv2eigen(from, to);
 
     return to;
 }
 
-boost::python::tuple computeProjection3(FrameBase *fb, const Eigen::Vector3d &p) {
+boost::python::tuple computeProjection3(FrameBase* fb, const Eigen::Vector3d& p) {
     Eigen::VectorXd y;
     bool success = fb->computeProjection3(p, y);
     return boost::python::make_tuple(success, y);
 }
 
-boost::python::tuple computeProjection4(FrameBase *fb, const Eigen::Vector4d &p) {
+boost::python::tuple computeProjection4(FrameBase* fb, const Eigen::Vector4d& p) {
     Eigen::VectorXd y;
     bool success = fb->computeProjection4(p, y);
     return boost::python::make_tuple(success, y);
 }
 
-boost::python::tuple computeProjectionUhp(FrameBase *fb, const sm::kinematics::UncertainHomogeneousPoint &p) {
+boost::python::tuple computeProjectionUhp(FrameBase* fb, const sm::kinematics::UncertainHomogeneousPoint& p) {
     Eigen::VectorXd y;
     bool success = fb->computeProjectionUhp(p, y);
     return boost::python::make_tuple(success, y);
 }
 
-void setImage(FrameBase *frame, const Eigen::Matrix<boost::uint8_t, Eigen::Dynamic, Eigen::Dynamic> &from) {
+void setImage(FrameBase* frame, const Eigen::Matrix<boost::uint8_t, Eigen::Dynamic, Eigen::Dynamic>& from) {
     cv::Mat to;
     eigen2cv(from, to);
     frame->setImage(to);
@@ -44,7 +44,7 @@ void setImage(FrameBase *frame, const Eigen::Matrix<boost::uint8_t, Eigen::Dynam
 
 boost::shared_ptr<cameras::CameraGeometryBase> (FrameBase::*geometryBase)() = &FrameBase::geometryBase;
 
-KeypointBase &(FrameBase::*keypointBase)(size_t i) = &FrameBase::keypointBase;
+KeypointBase& (FrameBase::*keypointBase)(size_t i) = &FrameBase::keypointBase;
 
 void exportFrame() {
     sm::python::Id_python_converter<FrameId>::register_converter();
@@ -71,37 +71,37 @@ void exportFrame() {
         .def("disableLandmark", &KeypointBase::disableLandmark)
         .def("enableLandmark", &KeypointBase::enableLandmark);
 
-    bool (FrameBase::*computeReprojectionErrorUhp1)(size_t i, const sm::kinematics::UncertainHomogeneousPoint &p,
-                                                    double &outReprojectionError) const =
+    bool (FrameBase::*computeReprojectionErrorUhp1)(size_t i, const sm::kinematics::UncertainHomogeneousPoint& p,
+                                                    double& outReprojectionError) const =
         &FrameBase::computeReprojectionErrorUhp;
 
     bool (FrameBase::*computeReprojectionErrorUhp2)(
-        const KeypointIdentifier &, const sm::kinematics::UncertainHomogeneousPoint &p, double &outReprojectionError)
+        const KeypointIdentifier&, const sm::kinematics::UncertainHomogeneousPoint& p, double& outReprojectionError)
         const = &FrameBase::computeReprojectionErrorUhp;
 
-    bool (FrameBase::*computeReprojectionError31)(size_t i, const Eigen::Vector3d &p, double &outReprojectionError)
+    bool (FrameBase::*computeReprojectionError31)(size_t i, const Eigen::Vector3d& p, double& outReprojectionError)
         const = &FrameBase::computeReprojectionError3;
 
-    bool (FrameBase::*computeReprojectionError41)(size_t i, const Eigen::Vector4d &p, double &outReprojectionError)
+    bool (FrameBase::*computeReprojectionError41)(size_t i, const Eigen::Vector4d& p, double& outReprojectionError)
         const = &FrameBase::computeReprojectionError4;
 
-    bool (FrameBase::*computeReprojectionError32)(const KeypointIdentifier &, const Eigen::Vector3d &p,
-                                                  double &outReprojectionError) const =
+    bool (FrameBase::*computeReprojectionError32)(const KeypointIdentifier&, const Eigen::Vector3d& p,
+                                                  double& outReprojectionError) const =
         &FrameBase::computeReprojectionError3;
 
-    bool (FrameBase::*computeReprojectionError42)(const KeypointIdentifier &, const Eigen::Vector4d &p,
-                                                  double &outReprojectionError) const =
+    bool (FrameBase::*computeReprojectionError42)(const KeypointIdentifier&, const Eigen::Vector4d& p,
+                                                  double& outReprojectionError) const =
         &FrameBase::computeReprojectionError4;
 
     Time (FrameBase::*keypointTime1)(size_t i) const = &FrameBase::keypointTime;
-    Time (FrameBase::*keypointTime2)(const KeypointIdentifier &) const = &FrameBase::keypointTime;
+    Time (FrameBase::*keypointTime2)(const KeypointIdentifier&) const = &FrameBase::keypointTime;
 
     /// \brief get the back projection for keypoint i
     void (FrameBase::*getBackProjection1)(size_t i, BackProjection & outBackProjection) const =
         &FrameBase::getBackProjection;
 
     /// \brief get the back projection for keypoint kid
-    void (FrameBase::*getBackProjection2)(const KeypointIdentifier &kid, BackProjection &outBackProjection) const =
+    void (FrameBase::*getBackProjection2)(const KeypointIdentifier& kid, BackProjection& outBackProjection) const =
         &FrameBase::getBackProjection;
 
     /// \brief get the back projection for keypoint i
@@ -109,8 +109,8 @@ void exportFrame() {
         &FrameBase::getUncertainBackProjection;
 
     /// \brief get the back projection for keypoint kid
-    void (FrameBase::*getUncertainBackProjection2)(const KeypointIdentifier &kid,
-                                                   UncertainBackProjection &outBackProjection) const =
+    void (FrameBase::*getUncertainBackProjection2)(const KeypointIdentifier& kid,
+                                                   UncertainBackProjection& outBackProjection) const =
         &FrameBase::getUncertainBackProjection;
 
     class_<FrameBase, boost::shared_ptr<FrameBase>, boost::noncopyable>("FrameBase", no_init)
@@ -185,8 +185,8 @@ void exportFrame() {
     // BriskDescriptor>("PinholeDVBriskFrameReprojectionIntrinsicsError");
 
     class_<BackProjection, boost::shared_ptr<BackProjection> >("BackProjection", init<>())
-        .def(init<const Eigen::Vector3d &>("BackProjection( ray )"))
-        .def(init<const Eigen::Vector3d &, const Eigen::Vector3d &>("BackProjection( ray, viewOrigin )"))
+        .def(init<const Eigen::Vector3d&>("BackProjection( ray )"))
+        .def(init<const Eigen::Vector3d&, const Eigen::Vector3d&>("BackProjection( ray, viewOrigin )"))
         .def("getRay", &BackProjection::getRay)
         .def("setRay", &BackProjection::setRay)
         .def("getViewOrigin", &BackProjection::getViewOrigin)

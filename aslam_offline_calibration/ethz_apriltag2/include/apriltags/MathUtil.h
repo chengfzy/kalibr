@@ -11,7 +11,7 @@
 
 namespace AprilTags {
 
-std::ostream &operator<<(std::ostream &os, const std::pair<float, float> &pt);
+std::ostream& operator<<(std::ostream& os, const std::pair<float, float>& pt);
 
 //! Miscellaneous math utilities and fast exp functions.
 class MathUtil {
@@ -19,7 +19,7 @@ class MathUtil {
     //! Returns the square of a value.
     static inline float square(float x) { return x * x; }
 
-    static inline float distance2D(const std::pair<float, float> &p0, const std::pair<float, float> &p1) {
+    static inline float distance2D(const std::pair<float, float>& p0, const std::pair<float, float>& p1) {
         float dx = p0.first - p1.first;
         float dy = p0.second - p1.second;
         return std::sqrt(dx * dx + dy * dy);

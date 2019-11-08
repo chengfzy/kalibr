@@ -10,7 +10,7 @@ namespace cameras {
 
 /// \brief Construct a calibration target
 GridCalibrationTargetCirclegrid::GridCalibrationTargetCirclegrid(size_t rows, size_t cols, double spacingMeters,
-                                                                 const CirclegridOptions &options)
+                                                                 const CirclegridOptions& options)
     : GridCalibrationTargetBase(rows, cols), _spacing(spacingMeters), _options(options) {
     SM_ASSERT_GT(Exception, spacingMeters, 0.0, "spacingMetric has to be positive");
 
@@ -54,8 +54,8 @@ void GridCalibrationTargetCirclegrid::createGridPoints() {
 }
 
 /// \brief extract the calibration target points from an image and write to an observation
-bool GridCalibrationTargetCirclegrid::computeObservation(const cv::Mat &image, Eigen::MatrixXd &outImagePoints,
-                                                         std::vector<bool> &outCornerObserved) const {
+bool GridCalibrationTargetCirclegrid::computeObservation(const cv::Mat& image, Eigen::MatrixXd& outImagePoints,
+                                                         std::vector<bool>& outCornerObserved) const {
     // extract the circle grid corners
     cv::Size patternSize(cols(), rows());
     cv::Mat centers(size(), 2, CV_64FC1);

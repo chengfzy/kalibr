@@ -10,23 +10,23 @@ CameraGeometry<P, S, M>::CameraGeometry() {}
 
 /// \brief Construct from projection
 template <typename P, typename S, typename M>
-CameraGeometry<P, S, M>::CameraGeometry(const sm::PropertyTree &config)
+CameraGeometry<P, S, M>::CameraGeometry(const sm::PropertyTree& config)
     : _projection(sm::PropertyTree(config, "projection")),
       _shutter(sm::PropertyTree(config, "shutter")),
       _mask(sm::PropertyTree(config, "mask")) {}
 
 /// \brief Construct from projection
 template <typename P, typename S, typename M>
-CameraGeometry<P, S, M>::CameraGeometry(const projection_t &projection) : _projection(projection) {}
+CameraGeometry<P, S, M>::CameraGeometry(const projection_t& projection) : _projection(projection) {}
 
 /// \brief Construct from projection and shutter
 template <typename P, typename S, typename M>
-CameraGeometry<P, S, M>::CameraGeometry(const projection_t &projection, const shutter_t &shutter)
+CameraGeometry<P, S, M>::CameraGeometry(const projection_t& projection, const shutter_t& shutter)
     : _projection(projection), _shutter(shutter) {}
 
 /// \brief Construct from projection, shutter, and mask
 template <typename P, typename S, typename M>
-CameraGeometry<P, S, M>::CameraGeometry(const projection_t &projection, const shutter_t &shutter, const mask_t &mask)
+CameraGeometry<P, S, M>::CameraGeometry(const projection_t& projection, const shutter_t& shutter, const mask_t& mask)
     : _projection(projection), _shutter(shutter), _mask(mask) {}
 
 /// \brief simple destructor
@@ -34,73 +34,73 @@ template <typename P, typename S, typename M>
 CameraGeometry<P, S, M>::~CameraGeometry() {}
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::vsEuclideanToKeypoint(const Eigen::Vector3d &p, Eigen::VectorXd &outKeypoint) const {
+bool CameraGeometry<P, S, M>::vsEuclideanToKeypoint(const Eigen::Vector3d& p, Eigen::VectorXd& outKeypoint) const {
     bool valid = _projection.euclideanToKeypoint(p, outKeypoint);
     return valid && _mask.isValid(outKeypoint);
 }
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::vsEuclideanToKeypoint(const Eigen::Vector3d &p, Eigen::VectorXd &outKeypoint,
-                                                    Eigen::MatrixXd &outJacobian) const {
+bool CameraGeometry<P, S, M>::vsEuclideanToKeypoint(const Eigen::Vector3d& p, Eigen::VectorXd& outKeypoint,
+                                                    Eigen::MatrixXd& outJacobian) const {
     bool valid = _projection.euclideanToKeypoint(p, outKeypoint, outJacobian);
     return valid && _mask.isValid(outKeypoint);
 }
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::vsHomogeneousToKeypoint(const Eigen::Vector4d &ph, Eigen::VectorXd &outKeypoint) const {
+bool CameraGeometry<P, S, M>::vsHomogeneousToKeypoint(const Eigen::Vector4d& ph, Eigen::VectorXd& outKeypoint) const {
     bool valid = _projection.homogeneousToKeypoint(ph, outKeypoint);
     return valid && _mask.isValid(outKeypoint);
 }
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::vsHomogeneousToKeypoint(const Eigen::Vector4d &ph, Eigen::VectorXd &outKeypoint,
-                                                      Eigen::MatrixXd &outJacobian) const {
+bool CameraGeometry<P, S, M>::vsHomogeneousToKeypoint(const Eigen::Vector4d& ph, Eigen::VectorXd& outKeypoint,
+                                                      Eigen::MatrixXd& outJacobian) const {
     bool valid = _projection.homogeneousToKeypoint(ph, outKeypoint, outJacobian);
     return valid && _mask.isValid(outKeypoint);
 }
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::vsKeypointToEuclidean(const Eigen::VectorXd &keypoint, Eigen::Vector3d &outPoint) const {
+bool CameraGeometry<P, S, M>::vsKeypointToEuclidean(const Eigen::VectorXd& keypoint, Eigen::Vector3d& outPoint) const {
     return _projection.keypointToEuclidean(keypoint, outPoint) && _mask.isValid(keypoint);
 }
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::vsKeypointToEuclidean(const Eigen::VectorXd &keypoint, Eigen::VectorXd &outPoint,
-                                                    Eigen::MatrixXd &outJacobian) const {
+bool CameraGeometry<P, S, M>::vsKeypointToEuclidean(const Eigen::VectorXd& keypoint, Eigen::VectorXd& outPoint,
+                                                    Eigen::MatrixXd& outJacobian) const {
     return _projection.keypointToEuclidean(keypoint, outPoint, outJacobian) && _mask.isValid(keypoint);
 }
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::vsKeypointToHomogeneous(Eigen::VectorXd const &keypoint,
-                                                      Eigen::VectorXd &outPoint) const {
+bool CameraGeometry<P, S, M>::vsKeypointToHomogeneous(Eigen::VectorXd const& keypoint,
+                                                      Eigen::VectorXd& outPoint) const {
     return _projection.keypointToHomogeneous(keypoint, outPoint) && _mask.isValid(keypoint);
 }
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::vsKeypointToHomogeneous(Eigen::VectorXd const &keypoint, Eigen::VectorXd &outPoint,
-                                                      Eigen::MatrixXd &outJacobian) const {
+bool CameraGeometry<P, S, M>::vsKeypointToHomogeneous(Eigen::VectorXd const& keypoint, Eigen::VectorXd& outPoint,
+                                                      Eigen::MatrixXd& outJacobian) const {
     return _projection.keypointToHomogeneous(keypoint, outPoint, outJacobian) && _mask.isValid(keypoint);
 }
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::vsIsValid(const Eigen::VectorXd &keypoint) const {
+bool CameraGeometry<P, S, M>::vsIsValid(const Eigen::VectorXd& keypoint) const {
     return isValid(keypoint);
 }
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::vsIsEuclideanVisible(const Eigen::Vector3d &p) const {
+bool CameraGeometry<P, S, M>::vsIsEuclideanVisible(const Eigen::Vector3d& p) const {
     return _projection.isEuclideanVisible(p);
 }
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::vsIsHomogeneousVisible(const Eigen::Vector4d &ph) const {
+bool CameraGeometry<P, S, M>::vsIsHomogeneousVisible(const Eigen::Vector4d& ph) const {
     return _projection.isHomogeneousVisible(ph);
 }
 
 // The amount of time elapsed between the start of the image and the
 // keypoint. For a global shutter camera, this can return Duration(0).
 template <typename P, typename S, typename M>
-Duration CameraGeometry<P, S, M>::vsTemporalOffset(const Eigen::VectorXd &keypoint) const {
+Duration CameraGeometry<P, S, M>::vsTemporalOffset(const Eigen::VectorXd& keypoint) const {
     return _shutter.temporalOffset(keypoint);
 }
 
@@ -136,27 +136,27 @@ Eigen::Vector3d CameraGeometry<P, S, M>::createRandomVisiblePoint(double depth) 
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_K>
-bool CameraGeometry<P, S, M>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                  const Eigen::MatrixBase<DERIVED_K> &outKeypoint) const {
+bool CameraGeometry<P, S, M>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                  const Eigen::MatrixBase<DERIVED_K>& outKeypoint) const {
     bool valid = _projection.euclideanToKeypoint(p, outKeypoint);
     return valid && _mask.isValid(outKeypoint);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-bool CameraGeometry<P, S, M>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                  const Eigen::MatrixBase<DERIVED_K> &outKeypoint,
-                                                  const Eigen::MatrixBase<DERIVED_JP> &outJp) const {
+bool CameraGeometry<P, S, M>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                  const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
+                                                  const Eigen::MatrixBase<DERIVED_JP>& outJp) const {
     bool valid = _projection.euclideanToKeypoint(p, outKeypoint, outJp);
     return valid && _mask.isValid(outKeypoint);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-bool CameraGeometry<P, S, M>::euclideanToKeypointFiniteDifference(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                                  const Eigen::MatrixBase<DERIVED_K> &outKeypoint,
-                                                                  const Eigen::MatrixBase<DERIVED_JP> &outJp) const {
-    DERIVED_JP &Jp = const_cast<Eigen::MatrixBase<DERIVED_JP> &>(outJp).derived();
+bool CameraGeometry<P, S, M>::euclideanToKeypointFiniteDifference(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                                  const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
+                                                                  const Eigen::MatrixBase<DERIVED_JP>& outJp) const {
+    DERIVED_JP& Jp = const_cast<Eigen::MatrixBase<DERIVED_JP>&>(outJp).derived();
     ASLAM_CAMERAS_ESTIMATE_JACOBIAN(this, euclideanToKeypoint, p, 1e-5, Jp);
 
     bool valid = _projection.euclideanToKeypoint(p, outKeypoint);
@@ -166,11 +166,11 @@ bool CameraGeometry<P, S, M>::euclideanToKeypointFiniteDifference(const Eigen::M
 // Project the point and get the associated uncertainty of the projection.
 template <typename P, typename S, typename M>
 template <typename DERIVED_K>
-bool CameraGeometry<P, S, M>::homogeneousToKeypoint(const sm::kinematics::UncertainHomogeneousPoint &p,
-                                                    const Eigen::MatrixBase<DERIVED_K> &outKeypoint,
-                                                    covariance_t &outProjectionUncertainty) const {
+bool CameraGeometry<P, S, M>::homogeneousToKeypoint(const sm::kinematics::UncertainHomogeneousPoint& p,
+                                                    const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
+                                                    covariance_t& outProjectionUncertainty) const {
     jacobian_homogeneous_t J;
-    bool r = static_cast<const CameraGeometry<projection_t, shutter_t, mask_t> *>(this)->homogeneousToKeypoint(
+    bool r = static_cast<const CameraGeometry<projection_t, shutter_t, mask_t>*>(this)->homogeneousToKeypoint(
         p.toHomogeneous(), outKeypoint, J);
 
     outProjectionUncertainty = J * p.U4() * J.transpose();
@@ -179,35 +179,35 @@ bool CameraGeometry<P, S, M>::homogeneousToKeypoint(const sm::kinematics::Uncert
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_K>
-bool CameraGeometry<P, S, M>::homogeneousToKeypoint(const sm::kinematics::HomogeneousPoint &p,
-                                                    const Eigen::MatrixBase<DERIVED_K> &outKeypoint) const {
-    return static_cast<const CameraGeometry<projection_t, shutter_t, mask_t> *>(this)->homogeneousToKeypoint(
+bool CameraGeometry<P, S, M>::homogeneousToKeypoint(const sm::kinematics::HomogeneousPoint& p,
+                                                    const Eigen::MatrixBase<DERIVED_K>& outKeypoint) const {
+    return static_cast<const CameraGeometry<projection_t, shutter_t, mask_t>*>(this)->homogeneousToKeypoint(
         p.toHomogeneous(), outKeypoint);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_K>
-bool CameraGeometry<P, S, M>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                    const Eigen::MatrixBase<DERIVED_K> &outKeypoint) const {
+bool CameraGeometry<P, S, M>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                    const Eigen::MatrixBase<DERIVED_K>& outKeypoint) const {
     bool valid = _projection.homogeneousToKeypoint(p, outKeypoint);
     return valid && _mask.isValid(outKeypoint);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-bool CameraGeometry<P, S, M>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                    const Eigen::MatrixBase<DERIVED_K> &outKeypoint,
-                                                    const Eigen::MatrixBase<DERIVED_JP> &outJp) const {
+bool CameraGeometry<P, S, M>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                    const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
+                                                    const Eigen::MatrixBase<DERIVED_JP>& outJp) const {
     bool valid = _projection.homogeneousToKeypoint(p, outKeypoint, outJp);
     return valid && _mask.isValid(outKeypoint);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-bool CameraGeometry<P, S, M>::homogeneousToKeypointFiniteDifference(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                                    const Eigen::MatrixBase<DERIVED_K> &outKeypoint,
-                                                                    const Eigen::MatrixBase<DERIVED_JP> &outJp) const {
-    DERIVED_JP &Jp = const_cast<Eigen::MatrixBase<DERIVED_JP> &>(outJp).derived();
+bool CameraGeometry<P, S, M>::homogeneousToKeypointFiniteDifference(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                                    const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
+                                                                    const Eigen::MatrixBase<DERIVED_JP>& outJp) const {
+    DERIVED_JP& Jp = const_cast<Eigen::MatrixBase<DERIVED_JP>&>(outJp).derived();
     ASLAM_CAMERAS_ESTIMATE_JACOBIAN(this, homogeneousToKeypoint, p, 1e-5, Jp);
 
     return _mask.isValid(_projection.homogeneousToKeypoint(p, outKeypoint));
@@ -215,27 +215,27 @@ bool CameraGeometry<P, S, M>::homogeneousToKeypointFiniteDifference(const Eigen:
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_K, typename DERIVED_P>
-bool CameraGeometry<P, S, M>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                  const Eigen::MatrixBase<DERIVED_P> &outPoint) const {
+bool CameraGeometry<P, S, M>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                  const Eigen::MatrixBase<DERIVED_P>& outPoint) const {
     // I'm putting the mask second in this case to make sure the keypointToEuclidean function is called.
     return _projection.keypointToEuclidean(keypoint, outPoint) && _mask.isValid(keypoint);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-bool CameraGeometry<P, S, M>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                  const Eigen::MatrixBase<DERIVED_P> &outPoint,
-                                                  const Eigen::MatrixBase<DERIVED_JK> &outJk) const {
+bool CameraGeometry<P, S, M>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                  const Eigen::MatrixBase<DERIVED_P>& outPoint,
+                                                  const Eigen::MatrixBase<DERIVED_JK>& outJk) const {
     // I'm putting the mask second in this case to make sure the keypointToEuclidean function is called.
     return _projection.keypointToEuclidean(keypoint, outPoint, outJk) && _mask.isValid(keypoint);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-bool CameraGeometry<P, S, M>::keypointToEuclideanFiniteDifference(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                                  const Eigen::MatrixBase<DERIVED_P> &outPoint,
-                                                                  const Eigen::MatrixBase<DERIVED_JK> &outJk) const {
-    DERIVED_JK &Jk = const_cast<Eigen::MatrixBase<DERIVED_JK> &>(outJk).derived();
+bool CameraGeometry<P, S, M>::keypointToEuclideanFiniteDifference(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                                  const Eigen::MatrixBase<DERIVED_P>& outPoint,
+                                                                  const Eigen::MatrixBase<DERIVED_JK>& outJk) const {
+    DERIVED_JK& Jk = const_cast<Eigen::MatrixBase<DERIVED_JK>&>(outJk).derived();
     ASLAM_CAMERAS_ESTIMATE_JACOBIAN(this, keypointToEuclidean, keypoint, 1e-5, Jk);
 
     // I'm putting the mask second in this case to make sure the keypointToEuclidean function is called.
@@ -244,27 +244,27 @@ bool CameraGeometry<P, S, M>::keypointToEuclideanFiniteDifference(const Eigen::M
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_K, typename DERIVED_P>
-bool CameraGeometry<P, S, M>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                    const Eigen::MatrixBase<DERIVED_P> &outPoint) const {
+bool CameraGeometry<P, S, M>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                    const Eigen::MatrixBase<DERIVED_P>& outPoint) const {
     // I'm putting the mask second in this case to make sure the keypointToEuclidean function is called.
     return _projection.keypointToHomogeneous(keypoint, outPoint) && _mask.isValid(keypoint);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-bool CameraGeometry<P, S, M>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                    const Eigen::MatrixBase<DERIVED_P> &outPoint,
-                                                    const Eigen::MatrixBase<DERIVED_JK> &outJk) const {
+bool CameraGeometry<P, S, M>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                    const Eigen::MatrixBase<DERIVED_P>& outPoint,
+                                                    const Eigen::MatrixBase<DERIVED_JK>& outJk) const {
     // I'm putting the mask second in this case to make sure the keypointToEuclidean function is called.
     return _projection.keypointToHomogeneous(keypoint, outPoint, outJk) && _mask.isValid(keypoint);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-bool CameraGeometry<P, S, M>::keypointToHomogeneousFiniteDifference(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                                    const Eigen::MatrixBase<DERIVED_P> &outPoint,
-                                                                    const Eigen::MatrixBase<DERIVED_JK> &outJk) const {
-    DERIVED_JK &Jk = const_cast<Eigen::MatrixBase<DERIVED_JK> &>(outJk).derived();
+bool CameraGeometry<P, S, M>::keypointToHomogeneousFiniteDifference(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                                    const Eigen::MatrixBase<DERIVED_P>& outPoint,
+                                                                    const Eigen::MatrixBase<DERIVED_JK>& outJk) const {
+    DERIVED_JK& Jk = const_cast<Eigen::MatrixBase<DERIVED_JK>&>(outJk).derived();
     ASLAM_CAMERAS_ESTIMATE_JACOBIAN(this, keypointToHomogeneous, keypoint, 1e-5, Jk);
 
     // I'm putting the mask second in this case to make sure the keypointToEuclidean function is called.
@@ -273,29 +273,29 @@ bool CameraGeometry<P, S, M>::keypointToHomogeneousFiniteDifference(const Eigen:
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_JI>
-void CameraGeometry<P, S, M>::euclideanToKeypointIntrinsicsJacobian(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                                    const Eigen::MatrixBase<DERIVED_JI> &outJi) const {
+void CameraGeometry<P, S, M>::euclideanToKeypointIntrinsicsJacobian(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                                    const Eigen::MatrixBase<DERIVED_JI>& outJi) const {
     _projection.euclideanToKeypointIntrinsicsJacobian(p, outJi);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_JD>
-void CameraGeometry<P, S, M>::euclideanToKeypointDistortionJacobian(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                                    const Eigen::MatrixBase<DERIVED_JD> &outJd) const {
+void CameraGeometry<P, S, M>::euclideanToKeypointDistortionJacobian(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                                    const Eigen::MatrixBase<DERIVED_JD>& outJd) const {
     _projection.euclideanToKeypointDistortionJacobian(p, outJd);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_JI>
 void CameraGeometry<P, S, M>::homogeneousToKeypointIntrinsicsJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JI> &outJi) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JI>& outJi) const {
     _projection.homogeneousToKeypointIntrinsicsJacobian(p, outJi);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_JD>
 void CameraGeometry<P, S, M>::homogeneousToKeypointDistortionJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JD> &outJd) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JD>& outJd) const {
     return _projection.homogeneousToKeypointDistortionJacobian(p, outJd);
 }
 
@@ -310,8 +310,8 @@ void CameraGeometry<P, S, M>::homogeneousToKeypointDistortionJacobian(
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_JI>
 void CameraGeometry<P, S, M>::euclideanToKeypointIntrinsicsJacobianFiniteDifference(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JI> &outJi) const {
-    DERIVED_JI &Ji = const_cast<Eigen::MatrixBase<DERIVED_JI> &>(outJi).derived();
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JI>& outJi) const {
+    DERIVED_JI& Ji = const_cast<Eigen::MatrixBase<DERIVED_JI>&>(outJi).derived();
     projection_t proj = _projection;
     ASLAM_CAMERAS_ESTIMATE_INTRINSIC_JACOBIAN(euclideanToKeypoint, proj, proj, p, 1e-5, Ji);
 }
@@ -319,8 +319,8 @@ void CameraGeometry<P, S, M>::euclideanToKeypointIntrinsicsJacobianFiniteDiffere
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_JI>
 void CameraGeometry<P, S, M>::homogeneousToKeypointIntrinsicsJacobianFiniteDifference(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JI> &outJi) const {
-    DERIVED_JI &Ji = const_cast<Eigen::MatrixBase<DERIVED_JI> &>(outJi).derived();
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JI>& outJi) const {
+    DERIVED_JI& Ji = const_cast<Eigen::MatrixBase<DERIVED_JI>&>(outJi).derived();
     projection_t proj = _projection;
     ASLAM_CAMERAS_ESTIMATE_INTRINSIC_JACOBIAN(homogeneousToKeypoint, proj, proj, p, 1e-5, Ji);
 }
@@ -328,8 +328,8 @@ void CameraGeometry<P, S, M>::homogeneousToKeypointIntrinsicsJacobianFiniteDiffe
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_JD>
 void CameraGeometry<P, S, M>::euclideanToKeypointDistortionJacobianFiniteDifference(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JD> &outJd) const {
-    DERIVED_JD &Jd = const_cast<Eigen::MatrixBase<DERIVED_JD> &>(outJd).derived();
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JD>& outJd) const {
+    DERIVED_JD& Jd = const_cast<Eigen::MatrixBase<DERIVED_JD>&>(outJd).derived();
     projection_t proj = _projection;
     ASLAM_CAMERAS_ESTIMATE_INTRINSIC_JACOBIAN(euclideanToKeypoint, proj, proj.distortion(), p, 1e-5, Jd);
 }
@@ -337,8 +337,8 @@ void CameraGeometry<P, S, M>::euclideanToKeypointDistortionJacobianFiniteDiffere
 template <typename P, typename S, typename M>
 template <typename DERIVED_P, typename DERIVED_JD>
 void CameraGeometry<P, S, M>::homogeneousToKeypointDistortionJacobianFiniteDifference(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JD> &outJd) const {
-    DERIVED_JD &Jd = const_cast<Eigen::MatrixBase<DERIVED_JD> &>(outJd).derived();
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JD>& outJd) const {
+    DERIVED_JD& Jd = const_cast<Eigen::MatrixBase<DERIVED_JD>&>(outJd).derived();
     projection_t proj = _projection;
     ASLAM_CAMERAS_ESTIMATE_INTRINSIC_JACOBIAN(homogeneousToKeypoint, proj, proj.distortion(), p, 1e-5, Jd);
 }
@@ -351,12 +351,12 @@ void CameraGeometry<P, S, M>::homogeneousToKeypointDistortionJacobianFiniteDiffe
 // keypoint. For a global shutter camera, this can return CameraGeometry<P,S,M>::Duration(0).
 template <typename P, typename S, typename M>
 template <typename DERIVED_K>
-Duration CameraGeometry<P, S, M>::temporalOffset(const Eigen::MatrixBase<DERIVED_K> &keypoint) const {
+Duration CameraGeometry<P, S, M>::temporalOffset(const Eigen::MatrixBase<DERIVED_K>& keypoint) const {
     return _shutter.temporalOffset(keypoint);
 }
 
 template <typename P, typename S, typename M>
-Duration CameraGeometry<P, S, M>::temporalOffset(const Eigen::VectorXd &keypoint) const {
+Duration CameraGeometry<P, S, M>::temporalOffset(const Eigen::VectorXd& keypoint) const {
     return _shutter.temporalOffset(keypoint);
 }
 
@@ -366,13 +366,13 @@ Duration CameraGeometry<P, S, M>::temporalOffset(const Eigen::VectorXd &keypoint
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_K>
-bool CameraGeometry<P, S, M>::isValid(const Eigen::MatrixBase<DERIVED_K> &keypoint) const {
+bool CameraGeometry<P, S, M>::isValid(const Eigen::MatrixBase<DERIVED_K>& keypoint) const {
     return _mask.isValid(keypoint) && _projection.isValid(keypoint);
 }
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_P>
-bool CameraGeometry<P, S, M>::isEuclideanVisible(const Eigen::MatrixBase<DERIVED_P> &p) const {
+bool CameraGeometry<P, S, M>::isEuclideanVisible(const Eigen::MatrixBase<DERIVED_P>& p) const {
     keypoint_t k;
     bool success = _projection.euclideanToKeypoint(p, k);
 
@@ -381,7 +381,7 @@ bool CameraGeometry<P, S, M>::isEuclideanVisible(const Eigen::MatrixBase<DERIVED
 
 template <typename P, typename S, typename M>
 template <typename DERIVED_P>
-bool CameraGeometry<P, S, M>::isHomogeneousVisible(const Eigen::MatrixBase<DERIVED_P> &ph) const {
+bool CameraGeometry<P, S, M>::isHomogeneousVisible(const Eigen::MatrixBase<DERIVED_P>& ph) const {
     keypoint_t k;
     bool success = _projection.homogeneousToKeypoint(ph, k);
 
@@ -394,7 +394,7 @@ bool CameraGeometry<P, S, M>::isProjectionInvertible() const {
 }
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::isBinaryEqual(const CameraGeometry<P, S, M> &rhs) const {
+bool CameraGeometry<P, S, M>::isBinaryEqual(const CameraGeometry<P, S, M>& rhs) const {
     return SM_CHECKMEMBERSSAME(rhs, _id) && SM_CHECKMEMBERSSAME(rhs, _projection) &&
            SM_CHECKMEMBERSSAME(rhs, _shutter) && SM_CHECKMEMBERSSAME(rhs, _mask);
 }
@@ -409,14 +409,14 @@ CameraGeometry<P, S, M> CameraGeometry<P, S, M>::getTestGeometry() {
 /// \brief initialize the intrinsics based on list of views of a gridded calibration target
 
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::initializeIntrinsics(const std::vector<GridCalibrationTargetObservation> &observations) {
+bool CameraGeometry<P, S, M>::initializeIntrinsics(const std::vector<GridCalibrationTargetObservation>& observations) {
     return _projection.initializeIntrinsics(observations);
 }
 
 /// \brief estimate the transformation of the camera with respect to the calibration target
 template <typename P, typename S, typename M>
-bool CameraGeometry<P, S, M>::estimateTransformation(const GridCalibrationTargetObservation &obs,
-                                                     sm::kinematics::Transformation &out_T_t_c) const {
+bool CameraGeometry<P, S, M>::estimateTransformation(const GridCalibrationTargetObservation& obs,
+                                                     sm::kinematics::Transformation& out_T_t_c) const {
     return _projection.estimateTransformation(obs, out_T_t_c);
 }
 
@@ -433,7 +433,7 @@ boost::shared_ptr<aslam::FrameBase> CameraGeometry<P, S, M>::createUninitialized
 }
 
 template <typename PP, typename S, typename M>
-void CameraGeometry<PP, S, M>::print(std::ostream &out) {
+void CameraGeometry<PP, S, M>::print(std::ostream& out) {
     std::cout << "Printing!\n";
     Eigen::MatrixXd P;
     _projection.getParameters(P);
@@ -463,7 +463,7 @@ int CameraGeometry<P, S, M>::minimalDimensionsShutter() const {
 
 /// \brief update the intrinsics
 template <typename P, typename S, typename M>
-void CameraGeometry<P, S, M>::update(const double *v, bool estimateProjection, bool estimateDistortion,
+void CameraGeometry<P, S, M>::update(const double* v, bool estimateProjection, bool estimateDistortion,
                                      bool estimateShutter) {
     if (estimateProjection) {
         _projection.update(v);
@@ -501,7 +501,7 @@ int CameraGeometry<P, S, M>::minimalDimensions(bool estimateProjection, bool est
 
 /// \brief get the intrinsic parameters.
 template <typename P, typename S, typename M>
-void CameraGeometry<P, S, M>::getParameters(Eigen::MatrixXd &params, bool estimateProjection, bool estimateDistortion,
+void CameraGeometry<P, S, M>::getParameters(Eigen::MatrixXd& params, bool estimateProjection, bool estimateDistortion,
                                             bool estimateShutter) const {
     Eigen::MatrixXd Pp, Pd, Ps;
     int rows = 0, cols = 0;
@@ -544,7 +544,7 @@ void CameraGeometry<P, S, M>::getParameters(Eigen::MatrixXd &params, bool estima
 
 /// \brief set the intrinsic parameters.
 template <typename P, typename S, typename M>
-void CameraGeometry<P, S, M>::setParameters(const Eigen::MatrixXd &params, bool estimateProjection,
+void CameraGeometry<P, S, M>::setParameters(const Eigen::MatrixXd& params, bool estimateProjection,
                                             bool estimateDistortion, bool estimateShutter) {
     // Ugh...I wish I had used a vector, not a matrix.
     int row = 0;
@@ -569,7 +569,7 @@ void CameraGeometry<P, S, M>::setParameters(const Eigen::MatrixXd &params, bool 
 
 /// \brief return the Jacobian of the projection with respect to the intrinsics.
 template <typename P, typename S, typename M>
-void CameraGeometry<P, S, M>::euclideanToKeypointIntrinsicsJacobian(const Eigen::Vector3d &p, Eigen::MatrixXd &outJi,
+void CameraGeometry<P, S, M>::euclideanToKeypointIntrinsicsJacobian(const Eigen::Vector3d& p, Eigen::MatrixXd& outJi,
                                                                     bool estimateProjection, bool estimateDistortion,
                                                                     bool estimateShutter) const {
     // Here I have to stack the answers. The resulting matrix should be
@@ -600,7 +600,7 @@ void CameraGeometry<P, S, M>::euclideanToKeypointIntrinsicsJacobian(const Eigen:
 
 /// \brief return the Jacobian of the projection with respect to the intrinsics.
 template <typename P, typename S, typename M>
-void CameraGeometry<P, S, M>::homogeneousToKeypointIntrinsicsJacobian(const Eigen::Vector4d &p, Eigen::MatrixXd &outJi,
+void CameraGeometry<P, S, M>::homogeneousToKeypointIntrinsicsJacobian(const Eigen::Vector4d& p, Eigen::MatrixXd& outJi,
                                                                       bool estimateProjection, bool estimateDistortion,
                                                                       bool estimateShutter) const {
     // Here I have to stack the answers. The resulting matrix should be
@@ -631,7 +631,7 @@ void CameraGeometry<P, S, M>::homogeneousToKeypointIntrinsicsJacobian(const Eige
 
 /// \brief return the temporal offset with respect to the intrinsics.
 template <typename P, typename S, typename M>
-void CameraGeometry<P, S, M>::temporalOffsetIntrinsicsJacobian(const Eigen::VectorXd &keypoint, Eigen::MatrixXd &outJi,
+void CameraGeometry<P, S, M>::temporalOffsetIntrinsicsJacobian(const Eigen::VectorXd& keypoint, Eigen::MatrixXd& outJi,
                                                                bool estimateProjection, bool estimateDistortion,
                                                                bool estimateShutter) const {
     // Here I have to stack the answers. The resulting matrix should be

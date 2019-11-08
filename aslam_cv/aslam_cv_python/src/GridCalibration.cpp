@@ -12,20 +12,20 @@
 
 typedef Eigen::Matrix<boost::uint8_t, Eigen::Dynamic, Eigen::Dynamic> image_t;
 
-boost::python::tuple pointToGridCoordinates(const aslam::cameras::GridCalibrationTargetBase *target, size_t i) {
+boost::python::tuple pointToGridCoordinates(const aslam::cameras::GridCalibrationTargetBase* target, size_t i) {
     std::pair<size_t, size_t> gc = target->pointToGridCoordinates(i);
     return boost::python::make_tuple(gc.first, gc.second);
 }
 
-image_t getImage(const aslam::cameras::GridCalibrationTargetObservation *gcto) {
-    const cv::Mat &from = gcto->image();
+image_t getImage(const aslam::cameras::GridCalibrationTargetObservation* gcto) {
+    const cv::Mat& from = gcto->image();
     image_t to(from.rows, from.cols);
     cv2eigen(from, to);
 
     return to;
 }
 
-void setImage(aslam::cameras::GridCalibrationTargetObservation *frame, const image_t &from) {
+void setImage(aslam::cameras::GridCalibrationTargetObservation* frame, const image_t& from) {
     cv::Mat to;
     eigen2cv(from, to);
     frame->setImage(to);
@@ -39,7 +39,7 @@ class PythonImageList {
     PythonImageList() : _images(new ImageListType){};
     ~PythonImageList(){};
 
-    void addImage(const image_t &image) {
+    void addImage(const image_t& image) {
         cv::Mat image_cv;
         eigen2cv(image, image_cv);
         _images->push_back(image_cv);
@@ -52,19 +52,19 @@ class PythonImageList {
     ImageListTypePtr _images;
 };
 
-void addImageToList(PythonImageList *list, const image_t &from) { list->addImage(from); }
+void addImageToList(PythonImageList* list, const image_t& from) { list->addImage(from); }
 
-bool initCameraGeometryFromObservation(aslam::cameras::GridDetector *gd, const image_t &image) {
+bool initCameraGeometryFromObservation(aslam::cameras::GridDetector* gd, const image_t& image) {
     cv::Mat image_cv;
     eigen2cv(image, image_cv);
     return gd->initCameraGeometryFromObservation(image_cv);
 }
 
-bool initCameraGeometryFromObservations(aslam::cameras::GridDetector *gd, PythonImageList &image_list) {
+bool initCameraGeometryFromObservations(aslam::cameras::GridDetector* gd, PythonImageList& image_list) {
     return gd->initCameraGeometryFromObservations(image_list.getImages());
 }
 
-boost::python::tuple findTarget1(aslam::cameras::GridDetector *gd, const aslam::Time &stamp, const image_t &image) {
+boost::python::tuple findTarget1(aslam::cameras::GridDetector* gd, const aslam::Time& stamp, const image_t& image) {
     aslam::cameras::GridCalibrationTargetObservation obs(gd->target());
     cv::Mat to;
     eigen2cv(image, to);
@@ -73,13 +73,13 @@ boost::python::tuple findTarget1(aslam::cameras::GridDetector *gd, const aslam::
     return boost::python::make_tuple(success, obs);
 }
 
-boost::python::tuple findTarget2(aslam::cameras::GridDetector *gd,
-                                 const Eigen::Matrix<boost::uint8_t, Eigen::Dynamic, Eigen::Dynamic> &image) {
+boost::python::tuple findTarget2(aslam::cameras::GridDetector* gd,
+                                 const Eigen::Matrix<boost::uint8_t, Eigen::Dynamic, Eigen::Dynamic>& image) {
     return findTarget1(gd, aslam::Time(0, 0), image);
 }
 
-boost::python::tuple findTargetNoTransformation1(aslam::cameras::GridDetector *gd, const aslam::Time &stamp,
-                                                 const image_t &image) {
+boost::python::tuple findTargetNoTransformation1(aslam::cameras::GridDetector* gd, const aslam::Time& stamp,
+                                                 const image_t& image) {
     aslam::cameras::GridCalibrationTargetObservation obs(gd->target());
     cv::Mat to;
     eigen2cv(image, to);
@@ -88,14 +88,14 @@ boost::python::tuple findTargetNoTransformation1(aslam::cameras::GridDetector *g
     return boost::python::make_tuple(success, obs);
 }
 
-boost::python::tuple findTargetNoTransformation2(aslam::cameras::GridDetector *gd, const image_t &image) {
+boost::python::tuple findTargetNoTransformation2(aslam::cameras::GridDetector* gd, const image_t& image) {
     return findTargetNoTransformation1(gd, aslam::Time(0, 0), image);
 }
 
 /// \brief get a point from the target expressed in the target frame
 /// \return true if the grid point was seen in this image.
 // bool imagePoint(size_t i, Eigen::Vector2d & outPoint) const;
-boost::python::tuple imagePoint(aslam::cameras::GridCalibrationTargetObservation *frame, size_t i) {
+boost::python::tuple imagePoint(aslam::cameras::GridCalibrationTargetObservation* frame, size_t i) {
     Eigen::Vector2d p = Eigen::Vector2d::Zero();
     bool success = frame->imagePoint(i, p);
     return boost::python::make_tuple(success, p);
@@ -104,14 +104,14 @@ boost::python::tuple imagePoint(aslam::cameras::GridCalibrationTargetObservation
 /// \brief get a point from the target expressed in the target frame
 /// \return true if the grid point was seen in this image.
 // bool imageGridPoint(size_t r, size_t c, Eigen::Vector2d & outPoint) const;
-boost::python::tuple imageGridPoint(aslam::cameras::GridCalibrationTargetObservation *frame, size_t r, size_t c) {
+boost::python::tuple imageGridPoint(aslam::cameras::GridCalibrationTargetObservation* frame, size_t r, size_t c) {
     Eigen::Vector2d p = Eigen::Vector2d::Zero();
     bool success = frame->imageGridPoint(r, c, p);
     return boost::python::make_tuple(success, p);
 }
 
 /// \brief get all corners in target coordinates (order matches getCornersImageFrame)
-Eigen::MatrixXd getCornersTargetFrame(aslam::cameras::GridCalibrationTargetObservation *frame) {
+Eigen::MatrixXd getCornersTargetFrame(aslam::cameras::GridCalibrationTargetObservation* frame) {
     // Get the corners in the target frame
     std::vector<cv::Point3f> targetCorners;
     unsigned int numCorners = frame->getCornersTargetFrame(targetCorners);
@@ -129,7 +129,7 @@ Eigen::MatrixXd getCornersTargetFrame(aslam::cameras::GridCalibrationTargetObser
 }
 
 /// \brief get all corners in image frame coordinates (order matches getObservedTargetFrame)
-Eigen::MatrixXd getCornersImageFrame(aslam::cameras::GridCalibrationTargetObservation *frame) {
+Eigen::MatrixXd getCornersImageFrame(aslam::cameras::GridCalibrationTargetObservation* frame) {
     // Get the corners in the image frame
     std::vector<cv::Point2f> imageCorners;
     unsigned int numCorners = frame->getCornersImageFrame(imageCorners);
@@ -146,7 +146,7 @@ Eigen::MatrixXd getCornersImageFrame(aslam::cameras::GridCalibrationTargetObserv
 }
 
 /// \brief get all corners in image frame coordinates (order matches getObservedTargetFrame)
-Eigen::MatrixXd getCornerReprojection(aslam::cameras::GridCalibrationTargetObservation *frame,
+Eigen::MatrixXd getCornerReprojection(aslam::cameras::GridCalibrationTargetObservation* frame,
                                       const boost::shared_ptr<aslam::cameras::CameraGeometryBase> cameraGeometry) {
     // Get the corners in the image frame
     std::vector<cv::Point2f> cornersReproj;
@@ -165,7 +165,7 @@ Eigen::MatrixXd getCornerReprojection(aslam::cameras::GridCalibrationTargetObser
 
 /// \brief get the point index of all (observed) corners (order corresponds to the output of getCornersImageFrame and
 /// getCornersTargetFrame)
-Eigen::VectorXi getCornersIdx(aslam::cameras::GridCalibrationTargetObservation *frame) {
+Eigen::VectorXi getCornersIdx(aslam::cameras::GridCalibrationTargetObservation* frame) {
     // Get the corners in the image frame
     std::vector<unsigned int> cornersIdx;
     unsigned int numCorners = frame->getCornersIdx(cornersIdx);

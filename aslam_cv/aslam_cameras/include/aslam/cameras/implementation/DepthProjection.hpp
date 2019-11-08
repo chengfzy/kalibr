@@ -28,7 +28,7 @@ DepthProjection<DISTORTION_T>::DepthProjection(distortion_t distortion)
       _distortion(distortion) {}
 
 template <typename DISTORTION_T>
-DepthProjection<DISTORTION_T>::DepthProjection(const sm::PropertyTree &config)
+DepthProjection<DISTORTION_T>::DepthProjection(const sm::PropertyTree& config)
     : _distortion(sm::PropertyTree(config, "distortion")) {
     _fu = config.getDouble("fu");
     _fv = config.getDouble("fv");
@@ -76,12 +76,12 @@ DepthProjection<DISTORTION_T>::~DepthProjection() {}
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K>
-bool DepthProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                        const Eigen::MatrixBase<DERIVED_K> &outKeypointConst) const {
+bool DepthProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                        const Eigen::MatrixBase<DERIVED_K>& outKeypointConst) const {
     /// \todo
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 3);
-    Eigen::MatrixBase<DERIVED_K> &outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K> &>(outKeypointConst);
+    Eigen::MatrixBase<DERIVED_K>& outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K>&>(outKeypointConst);
 
     outKeypoint.derived().resize(3);
     double rz = 1.0 / p[2];
@@ -99,18 +99,18 @@ bool DepthProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-bool DepthProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                        const Eigen::MatrixBase<DERIVED_K> &outKeypointConst,
-                                                        const Eigen::MatrixBase<DERIVED_JP> &outJp) const {
+bool DepthProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                        const Eigen::MatrixBase<DERIVED_K>& outKeypointConst,
+                                                        const Eigen::MatrixBase<DERIVED_JP>& outJp) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 3);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JP>, 3, 3);
     /// \todo
-    Eigen::MatrixBase<DERIVED_K> &outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K> &>(outKeypointConst);
+    Eigen::MatrixBase<DERIVED_K>& outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K>&>(outKeypointConst);
     outKeypoint.derived().resize(3);
 
     // Jacobian:
-    Eigen::MatrixBase<DERIVED_JP> &J = const_cast<Eigen::MatrixBase<DERIVED_JP> &>(outJp);
+    Eigen::MatrixBase<DERIVED_JP>& J = const_cast<Eigen::MatrixBase<DERIVED_JP>&>(outJp);
     J.derived().resize(KeypointDimension, 3);
     J.setZero();
 
@@ -145,8 +145,8 @@ bool DepthProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K>
-bool DepthProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P> &ph,
-                                                          const Eigen::MatrixBase<DERIVED_K> &outKeypoint) const {
+bool DepthProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P>& ph,
+                                                          const Eigen::MatrixBase<DERIVED_K>& outKeypoint) const {
     /// \todo this class now assumes (as the pinhole projection class) that a homogeneous point ph has p[3] == 0!
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 3);
@@ -160,14 +160,14 @@ bool DepthProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBas
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-bool DepthProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P> &ph,
-                                                          const Eigen::MatrixBase<DERIVED_K> &outKeypoint,
-                                                          const Eigen::MatrixBase<DERIVED_JP> &outJp) const {
+bool DepthProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P>& ph,
+                                                          const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
+                                                          const Eigen::MatrixBase<DERIVED_JP>& outJp) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 3);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JP>, 3, 4);
 
-    Eigen::MatrixBase<DERIVED_JP> &J = const_cast<Eigen::MatrixBase<DERIVED_JP> &>(outJp);
+    Eigen::MatrixBase<DERIVED_JP>& J = const_cast<Eigen::MatrixBase<DERIVED_JP>&>(outJp);
     J.derived().resize(KeypointDimension, 4);
     J.setZero();
 
@@ -185,9 +185,8 @@ bool DepthProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBas
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P>
-bool DepthProjection<DISTORTION_T>::keypointToEuclidean(
-    const Eigen::MatrixBase<DERIVED_K> & /* keypoint */,
-    const Eigen::MatrixBase<DERIVED_P> & /* outPointConst */) const {
+bool DepthProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& /* keypoint */,
+                                                        const Eigen::MatrixBase<DERIVED_P>& /* outPointConst */) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 3);
     /// \todo
@@ -209,9 +208,9 @@ bool DepthProjection<DISTORTION_T>::keypointToEuclidean(
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-bool DepthProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K> & /* keypoint */,
-                                                        const Eigen::MatrixBase<DERIVED_P> & /* outPointConst */,
-                                                        const Eigen::MatrixBase<DERIVED_JK> & /* outJk */) const {
+bool DepthProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& /* keypoint */,
+                                                        const Eigen::MatrixBase<DERIVED_P>& /* outPointConst */,
+                                                        const Eigen::MatrixBase<DERIVED_JK>& /* outJk */) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 3);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JK>, 3, 3);
@@ -249,12 +248,12 @@ bool DepthProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P>
-bool DepthProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                          const Eigen::MatrixBase<DERIVED_P> &outPoint) const {
+bool DepthProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                          const Eigen::MatrixBase<DERIVED_P>& outPoint) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 3);
 
-    Eigen::MatrixBase<DERIVED_P> &p = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPoint);
+    Eigen::MatrixBase<DERIVED_P>& p = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPoint);
     p.derived().resize(4);
     p[3] = 1.0;
     return keypointToEuclidean(keypoint, p.derived().template head<3>());
@@ -262,18 +261,18 @@ bool DepthProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBas
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-bool DepthProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                          const Eigen::MatrixBase<DERIVED_P> &outPoint,
-                                                          const Eigen::MatrixBase<DERIVED_JK> &outJk) const {
+bool DepthProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                          const Eigen::MatrixBase<DERIVED_P>& outPoint,
+                                                          const Eigen::MatrixBase<DERIVED_JK>& outJk) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 3);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JK>, 4, 3);
 
-    Eigen::MatrixBase<DERIVED_JK> &Jk = const_cast<Eigen::MatrixBase<DERIVED_JK> &>(outJk);
+    Eigen::MatrixBase<DERIVED_JK>& Jk = const_cast<Eigen::MatrixBase<DERIVED_JK>&>(outJk);
     Jk.derived().resize(KeypointDimension, 4);
     Jk.setZero();
 
-    Eigen::MatrixBase<DERIVED_P> &p = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPoint);
+    Eigen::MatrixBase<DERIVED_P>& p = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPoint);
     p[3] = 1.0;
 
     return keypointToEuclidean(keypoint, p.template head<3>(), Jk.template topLeftCorner<3, KeypointDimension>());
@@ -282,11 +281,11 @@ bool DepthProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBas
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JI>
 void DepthProjection<DISTORTION_T>::euclideanToKeypointIntrinsicsJacobian(
-    const Eigen::MatrixBase<DERIVED_P> & /* p */, const Eigen::MatrixBase<DERIVED_JI> &outJi) const {
+    const Eigen::MatrixBase<DERIVED_P>& /* p */, const Eigen::MatrixBase<DERIVED_JI>& outJi) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JI>, 3, 4);
     /// \todo
-    Eigen::MatrixBase<DERIVED_JI> &J = const_cast<Eigen::MatrixBase<DERIVED_JI> &>(outJi);
+    Eigen::MatrixBase<DERIVED_JI>& J = const_cast<Eigen::MatrixBase<DERIVED_JI>&>(outJi);
     J.derived().resize(KeypointDimension, 4);
     J.setZero();
     /*
@@ -307,7 +306,7 @@ void DepthProjection<DISTORTION_T>::euclideanToKeypointIntrinsicsJacobian(
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JD>
 void DepthProjection<DISTORTION_T>::euclideanToKeypointDistortionJacobian(
-    const Eigen::MatrixBase<DERIVED_P> & /* p */, const Eigen::MatrixBase<DERIVED_JD> & /* outJd */) const {
+    const Eigen::MatrixBase<DERIVED_P>& /* p */, const Eigen::MatrixBase<DERIVED_JD>& /* outJd */) const {
     /// \todo
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     /*
@@ -328,7 +327,7 @@ void DepthProjection<DISTORTION_T>::euclideanToKeypointDistortionJacobian(
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JI>
 void DepthProjection<DISTORTION_T>::homogeneousToKeypointIntrinsicsJacobian(
-    const Eigen::MatrixBase<DERIVED_P> & /* p */, const Eigen::MatrixBase<DERIVED_JI> & /* outJi */) const {
+    const Eigen::MatrixBase<DERIVED_P>& /* p */, const Eigen::MatrixBase<DERIVED_JI>& /* outJi */) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JI>, 3, 4);
 
@@ -339,7 +338,7 @@ void DepthProjection<DISTORTION_T>::homogeneousToKeypointIntrinsicsJacobian(
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JD>
 void DepthProjection<DISTORTION_T>::homogeneousToKeypointDistortionJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JD> &outJd) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JD>& outJd) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
 
     euclideanToKeypointDistortionJacobian(p.derived().template head<3>(), outJd);
@@ -347,7 +346,7 @@ void DepthProjection<DISTORTION_T>::homogeneousToKeypointDistortionJacobian(
 
 template <typename DISTORTION_T>
 template <class Archive>
-void DepthProjection<DISTORTION_T>::load(Archive &ar, const unsigned int version) {
+void DepthProjection<DISTORTION_T>::load(Archive& ar, const unsigned int version) {
     SM_ASSERT_LE(std::runtime_error, version, (unsigned int)CLASS_SERIALIZATION_VERSION,
                  "Unsupported serialization version");
 
@@ -366,7 +365,7 @@ void DepthProjection<DISTORTION_T>::load(Archive &ar, const unsigned int version
 
 template <typename DISTORTION_T>
 template <class Archive>
-void DepthProjection<DISTORTION_T>::save(Archive &ar, const unsigned int /* version */) const {
+void DepthProjection<DISTORTION_T>::save(Archive& ar, const unsigned int /* version */) const {
     ar << BOOST_SERIALIZATION_NVP(_fu);
     ar << BOOST_SERIALIZATION_NVP(_fv);
     ar << BOOST_SERIALIZATION_NVP(_cu);
@@ -392,14 +391,14 @@ Eigen::Vector3d DepthProjection<DISTORTION_T>::createRandomVisiblePoint(double /
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K>
-bool DepthProjection<DISTORTION_T>::isValid(const Eigen::MatrixBase<DERIVED_K> &keypoint) const {
+bool DepthProjection<DISTORTION_T>::isValid(const Eigen::MatrixBase<DERIVED_K>& keypoint) const {
     /// \todo
     return keypoint[0] >= 0 && keypoint[1] >= 0 && keypoint[0] < (double)_ru && keypoint[1] < (double)_rv;
 }
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P>
-bool DepthProjection<DISTORTION_T>::isEuclideanVisible(const Eigen::MatrixBase<DERIVED_P> &p) const {
+bool DepthProjection<DISTORTION_T>::isEuclideanVisible(const Eigen::MatrixBase<DERIVED_P>& p) const {
     /// \todo
     keypoint_t k;
     return euclideanToKeypoint(p, k);
@@ -407,14 +406,14 @@ bool DepthProjection<DISTORTION_T>::isEuclideanVisible(const Eigen::MatrixBase<D
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P>
-bool DepthProjection<DISTORTION_T>::isHomogeneousVisible(const Eigen::MatrixBase<DERIVED_P> &ph) const {
+bool DepthProjection<DISTORTION_T>::isHomogeneousVisible(const Eigen::MatrixBase<DERIVED_P>& ph) const {
     /// \todo
     keypoint_t k;
     return homogeneousToKeypoint(ph, k);
 }
 
 template <typename DISTORTION_T>
-void DepthProjection<DISTORTION_T>::update(const double *v) {
+void DepthProjection<DISTORTION_T>::update(const double* v) {
     _fu += v[0];
     _fv += v[1];
     _cu += v[2];
@@ -435,7 +434,7 @@ Eigen::Vector2i DepthProjection<DISTORTION_T>::parameterSize() const {
 }
 
 template <typename DISTORTION_T>
-void DepthProjection<DISTORTION_T>::getParameters(Eigen::MatrixXd &P) const {
+void DepthProjection<DISTORTION_T>::getParameters(Eigen::MatrixXd& P) const {
     P.resize(4, 1);
     P(0, 0) = _fu;
     P(1, 0) = _fv;
@@ -444,7 +443,7 @@ void DepthProjection<DISTORTION_T>::getParameters(Eigen::MatrixXd &P) const {
 }
 
 template <typename DISTORTION_T>
-void DepthProjection<DISTORTION_T>::setParameters(const Eigen::MatrixXd &P) {
+void DepthProjection<DISTORTION_T>::setParameters(const Eigen::MatrixXd& P) {
     _fu = P(0, 0);
     _fv = P(1, 0);
     _cu = P(2, 0);

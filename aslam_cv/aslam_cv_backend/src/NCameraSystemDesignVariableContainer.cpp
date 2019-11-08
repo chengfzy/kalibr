@@ -41,15 +41,15 @@ NCameraSystemDesignVariableContainer::NCameraSystemDesignVariableContainer(
 NCameraSystemDesignVariableContainer::~NCameraSystemDesignVariableContainer() {}
 
 /// \brief Get all design variables associated with this camera system
-void NCameraSystemDesignVariableContainer::getDesignVariables(backend::DesignVariable::set_t &dvs) const {
-    BOOST_FOREACH (const boost::shared_ptr<backend::MappedRotationQuaternion> &q, _q_v_c) { dvs.insert(q.get()); }
+void NCameraSystemDesignVariableContainer::getDesignVariables(backend::DesignVariable::set_t& dvs) const {
+    BOOST_FOREACH (const boost::shared_ptr<backend::MappedRotationQuaternion>& q, _q_v_c) { dvs.insert(q.get()); }
 
-    BOOST_FOREACH (const boost::shared_ptr<backend::MappedEuclideanPoint> &p, _p_v_c) { dvs.insert(p.get()); }
+    BOOST_FOREACH (const boost::shared_ptr<backend::MappedEuclideanPoint>& p, _p_v_c) { dvs.insert(p.get()); }
 }
 
 /// \brief set all intrinsics active
 void NCameraSystemDesignVariableContainer::setIntrinsicsActive(bool active) {
-    BOOST_FOREACH (boost::shared_ptr<CameraGeometryDesignVariableContainer> &cam, _cameraDvs) {
+    BOOST_FOREACH (boost::shared_ptr<CameraGeometryDesignVariableContainer>& cam, _cameraDvs) {
         cam->setActive(active);
     }
 }
@@ -68,12 +68,12 @@ void NCameraSystemDesignVariableContainer::setExtrinsicsActive(bool active) {
 
 /// \brief set all extrinsics active
 void NCameraSystemDesignVariableContainer::setExtrinsicsRotationActive(bool active) {
-    BOOST_FOREACH (boost::shared_ptr<backend::MappedRotationQuaternion> &q, _q_v_c) { q->setActive(active); }
+    BOOST_FOREACH (boost::shared_ptr<backend::MappedRotationQuaternion>& q, _q_v_c) { q->setActive(active); }
 }
 
 /// \brief set all extrinsics active
 void NCameraSystemDesignVariableContainer::setExtrinsicsTranslationActive(bool active) {
-    BOOST_FOREACH (boost::shared_ptr<backend::MappedEuclideanPoint> &p, _p_v_c) { p->setActive(active); }
+    BOOST_FOREACH (boost::shared_ptr<backend::MappedEuclideanPoint>& p, _p_v_c) { p->setActive(active); }
 }
 
 /// \brief set the intrinsics of a specific camera active
@@ -125,7 +125,7 @@ NCameraSystemDesignVariableContainer::getCameraGeometryDesignVariableContainer(s
 }
 
 boost::shared_ptr<ReprojectionError> NCameraSystemDesignVariableContainer::createReprojectionError(
-    MultiFrame &mf, const KeypointIdentifier &kid, backend::HomogeneousExpression &p_v) {
+    MultiFrame& mf, const KeypointIdentifier& kid, backend::HomogeneousExpression& p_v) {
     boost::shared_ptr<ReprojectionError> re;
 
     boost::shared_ptr<FrameBase> frame = mf.getFrame(kid.cameraIndex);

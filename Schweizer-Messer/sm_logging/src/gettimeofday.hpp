@@ -26,7 +26,7 @@ struct timezone {
 
 // Definition of a gettimeofday function
 
-int gettimeofday(struct timeval *tv, struct timezone *tz) {
+int gettimeofday(struct timeval* tv, struct timezone* tz) {
     // Define a structure to receive the current Windows filetime
     FILETIME ft;
 
@@ -71,7 +71,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz) {
     return 0;
 }
 #else
-int gettimeofday(struct timeval *tv, struct timezone *tz) { return ::gettimeofday(tv, tz); }
+int gettimeofday(struct timeval* tv, struct timezone* tz) { return ::gettimeofday(tv, tz); }
 #endif  // WIN32
 
 }  // namespace sm

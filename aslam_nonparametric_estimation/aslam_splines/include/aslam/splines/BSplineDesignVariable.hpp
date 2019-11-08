@@ -24,25 +24,25 @@ class BSplineDesignVariable {
     typedef aslam::backend::DesignVariableMappedVector<Dimension> dv_t;
 
     /// \brief this guy takes a copy.
-    BSplineDesignVariable(const bsplines::BSpline &bspline);
+    BSplineDesignVariable(const bsplines::BSpline& bspline);
 
     virtual ~BSplineDesignVariable();
 
     /// \brief get the spline.
-    const bsplines::BSpline &spline();
+    const bsplines::BSpline& spline();
 
     /// \brief get an expression
     aslam::backend::VectorExpression<DIM> toExpression(double time, int derivativeOrder);
 
     size_t numDesignVariables();
-    aslam::backend::DesignVariableMappedVector<DIM> *designVariable(size_t i);
+    aslam::backend::DesignVariableMappedVector<DIM>* designVariable(size_t i);
 
-    std::vector<aslam::backend::DesignVariable *> getDesignVariables(double time) const;
+    std::vector<aslam::backend::DesignVariable*> getDesignVariables(double time) const;
 
     // Fabio:
     // add one Segment at the end of the PoseSpline
-    void addSegment(double t, const Eigen::VectorXd &p);
-    void addSegment2(double t, const Eigen::VectorXd &p, double lambda);
+    void addSegment(double t, const Eigen::VectorXd& p);
+    void addSegment2(double t, const Eigen::VectorXd& p, double lambda);
     void removeSegment();
 
   protected:

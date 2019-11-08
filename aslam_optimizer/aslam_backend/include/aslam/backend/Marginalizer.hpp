@@ -21,12 +21,12 @@ namespace backend {
 ///	\param[IN] inDesignVariables list of input design variables to be marginalized
 /// \param[IN] inErrorTerms list of all error terms related to the input design variables
 /// \param[IN] numberOfInputDesignVariablesToRemove Number of input design variables to be removed.
-/// 											The functions removes this many input design variables, starting at
-/// the beginning of
-///												the list of input design variables. Therefore,
-///the
-/// ordering of the design variables in the 												input desing variables list
-/// matters!
+/// 											The functions removes this many input design variables, starting
+/// at the beginning of
+///												the list of input design variables.
+///Therefore, the
+/// ordering of the design variables in the 												input desing variables
+/// list matters!
 /// \param[IN] useMEstimator					Wheter or not to use an M-Estimator in the QR sovler.
 /// \param[OUT] outPriorErrorTermPtr			Shared pointer to the resulting marginalized prior error term.
 ///

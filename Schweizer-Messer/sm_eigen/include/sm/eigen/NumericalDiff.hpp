@@ -18,9 +18,9 @@ struct NumericalDiffFunctor {
 
     NumericalDiffFunctor(boost::function<value_t(input_t)> f) : _f(f) {}
 
-    value_t operator()(const input_t &x) { return _f(x); }
+    value_t operator()(const input_t& x) { return _f(x); }
 
-    input_t update(const input_t &x, int c, scalar_t delta) {
+    input_t update(const input_t& x, int c, scalar_t delta) {
         input_t xnew = x;
         xnew[c] += delta;
         return xnew;
@@ -39,7 +39,7 @@ struct NumericalDiff {
 
     NumericalDiff(functor_t f, scalar_t eps = sqrt(std::numeric_limits<scalar_t>::epsilon())) : functor(f), eps(eps) {}
 
-    jacobian_t estimateJacobian(input_t const &x0) {
+    jacobian_t estimateJacobian(input_t const& x0) {
         // evaluate the function at the operating point:
         value_t fx0 = functor(x0);
         size_t N = x0.size();
@@ -71,7 +71,7 @@ struct NumericalDiff {
 
 template <typename ValueType_, typename InputType_>
 Eigen::MatrixXd numericalDiff(
-    std::function<ValueType_(const InputType_ &)> function, InputType_ const &input,
+    std::function<ValueType_(const InputType_&)> function, InputType_ const& input,
     double eps =
         sqrt(std::numeric_limits<typename NumericalDiffFunctor<ValueType_, InputType_>::scalar_t>::epsilon())) {
     typedef NumericalDiffFunctor<ValueType_, InputType_> Functor;

@@ -5,12 +5,12 @@
 #include <sm/python/boost_serialization_pickle.hpp>
 
 template <typename T>
-void loadobj(T *obj, std::string fname) {
+void loadobj(T* obj, std::string fname) {
     sm::boost_serialization::load(*obj, fname);
 }
 
 template <typename T>
-void saveobj(T *obj, std::string fname) {
+void saveobj(T* obj, std::string fname) {
     sm::boost_serialization::save(*obj, fname);
 }
 
@@ -24,8 +24,8 @@ void exportTransformation() {
     def("slerpTransformations", &slerpTransformations);
 
     class_<Transformation, boost::shared_ptr<Transformation> >("Transformation", init<>())
-        .def(init<const Eigen::Matrix4d &>())
-        .def(init<const Eigen::Vector4d &, const Eigen::Vector3d>())
+        .def(init<const Eigen::Matrix4d&>())
+        .def(init<const Eigen::Vector4d&, const Eigen::Vector3d>())
         .def("save", &saveobj<Transformation>)
         .def("load", &loadobj<Transformation>)
         .def("T", &Transformation::T)
@@ -59,15 +59,15 @@ void exportTransformation() {
 
     class_<UncertainTransformation, boost::shared_ptr<UncertainTransformation>, bases<Transformation> >(
         "UncertainTransformation", init<>())
-        .def(init<const Eigen::Matrix4d &, const covariance_t &>())
-        .def(init<const Eigen::Matrix4d &, double, double>())
-        .def(init<const Eigen::Vector4d &, const Eigen::Vector3d, const covariance_t &>())
-        .def(init<const Eigen::Vector4d &, const Eigen::Vector3d, double, double>())
-        .def(init<const Transformation &, const covariance_t &>())
-        .def(init<const Transformation &, double, double>())
-        .def(init<const Transformation &>())
-        .def(init<const Eigen::Matrix4d &>())
-        .def(init<const Eigen::Vector4d &, const Eigen::Vector3d>())
+        .def(init<const Eigen::Matrix4d&, const covariance_t&>())
+        .def(init<const Eigen::Matrix4d&, double, double>())
+        .def(init<const Eigen::Vector4d&, const Eigen::Vector3d, const covariance_t&>())
+        .def(init<const Eigen::Vector4d&, const Eigen::Vector3d, double, double>())
+        .def(init<const Transformation&, const covariance_t&>())
+        .def(init<const Transformation&, double, double>())
+        .def(init<const Transformation&>())
+        .def(init<const Eigen::Matrix4d&>())
+        .def(init<const Eigen::Vector4d&, const Eigen::Vector3d>())
         .def("save", &saveobj<UncertainTransformation>)
         .def("load", &loadobj<UncertainTransformation>)
         .def(self * self)

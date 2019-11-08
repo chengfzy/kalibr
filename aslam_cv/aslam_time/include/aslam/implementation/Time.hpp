@@ -59,28 +59,28 @@
 namespace aslam {
 
 template <class T, class D>
-T &TimeBase<T, D>::fromNSec(uint64_t t) {
+T& TimeBase<T, D>::fromNSec(uint64_t t) {
     sec = (int32_t)(t / 1000000000);
     nsec = (int32_t)(t % 1000000000);
 
     normalizeSecNSec(sec, nsec);
 
-    return *static_cast<T *>(this);
+    return *static_cast<T*>(this);
 }
 
 template <class T, class D>
-D TimeBase<T, D>::operator-(const T &rhs) const {
+D TimeBase<T, D>::operator-(const T& rhs) const {
     return D((int32_t)sec - (int32_t)rhs.sec,
              (int32_t)nsec - (int32_t)rhs.nsec);  // carry handled in ctor
 }
 
 template <class T, class D>
-T TimeBase<T, D>::operator-(const D &rhs) const {
-    return *static_cast<const T *>(this) + (-rhs);
+T TimeBase<T, D>::operator-(const D& rhs) const {
+    return *static_cast<const T*>(this) + (-rhs);
 }
 
 template <class T, class D>
-T TimeBase<T, D>::operator+(const D &rhs) const {
+T TimeBase<T, D>::operator+(const D& rhs) const {
     int64_t sec_sum = (int64_t)sec + (int64_t)rhs.sec;
     int64_t nsec_sum = (int64_t)nsec + (int64_t)rhs.nsec;
 
@@ -92,24 +92,24 @@ T TimeBase<T, D>::operator+(const D &rhs) const {
 }
 
 template <class T, class D>
-T &TimeBase<T, D>::operator+=(const D &rhs) {
+T& TimeBase<T, D>::operator+=(const D& rhs) {
     *this = *this + rhs;
-    return *static_cast<T *>(this);
+    return *static_cast<T*>(this);
 }
 
 template <class T, class D>
-T &TimeBase<T, D>::operator-=(const D &rhs) {
+T& TimeBase<T, D>::operator-=(const D& rhs) {
     *this += (-rhs);
-    return *static_cast<T *>(this);
+    return *static_cast<T*>(this);
 }
 
 template <class T, class D>
-bool TimeBase<T, D>::operator==(const T &rhs) const {
+bool TimeBase<T, D>::operator==(const T& rhs) const {
     return sec == rhs.sec && nsec == rhs.nsec;
 }
 
 template <class T, class D>
-bool TimeBase<T, D>::operator<(const T &rhs) const {
+bool TimeBase<T, D>::operator<(const T& rhs) const {
     if (sec < rhs.sec)
         return true;
     else if (sec == rhs.sec && nsec < rhs.nsec)
@@ -118,7 +118,7 @@ bool TimeBase<T, D>::operator<(const T &rhs) const {
 }
 
 template <class T, class D>
-bool TimeBase<T, D>::operator>(const T &rhs) const {
+bool TimeBase<T, D>::operator>(const T& rhs) const {
     if (sec > rhs.sec)
         return true;
     else if (sec == rhs.sec && nsec > rhs.nsec)
@@ -127,7 +127,7 @@ bool TimeBase<T, D>::operator>(const T &rhs) const {
 }
 
 template <class T, class D>
-bool TimeBase<T, D>::operator<=(const T &rhs) const {
+bool TimeBase<T, D>::operator<=(const T& rhs) const {
     if (sec < rhs.sec)
         return true;
     else if (sec == rhs.sec && nsec <= rhs.nsec)
@@ -136,7 +136,7 @@ bool TimeBase<T, D>::operator<=(const T &rhs) const {
 }
 
 template <class T, class D>
-bool TimeBase<T, D>::operator>=(const T &rhs) const {
+bool TimeBase<T, D>::operator>=(const T& rhs) const {
     if (sec > rhs.sec)
         return true;
     else if (sec == rhs.sec && nsec >= rhs.nsec)

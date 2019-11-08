@@ -35,14 +35,13 @@ boost::python::tuple triangulateWrap(const Eigen::Vector3d& point0, const Eigen:
 // 	using namespace aslam::python;
 
 // 	boost::python::class_<CameraDesignVariable<C>, boost::shared_ptr<CameraDesignVariable<C> > >((name +
-// "DesignVariable").c_str() , boost::python::init< boost::shared_ptr<C> >()) 			.def("euclideanToKeypoint",
+// "DesignVariable").c_str() , boost::python::init< boost::shared_ptr<C> >()) .def("euclideanToKeypoint",
 // &CameraDesignVariable<C>::euclideanToKeypoint) 			.def("homogeneousToKeypoint",
-// &CameraDesignVariable<C>::homogeneousToKeypoint) 			.def("setActive", &CameraDesignVariable<C>::setActive )
-// 			.def("getDesignVariables", &getDesignVariables<CameraDesignVariable<C> >)
-// 			.def("projectionDesignVariable", &CameraDesignVariable<C>::projectionDesignVariable)
-// 			.def("distortionDesignVariable", &CameraDesignVariable<C>::distortionDesignVariable)
-// 			.def("shutterDesignVariable", &CameraDesignVariable<C>::shutterDesignVariable)
-// 			.def("camera", &CameraDesignVariable<C>::camera)
+// &CameraDesignVariable<C>::homogeneousToKeypoint) 			.def("setActive", &CameraDesignVariable<C>::setActive
+// ) 			.def("getDesignVariables", &getDesignVariables<CameraDesignVariable<C> >) 			.def("projectionDesignVariable",
+// &CameraDesignVariable<C>::projectionDesignVariable) 			.def("distortionDesignVariable",
+// &CameraDesignVariable<C>::distortionDesignVariable) 			.def("shutterDesignVariable",
+// &CameraDesignVariable<C>::shutterDesignVariable) 			.def("camera", &CameraDesignVariable<C>::camera)
 // 			;
 
 // }

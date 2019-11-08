@@ -4,8 +4,8 @@
 #include <aslam/backend/ErrorTerm.hpp>
 #include <sm/PropertyTree.hpp>
 
-#include "sm/DebugInfo.h"
 #include "Eigen/Dense"
+#include "sm/DebugInfo.h"
 
 namespace aslam {
 namespace backend {

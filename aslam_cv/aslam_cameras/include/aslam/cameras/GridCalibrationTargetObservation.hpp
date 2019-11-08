@@ -43,32 +43,32 @@ class GridCalibrationTargetObservation {
     void clearImage();
 
     /// \brief get all corners in image coordinates (order matches getCornersImageFrame)
-    unsigned int getCornersTargetFrame(std::vector<cv::Point3f> &outCornerList) const;
+    unsigned int getCornersTargetFrame(std::vector<cv::Point3f>& outCornerList) const;
 
     /// \brief get all corners in target frame coordinates (order matches getObservedTargetFrame)
-    unsigned int getCornersImageFrame(std::vector<cv::Point2f> &outCornerList) const;
+    unsigned int getCornersImageFrame(std::vector<cv::Point2f>& outCornerList) const;
 
     /// \brief get the point index of all (observed) corners (order corresponds to the output
     ///        of getCornersImageFrame and getCornersTargetFrame)
-    unsigned int getCornersIdx(std::vector<unsigned int> &outCornerIdx) const;
+    unsigned int getCornersIdx(std::vector<unsigned int>& outCornerIdx) const;
 
     /// \brief get the the reprojected corners of all observed corners
     unsigned int getCornerReprojection(const boost::shared_ptr<CameraGeometryBase> cameraGeometry,
-                                       std::vector<cv::Point2f> &outPointReproj) const;
+                                       std::vector<cv::Point2f>& outPointReproj) const;
 
     /// \brief get a point from the target expressed in the target frame
     /// \return true if the grid point was seen in this image.
-    bool imagePoint(size_t i, Eigen::Vector2d &outPoint) const;
+    bool imagePoint(size_t i, Eigen::Vector2d& outPoint) const;
 
     /// \brief update an image observation
-    void updateImagePoint(size_t i, const Eigen::Vector2d &point);
+    void updateImagePoint(size_t i, const Eigen::Vector2d& point);
 
     /// \brief remove an image observation
     void removeImagePoint(size_t i);
 
     /// \brief get a point from the target expressed in the target frame
     /// \return true if the grid point was seen in this image.
-    bool imageGridPoint(size_t r, size_t c, Eigen::Vector2d &outPoint) const;
+    bool imageGridPoint(size_t r, size_t c, Eigen::Vector2d& outPoint) const;
 
     /// \brief get the number of rows in the image
     size_t imRows() const { return _imRows; };
@@ -85,13 +85,13 @@ class GridCalibrationTargetObservation {
     /// \brief get the grid calibration target
     GridCalibrationTargetBase::ConstPtr target() const { return _target; };
 
-    void setTarget(GridCalibrationTargetBase::Ptr target);
+    void setTarget(const GridCalibrationTargetBase::Ptr& target);
 
     /// \brief get the transformation that takes points from
     ///        camera coordinates to target coordinates.
-    const sm::kinematics::Transformation &T_t_c() const { return _T_t_c; };
+    const sm::kinematics::Transformation& T_t_c() const { return _T_t_c; };
 
-    void set_T_t_c(const sm::kinematics::Transformation &T_t_c) {
+    void set_T_t_c(const sm::kinematics::Transformation& T_t_c) {
         _T_t_c_isSet = true;
         _T_t_c = T_t_c;
     };
@@ -100,7 +100,7 @@ class GridCalibrationTargetObservation {
     aslam::Time time() const { return _stamp; };
 
     /// \brief set the time of the observation
-    void setTime(const aslam::Time &stamp) { _stamp = stamp; };
+    void setTime(const aslam::Time& stamp) { _stamp = stamp; };
 
     /// \brief return true if the class has at least one successful observation
     bool hasSuccessfulObservation() const;
@@ -148,7 +148,7 @@ class GridCalibrationTargetObservation {
     friend class boost::serialization::access;
 
     template <class Archive>
-    void load(Archive &ar, const unsigned int version) {
+    void load(Archive& ar, const unsigned int version) {
         SM_ASSERT_LE(std::runtime_error, version, (unsigned int)CLASS_SERIALIZATION_VERSION,
                      "Unsupported serialization version");
         ar >> BOOST_SERIALIZATION_NVP(_target);
@@ -163,7 +163,7 @@ class GridCalibrationTargetObservation {
     }
 
     template <class Archive>
-    void save(Archive &ar, const unsigned int /* version */) const {
+    void save(Archive& ar, const unsigned int /* version */) const {
         ar << BOOST_SERIALIZATION_NVP(_target);
         ar << BOOST_SERIALIZATION_NVP(_points);
         ar << BOOST_SERIALIZATION_NVP(_success);

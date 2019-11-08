@@ -8,7 +8,7 @@ OmniProjection<DISTORTION_T>::OmniProjection() : _xi(0.0), _fu(0.0), _fv(0.0), _
 }
 
 template <typename DISTORTION_T>
-OmniProjection<DISTORTION_T>::OmniProjection(const sm::PropertyTree &config)
+OmniProjection<DISTORTION_T>::OmniProjection(const sm::PropertyTree& config)
     : _distortion(sm::PropertyTree(config, "distortion")) {
     _xi = config.getDouble("xi");
     _fu = config.getDouble("fu");
@@ -55,11 +55,11 @@ OmniProjection<DISTORTION_T>::~OmniProjection() {}
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K>
-bool OmniProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                       const Eigen::MatrixBase<DERIVED_K> &outKeypointConst) const {
+bool OmniProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                       const Eigen::MatrixBase<DERIVED_K>& outKeypointConst) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
-    Eigen::MatrixBase<DERIVED_K> &outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K> &>(outKeypointConst);
+    Eigen::MatrixBase<DERIVED_K>& outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K>&>(outKeypointConst);
     outKeypoint.derived().resize(2);
     //    SM_OUT(p.transpose());
     double d = p.norm();
@@ -93,18 +93,18 @@ bool OmniProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<D
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-bool OmniProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                       const Eigen::MatrixBase<DERIVED_K> &outKeypointConst,
-                                                       const Eigen::MatrixBase<DERIVED_JP> &outJp) const {
+bool OmniProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                       const Eigen::MatrixBase<DERIVED_K>& outKeypointConst,
+                                                       const Eigen::MatrixBase<DERIVED_JP>& outJp) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JP>, 2, 3);
 
-    Eigen::MatrixBase<DERIVED_K> &outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K> &>(outKeypointConst);
+    Eigen::MatrixBase<DERIVED_K>& outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K>&>(outKeypointConst);
     outKeypoint.derived().resize(2);
 
     // Jacobian:
-    Eigen::MatrixBase<DERIVED_JP> &J = const_cast<Eigen::MatrixBase<DERIVED_JP> &>(outJp);
+    Eigen::MatrixBase<DERIVED_JP>& J = const_cast<Eigen::MatrixBase<DERIVED_JP>&>(outJp);
     J.derived().resize(KeypointDimension, 3);
     J.setZero();
 
@@ -151,8 +151,8 @@ bool OmniProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<D
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K>
-bool OmniProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P> &ph,
-                                                         const Eigen::MatrixBase<DERIVED_K> &outKeypoint) const {
+bool OmniProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P>& ph,
+                                                         const Eigen::MatrixBase<DERIVED_K>& outKeypoint) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
@@ -165,14 +165,14 @@ bool OmniProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-bool OmniProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P> &ph,
-                                                         const Eigen::MatrixBase<DERIVED_K> &outKeypoint,
-                                                         const Eigen::MatrixBase<DERIVED_JP> &outJp) const {
+bool OmniProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P>& ph,
+                                                         const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
+                                                         const Eigen::MatrixBase<DERIVED_JP>& outJp) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JP>, 2, 4);
 
-    Eigen::MatrixBase<DERIVED_JP> &J = const_cast<Eigen::MatrixBase<DERIVED_JP> &>(outJp);
+    Eigen::MatrixBase<DERIVED_JP>& J = const_cast<Eigen::MatrixBase<DERIVED_JP>&>(outJp);
     J.derived().resize(KeypointDimension, 4);
     J.setZero();
 
@@ -189,12 +189,12 @@ bool OmniProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P>
-bool OmniProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                       const Eigen::MatrixBase<DERIVED_P> &outPointConst) const {
+bool OmniProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                       const Eigen::MatrixBase<DERIVED_P>& outPointConst) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
-    Eigen::MatrixBase<DERIVED_P> &outPoint = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPointConst);
+    Eigen::MatrixBase<DERIVED_P>& outPoint = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPointConst);
     outPoint.derived().resize(3);
 
     // Unproject...
@@ -215,14 +215,14 @@ bool OmniProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<D
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-bool OmniProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                       const Eigen::MatrixBase<DERIVED_P> &outPointConst,
-                                                       const Eigen::MatrixBase<DERIVED_JK> &outJk) const {
+bool OmniProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                       const Eigen::MatrixBase<DERIVED_P>& outPointConst,
+                                                       const Eigen::MatrixBase<DERIVED_JK>& outJk) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JK>, 3, 2);
 
-    Eigen::MatrixBase<DERIVED_P> &outPoint = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPointConst);
+    Eigen::MatrixBase<DERIVED_P>& outPoint = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPointConst);
     outPoint.derived().resize(3);
 
     // Unproject...
@@ -243,8 +243,8 @@ bool OmniProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<D
 
     outPoint[2] = 1 - _xi * (rho2_d + 1) * recip_tmpA;
 
-    Eigen::MatrixBase<DERIVED_JK> &mbJk = const_cast<Eigen::MatrixBase<DERIVED_JK> &>(outJk);
-    DERIVED_JK &Jk = mbJk.derived();
+    Eigen::MatrixBase<DERIVED_JK>& mbJk = const_cast<Eigen::MatrixBase<DERIVED_JK>&>(outJk);
+    DERIVED_JK& Jk = mbJk.derived();
 
     double r0 = outPoint[0];
     double r1 = outPoint[1];
@@ -271,12 +271,12 @@ bool OmniProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<D
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P>
-bool OmniProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                         const Eigen::MatrixBase<DERIVED_P> &outPoint) const {
+bool OmniProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                         const Eigen::MatrixBase<DERIVED_P>& outPoint) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
-    Eigen::MatrixBase<DERIVED_P> &p = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPoint);
+    Eigen::MatrixBase<DERIVED_P>& p = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPoint);
     p.derived().resize(4);
     p[3] = 0.0;
     return keypointToEuclidean(keypoint, p.derived().template head<3>());
@@ -284,18 +284,18 @@ bool OmniProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-bool OmniProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                         const Eigen::MatrixBase<DERIVED_P> &outPoint,
-                                                         const Eigen::MatrixBase<DERIVED_JK> &outJk) const {
+bool OmniProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                         const Eigen::MatrixBase<DERIVED_P>& outPoint,
+                                                         const Eigen::MatrixBase<DERIVED_JK>& outJk) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JK>, 4, 2);
 
-    Eigen::MatrixBase<DERIVED_JK> &Jk = const_cast<Eigen::MatrixBase<DERIVED_JK> &>(outJk);
+    Eigen::MatrixBase<DERIVED_JK>& Jk = const_cast<Eigen::MatrixBase<DERIVED_JK>&>(outJk);
     Jk.derived().resize(4, 2);
     Jk.setZero();
 
-    Eigen::MatrixBase<DERIVED_P> &p = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPoint);
+    Eigen::MatrixBase<DERIVED_P>& p = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPoint);
     p.derived().resize(4);
     p[3] = 0.0;
 
@@ -305,11 +305,11 @@ bool OmniProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JI>
 void OmniProjection<DISTORTION_T>::euclideanToKeypointIntrinsicsJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JI> &outJi) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JI>& outJi) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JI>, (int)KeypointDimension, 5);
 
-    Eigen::MatrixBase<DERIVED_JI> &J = const_cast<Eigen::MatrixBase<DERIVED_JI> &>(outJi);
+    Eigen::MatrixBase<DERIVED_JI>& J = const_cast<Eigen::MatrixBase<DERIVED_JI>&>(outJi);
     J.derived().resize(KeypointDimension, 5);
     J.setZero();
 
@@ -340,7 +340,7 @@ void OmniProjection<DISTORTION_T>::euclideanToKeypointIntrinsicsJacobian(
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JD>
 void OmniProjection<DISTORTION_T>::euclideanToKeypointDistortionJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JD> &outJd) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JD>& outJd) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
 
     double d = p.norm();
@@ -351,7 +351,7 @@ void OmniProjection<DISTORTION_T>::euclideanToKeypointDistortionJacobian(
 
     _distortion.distortParameterJacobian(kp, outJd);
 
-    Eigen::MatrixBase<DERIVED_JD> &J = const_cast<Eigen::MatrixBase<DERIVED_JD> &>(outJd);
+    Eigen::MatrixBase<DERIVED_JD>& J = const_cast<Eigen::MatrixBase<DERIVED_JD>&>(outJd);
 
     J.row(0) *= _fu;
     J.row(1) *= _fv;
@@ -360,7 +360,7 @@ void OmniProjection<DISTORTION_T>::euclideanToKeypointDistortionJacobian(
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JI>
 void OmniProjection<DISTORTION_T>::homogeneousToKeypointIntrinsicsJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JI> &outJi) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JI>& outJi) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
 
     if (p[3] < 0.0) {
@@ -373,7 +373,7 @@ void OmniProjection<DISTORTION_T>::homogeneousToKeypointIntrinsicsJacobian(
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JD>
 void OmniProjection<DISTORTION_T>::homogeneousToKeypointDistortionJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JD> &outJd) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JD>& outJd) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
 
     if (p[3] < 0.0) {
@@ -385,7 +385,7 @@ void OmniProjection<DISTORTION_T>::homogeneousToKeypointDistortionJacobian(
 
 template <typename DISTORTION_T>
 template <class Archive>
-void OmniProjection<DISTORTION_T>::load(Archive &ar, const unsigned int version) {
+void OmniProjection<DISTORTION_T>::load(Archive& ar, const unsigned int version) {
     SM_ASSERT_LE(std::runtime_error, version, (unsigned int)CLASS_SERIALIZATION_VERSION,
                  "Unsupported serialization version");
 
@@ -403,7 +403,7 @@ void OmniProjection<DISTORTION_T>::load(Archive &ar, const unsigned int version)
 
 template <typename DISTORTION_T>
 template <class Archive>
-void OmniProjection<DISTORTION_T>::save(Archive &ar, const unsigned int /* version */) const {
+void OmniProjection<DISTORTION_T>::save(Archive& ar, const unsigned int /* version */) const {
     ar << BOOST_SERIALIZATION_NVP(_xi);
     ar << BOOST_SERIALIZATION_NVP(_fu);
     ar << BOOST_SERIALIZATION_NVP(_fv);
@@ -465,7 +465,7 @@ Eigen::Vector3d OmniProjection<DISTORTION_T>::createRandomVisiblePoint(double de
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K>
-bool OmniProjection<DISTORTION_T>::isValid(const Eigen::MatrixBase<DERIVED_K> &keypoint) const {
+bool OmniProjection<DISTORTION_T>::isValid(const Eigen::MatrixBase<DERIVED_K>& keypoint) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
     return keypoint(0) >= 0 && keypoint(0) < ru() && keypoint(1) >= 0 && keypoint(1) < rv();
@@ -478,7 +478,7 @@ bool OmniProjection<DISTORTION_T>::isUndistortedKeypointValid(const double rho2_
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K>
-bool OmniProjection<DISTORTION_T>::isLiftable(const Eigen::MatrixBase<DERIVED_K> &keypoint) const {
+bool OmniProjection<DISTORTION_T>::isLiftable(const Eigen::MatrixBase<DERIVED_K>& keypoint) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
     // Unproject...
@@ -496,14 +496,14 @@ bool OmniProjection<DISTORTION_T>::isLiftable(const Eigen::MatrixBase<DERIVED_K>
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P>
-bool OmniProjection<DISTORTION_T>::isEuclideanVisible(const Eigen::MatrixBase<DERIVED_P> &p) const {
+bool OmniProjection<DISTORTION_T>::isEuclideanVisible(const Eigen::MatrixBase<DERIVED_P>& p) const {
     keypoint_t k;
     return euclideanToKeypoint(p, k);
 }
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P>
-bool OmniProjection<DISTORTION_T>::isHomogeneousVisible(const Eigen::MatrixBase<DERIVED_P> &ph) const {
+bool OmniProjection<DISTORTION_T>::isHomogeneousVisible(const Eigen::MatrixBase<DERIVED_P>& ph) const {
     keypoint_t k;
     return homogeneousToKeypoint(ph, k);
 }
@@ -519,7 +519,7 @@ void OmniProjection<DISTORTION_T>::updateTemporaries() {
 
 // aslam::backend compatibility
 template <typename DISTORTION_T>
-void OmniProjection<DISTORTION_T>::update(const double *v) {
+void OmniProjection<DISTORTION_T>::update(const double* v) {
     _xi += v[0];
     _fu += v[1];
     _fv += v[2];
@@ -539,12 +539,12 @@ Eigen::Vector2i OmniProjection<DISTORTION_T>::parameterSize() const {
 }
 
 template <typename DISTORTION_T>
-void OmniProjection<DISTORTION_T>::getParameters(Eigen::MatrixXd &P) const {
+void OmniProjection<DISTORTION_T>::getParameters(Eigen::MatrixXd& P) const {
     P.resize(5, 1);
     P << _xi, _fu, _fv, _cu, _cv;
 }
 template <typename DISTORTION_T>
-void OmniProjection<DISTORTION_T>::setParameters(const Eigen::MatrixXd &P) {
+void OmniProjection<DISTORTION_T>::setParameters(const Eigen::MatrixXd& P) {
     SM_ASSERT_EQ(std::runtime_error, P.rows(), 5, "Incorrect size");
     SM_ASSERT_EQ(std::runtime_error, P.cols(), 1, "Incorrect size");
     _xi = P(0, 0);
@@ -557,7 +557,7 @@ void OmniProjection<DISTORTION_T>::setParameters(const Eigen::MatrixXd &P) {
 }
 
 template <typename DISTORTION_T>
-bool OmniProjection<DISTORTION_T>::isBinaryEqual(const OmniProjection<distortion_t> &rhs) const {
+bool OmniProjection<DISTORTION_T>::isBinaryEqual(const OmniProjection<distortion_t>& rhs) const {
     return _xi == rhs._xi && _fu == rhs._fu && _fv == rhs._fv && _cu == rhs._cu && _cv == rhs._cv && _ru == rhs._ru &&
            _rv == rhs._rv && _recip_fu == rhs._recip_fu && _recip_fv == rhs._recip_fv &&
            _fu_over_fv == rhs._fu_over_fv && _one_over_xixi_m_1 == rhs._one_over_xixi_m_1 &&
@@ -596,7 +596,7 @@ inline double hypot(double a, double b) { return sqrt(square(a) + square(b)); }
 /// https://github.com/hengli/camodocal
 template <typename DISTORTION_T>
 bool OmniProjection<DISTORTION_T>::initializeIntrinsics(
-    const std::vector<GridCalibrationTargetObservation> &observations) {
+    const std::vector<GridCalibrationTargetObservation>& observations) {
     using detail::hypot;
     using detail::square;
 
@@ -620,9 +620,9 @@ bool OmniProjection<DISTORTION_T>::initializeIntrinsics(
 
     // go though all images and pick the best estimate (=lowest mean reproj. err)
     for (size_t i = 0; i < observations.size(); ++i) {
-        const GridCalibrationTargetObservation &obs = observations.at(i);
+        const GridCalibrationTargetObservation& obs = observations.at(i);
         SM_ASSERT_TRUE(Exception, obs.target(), "The GridCalibrationTargetObservation has no target object");
-        const GridCalibrationTargetBase &target = *obs.target();
+        const GridCalibrationTargetBase& target = *obs.target();
 
         // check all corner rows of the target
         for (size_t r = 0; r < target.rows(); ++r) {
@@ -712,9 +712,9 @@ bool OmniProjection<DISTORTION_T>::initializeIntrinsics(
 }  // initializeIntrinsics()
 
 template <typename DISTORTION_T>
-size_t OmniProjection<DISTORTION_T>::computeReprojectionError(const GridCalibrationTargetObservation &obs,
-                                                              const sm::kinematics::Transformation &T_target_camera,
-                                                              double &outErr) const {
+size_t OmniProjection<DISTORTION_T>::computeReprojectionError(const GridCalibrationTargetObservation& obs,
+                                                              const sm::kinematics::Transformation& T_target_camera,
+                                                              double& outErr) const {
     outErr = 0.0;
     size_t count = 0;
     sm::kinematics::Transformation T_camera_target = T_target_camera.inverse();
@@ -738,8 +738,8 @@ size_t OmniProjection<DISTORTION_T>::computeReprojectionError(const GridCalibrat
 /// These functions were developed with the help of Lionel Heng and the excellent camodocal
 /// https://github.com/hengli/camodocal
 template <typename DISTORTION_T>
-bool OmniProjection<DISTORTION_T>::estimateTransformation(const GridCalibrationTargetObservation &obs,
-                                                          sm::kinematics::Transformation &out_T_t_c) const {
+bool OmniProjection<DISTORTION_T>::estimateTransformation(const GridCalibrationTargetObservation& obs,
+                                                          sm::kinematics::Transformation& out_T_t_c) const {
     using detail::square;
     std::vector<cv::Point2f> Ms;
     std::vector<cv::Point3f> Ps;

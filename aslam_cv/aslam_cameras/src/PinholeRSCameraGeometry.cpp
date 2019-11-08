@@ -53,13 +53,13 @@ PinholeRSCameraGeometry::~PinholeRSCameraGeometry() {}
 
 // This updates the intrinsic parameters with a small step: i <-- i + di
 // The Jacobians above are with respect to this update function.
-void PinholeRSCameraGeometry::updateIntrinsicsOplus(double *di) {
+void PinholeRSCameraGeometry::updateIntrinsicsOplus(double* di) {
     SM_THROW(NotImplementedException, "The pinhole camera object does not support optimizing intrinsics");
 }
 
 // The amount of time elapsed between the start of the image and the
 // keypoint. For a global shutter camera, this can return Duration(0).
-Duration PinholeRSCameraGeometry::temporalOffset(const keypoint_t &keypoint) const {
+Duration PinholeRSCameraGeometry::temporalOffset(const keypoint_t& keypoint) const {
     // time offset only depends on the line => keypoint(1)
     return Duration(_lineDelay * keypoint(1));
 }
@@ -86,7 +86,7 @@ PinholeRSCameraGeometry PinholeRSCameraGeometry::createDistortedTestGeometry() {
  * \param dx return value, to obtain the distorted point : mx_d = mx_u+dx_u
  * \param dy return value, to obtain the distorted point : my_d = my_u+dy_u
  */
-void PinholeRSCameraGeometry::distortion(double mx_u, double my_u, double *dx_u, double *dy_u) const {
+void PinholeRSCameraGeometry::distortion(double mx_u, double my_u, double* dx_u, double* dy_u) const {
     double mx2_u, my2_u, mxy_u, rho2_u, rad_dist_u;
 
     mx2_u = mx_u * mx_u;
@@ -107,8 +107,8 @@ void PinholeRSCameraGeometry::distortion(double mx_u, double my_u, double *dx_u,
  * \param dx return value, to obtain the distorted point : mx_d = mx_u+dx_u
  * \param dy return value, to obtain the distorted point : my_d = my_u+dy_u
  */
-void PinholeRSCameraGeometry::distortion(double mx_u, double my_u, double *dx_u, double *dy_u, double *dxdmx,
-                                         double *dydmx, double *dxdmy, double *dydmy) const {
+void PinholeRSCameraGeometry::distortion(double mx_u, double my_u, double* dx_u, double* dy_u, double* dxdmx,
+                                         double* dydmx, double* dxdmy, double* dydmy) const {
     double mx2_u, my2_u, mxy_u, rho2_u, rad_dist_u;
 
     mx2_u = mx_u * mx_u;
@@ -126,7 +126,7 @@ void PinholeRSCameraGeometry::distortion(double mx_u, double my_u, double *dx_u,
 }
 
 // Use Gauss-Newton to undistort.
-void PinholeRSCameraGeometry::undistortGN(double u_d, double v_d, double *u, double *v) const {
+void PinholeRSCameraGeometry::undistortGN(double u_d, double v_d, double* u, double* v) const {
     *u = u_d;
     *v = v_d;
 
@@ -154,7 +154,7 @@ void PinholeRSCameraGeometry::undistortGN(double u_d, double v_d, double *u, dou
 }
 
 void PinholeRSCameraGeometry::setIntrinsicsVectorImplementation(
-    const PinholeRSCameraGeometry::traits_t::intrinsics_t &intrinsics) {
+    const PinholeRSCameraGeometry::traits_t::intrinsics_t& intrinsics) {
     _fu = intrinsics(0);
     _fv = intrinsics(1);
     _cu = intrinsics(2);

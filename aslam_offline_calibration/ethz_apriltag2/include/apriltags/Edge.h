@@ -33,7 +33,7 @@ class Edge {
     Edge() : pixelIdxA(), pixelIdxB(), cost() {}
 
     //! Compare edges based on cost
-    inline bool operator<(const Edge &other) const { return (cost < other.cost); }
+    inline bool operator<(const Edge& other) const { return (cost < other.cost); }
 
     //! Cost of an edge between two adjacent pixels; -1 if no edge here
     /*! An edge exists between adjacent pixels if the magnitude of the
@@ -45,11 +45,11 @@ class Edge {
     static int edgeCost(float theta0, float theta1, float mag1);
 
     //! Calculates and inserts up to four edges into 'edges', a vector of Edges.
-    static void calcEdges(float theta0, int x, int y, const FloatImage &theta, const FloatImage &mag,
-                          std::vector<Edge> &edges, size_t &nEdges);
+    static void calcEdges(float theta0, int x, int y, const FloatImage& theta, const FloatImage& mag,
+                          std::vector<Edge>& edges, size_t& nEdges);
 
     //! Process edges in order of increasing cost, merging clusters if we can do so without exceeding the thetaThresh.
-    static void mergeEdges(std::vector<Edge> &edges, UnionFindSimple &uf, float tmin[], float tmax[], float mmin[],
+    static void mergeEdges(std::vector<Edge>& edges, UnionFindSimple& uf, float tmin[], float tmax[], float mmin[],
                            float mmax[]);
 };
 

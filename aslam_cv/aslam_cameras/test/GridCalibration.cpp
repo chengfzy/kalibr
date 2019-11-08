@@ -68,7 +68,7 @@ TEST(GridCalibrationTestSuite, testSerialization) {
         ASSERT_TRUE(detector.findTarget(obs.image(), obs2));
 
         SCOPED_TRACE("");
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         FAIL() << e.what();
     }
 }
@@ -121,7 +121,7 @@ TEST(GridCalibrationTestSuite, testCalibrationTargetCheckerboard) {
         SM_DEBUG_STREAM("Transformation" << std::endl << transformation.T() << std::endl);
 
         SCOPED_TRACE("");
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         FAIL() << e.what();
     }
 }
@@ -159,7 +159,7 @@ TEST(GridCalibrationTestSuite, testCalibrationTargetCircleGrid) {
         ASSERT_TRUE(detector.findTargetNoTransformation(image, obs));
 
         SCOPED_TRACE("");
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         FAIL() << e.what();
     }
 }

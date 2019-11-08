@@ -89,8 +89,8 @@ void exportKeypoint() {
 
 //       class_< ReprojectionError<frame_t>, boost::shared_ptr<ReprojectionError<frame_t> >, bases< ErrorTerm > >(
 //       name.c_str(),
-//     		  init<const frame_t * , int ,HomogeneousExpression, CameraDesignVariable<geometry_t> >( (name + "( frame,
-//     keypointIndex, homogeneousPointExpression, CameraDesignVariable)").c_str()) )
+//     		  init<const frame_t * , int ,HomogeneousExpression, CameraDesignVariable<geometry_t> >( (name + "(
+//     frame, keypointIndex, homogeneousPointExpression, CameraDesignVariable)").c_str()) )
 // 			;
 
 //       class_< SimpleReprojectionError<frame_t>, boost::shared_ptr<SimpleReprojectionError<frame_t> >, bases<

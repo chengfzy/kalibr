@@ -12,7 +12,7 @@ template <typename C>
 Frame<C>::~Frame() {}
 
 template <typename C>
-const typename Frame<C>::camera_geometry_t &Frame<C>::geometry() const {
+const typename Frame<C>::camera_geometry_t& Frame<C>::geometry() const {
     return *_geometry;
 }
 
@@ -22,7 +22,7 @@ boost::shared_ptr<C> Frame<C>::geometryPtr() const {
 }
 
 template <typename C>
-void Frame<C>::setGeometryBase(const boost::shared_ptr<cameras::CameraGeometryBase> &geometry) {
+void Frame<C>::setGeometryBase(const boost::shared_ptr<cameras::CameraGeometryBase>& geometry) {
     SM_ASSERT_TRUE(Exception, geometry.get() != NULL, "Cannot set a null geometry pointer. Illegal!");
     boost::shared_ptr<C> cam = boost::dynamic_pointer_cast<C>(geometry);
     SM_ASSERT_TRUE(Exception, cam.get() != NULL,
@@ -32,7 +32,7 @@ void Frame<C>::setGeometryBase(const boost::shared_ptr<cameras::CameraGeometryBa
 }
 
 template <typename C>
-void Frame<C>::setGeometry(const boost::shared_ptr<typename Frame<C>::camera_geometry_t> &cameraGeometryPtr) {
+void Frame<C>::setGeometry(const boost::shared_ptr<typename Frame<C>::camera_geometry_t>& cameraGeometryPtr) {
     _geometry = cameraGeometryPtr;
 }
 
@@ -47,27 +47,27 @@ void Frame<C>::clearKeypoints() {
 }
 
 template <typename C>
-const typename Frame<C>::keypoint_t &Frame<C>::keypoint(size_t i) const {
+const typename Frame<C>::keypoint_t& Frame<C>::keypoint(size_t i) const {
     SM_ASSERT_LT_DBG(IndexOutOfBoundsException, i, _keypoints.size(), "Keypoint index out of bounds");
     return _keypoints[i];
 }
 
 template <typename C>
-typename Frame<C>::keypoint_t &Frame<C>::keypoint(size_t i) {
+typename Frame<C>::keypoint_t& Frame<C>::keypoint(size_t i) {
     SM_ASSERT_LT_DBG(IndexOutOfBoundsException, i, _keypoints.size(), "Keypoint index out of bounds");
 
     return _keypoints[i];
 }
 
 template <typename C>
-typename Frame<C>::keypoint_t &Frame<C>::keypointChecked(size_t i) {
+typename Frame<C>::keypoint_t& Frame<C>::keypointChecked(size_t i) {
     SM_ASSERT_LT(IndexOutOfBoundsException, i, _keypoints.size(), "Keypoint index out of bounds");
 
     return _keypoints[i];
 }
 
 template <typename C>
-const typename Frame<C>::keypoint_t &Frame<C>::keypointChecked(size_t i) const {
+const typename Frame<C>::keypoint_t& Frame<C>::keypointChecked(size_t i) const {
     SM_ASSERT_LT(IndexOutOfBoundsException, i, _keypoints.size(), "Keypoint index out of bounds");
 
     return _keypoints[i];
@@ -81,30 +81,30 @@ Time Frame<C>::keypointTime(size_t i) const {
 }
 
 template <typename C>
-Time Frame<C>::keypointTime(const KeypointIdentifier &kid) const {
+Time Frame<C>::keypointTime(const KeypointIdentifier& kid) const {
     return keypointTime(kid.keypointIndex);
 }
 
 // Keypoints can only be added, never removed. This is because data associations between
 // frames are stored as indices.
 template <typename C>
-void Frame<C>::addKeypoint(const keypoint_t &keypoint) {
+void Frame<C>::addKeypoint(const keypoint_t& keypoint) {
     _keypoints.push_back(keypoint);
 }
 
 template <typename C>
-void Frame<C>::addKeypoints(const keypoint_list_t &keypoints) {
+void Frame<C>::addKeypoints(const keypoint_list_t& keypoints) {
     _keypoints.insert(_keypoints.end(), keypoints.begin(), keypoints.end());
 }
 
 template <typename C>
-typename Frame<C>::keypoint_t &Frame<C>::addKeypoint() {
+typename Frame<C>::keypoint_t& Frame<C>::addKeypoint() {
     _keypoints.push_back(typename Frame<C>::keypoint_t());
     return _keypoints[_keypoints.size() - 1];
 }
 
 template <typename C>
-KeypointBase &Frame<C>::addBaseKeypoint() {
+KeypointBase& Frame<C>::addBaseKeypoint() {
     return addKeypoint();
 }
 
@@ -124,12 +124,12 @@ boost::shared_ptr<const cameras::CameraGeometryBase> Frame<C>::geometryBase() co
 }
 
 template <typename C>
-const KeypointBase &Frame<C>::keypointBase(size_t i) const {
+const KeypointBase& Frame<C>::keypointBase(size_t i) const {
     return keypoint(i);
 }
 
 template <typename C>
-KeypointBase &Frame<C>::keypointBase(size_t i) {
+KeypointBase& Frame<C>::keypointBase(size_t i) {
     return keypoint(i);
 }
 
@@ -141,14 +141,14 @@ size_t Frame<C>::numKeypoints() const {
 /// \brief compute the projection for a 4x1 homogeneous point
 ///        returns true if the projection was successful
 template <typename C>
-bool Frame<C>::computeProjection4(const Eigen::Vector4d &ph, Eigen::VectorXd &outReprojection) const {
+bool Frame<C>::computeProjection4(const Eigen::Vector4d& ph, Eigen::VectorXd& outReprojection) const {
     return _geometry->homogeneousToKeypoint(ph, outReprojection);
 }
 
 /// \brief compute the projection for a 3x1 point
 ///        returns true if the projection was successful
 template <typename C>
-bool Frame<C>::computeProjection3(const Eigen::Vector3d &ph, Eigen::VectorXd &outReprojection) const {
+bool Frame<C>::computeProjection3(const Eigen::Vector3d& ph, Eigen::VectorXd& outReprojection) const {
     return _geometry->euclideanToKeypoint(ph, outReprojection);
     return _geometry->euclideanToKeypoint(ph, outReprojection);
     ;
@@ -157,20 +157,20 @@ bool Frame<C>::computeProjection3(const Eigen::Vector3d &ph, Eigen::VectorXd &ou
 /// \brief compute the projection for an uncertain homogeneous point
 ///        returns true if the projection was successful
 template <typename C>
-bool Frame<C>::computeProjectionUhp(const sm::kinematics::UncertainHomogeneousPoint &ph,
-                                    Eigen::VectorXd &outReprojection) const {
+bool Frame<C>::computeProjectionUhp(const sm::kinematics::UncertainHomogeneousPoint& ph,
+                                    Eigen::VectorXd& outReprojection) const {
     return _geometry->homogeneousToKeypoint(ph.toHomogeneous(), outReprojection);
     ;
 }
 
 /// \brief compute the reprojection error for this keypoint from a Euclidean point
 template <typename C>
-bool Frame<C>::computeReprojectionError3(size_t i, const Eigen::Vector3d &p, double &outReprojectionError) const {
+bool Frame<C>::computeReprojectionError3(size_t i, const Eigen::Vector3d& p, double& outReprojectionError) const {
     SM_ASSERT_LT_DBG(IndexOutOfBoundsException, i, numKeypoints(), "Index out of bounds");
     measurement_t y;
     bool success = _geometry->euclideanToKeypoint(p, y);
     if (success) {
-        const keypoint_t &k = _keypoints[i];
+        const keypoint_t& k = _keypoints[i];
         y -= k.y();
         outReprojectionError = y.dot(k.invR() * y);
     }
@@ -179,12 +179,12 @@ bool Frame<C>::computeReprojectionError3(size_t i, const Eigen::Vector3d &p, dou
 
 /// \brief compute the reprojection error for this keypoint from a Homogeneous point
 template <typename C>
-bool Frame<C>::computeReprojectionError4(size_t i, const Eigen::Vector4d &p, double &outReprojectionError) const {
+bool Frame<C>::computeReprojectionError4(size_t i, const Eigen::Vector4d& p, double& outReprojectionError) const {
     SM_ASSERT_LT_DBG(IndexOutOfBoundsException, i, numKeypoints(), "Index out of bounds");
     measurement_t y;
     bool success = _geometry->homogeneousToKeypoint(p, y);
     if (success) {
-        const keypoint_t &k = _keypoints[i];
+        const keypoint_t& k = _keypoints[i];
         y -= k.y();
         outReprojectionError = y.dot(k.invR() * y);
     }
@@ -193,15 +193,15 @@ bool Frame<C>::computeReprojectionError4(size_t i, const Eigen::Vector4d &p, dou
 
 /// \brief compute the reprojection error for this keypoint from an uncertain Homogeneous point
 template <typename C>
-bool Frame<C>::computeReprojectionErrorUhp(size_t i, const sm::kinematics::UncertainHomogeneousPoint &p,
-                                           double &outReprojectionError) const {
+bool Frame<C>::computeReprojectionErrorUhp(size_t i, const sm::kinematics::UncertainHomogeneousPoint& p,
+                                           double& outReprojectionError) const {
     SM_ASSERT_LT_DBG(IndexOutOfBoundsException, i, numKeypoints(), "Index out of bounds");
     measurement_t y;
     typename camera_geometry_t::jacobian_homogeneous_t J;
     typename camera_geometry_t::covariance_t invR;
     bool success = _geometry->homogeneousToKeypoint(p.toHomogeneous(), y, J);
     if (success) {
-        const keypoint_t &k = _keypoints[i];
+        const keypoint_t& k = _keypoints[i];
         y -= k.y();
 
         invR = (k.invR().inverse() + J * p.U4() * J.transpose()).inverse();
@@ -217,42 +217,42 @@ bool Frame<C>::computeReprojectionErrorUhp(size_t i, const sm::kinematics::Uncer
 
 /// \brief compute the reprojection error for this keypoint from a Euclidean point
 template <typename C>
-bool Frame<C>::computeReprojectionError3(const KeypointIdentifier &kid, const Eigen::Vector3d &p,
-                                         double &outReprojectionError) const {
+bool Frame<C>::computeReprojectionError3(const KeypointIdentifier& kid, const Eigen::Vector3d& p,
+                                         double& outReprojectionError) const {
     return computeReprojectionError3(kid.keypointIndex, p, outReprojectionError);
 }
 
 /// \brief compute the reprojection error for this keypoint from a Homogeneous point
 template <typename C>
-bool Frame<C>::computeReprojectionError4(const KeypointIdentifier &kid, const Eigen::Vector4d &p,
-                                         double &outReprojectionError) const {
+bool Frame<C>::computeReprojectionError4(const KeypointIdentifier& kid, const Eigen::Vector4d& p,
+                                         double& outReprojectionError) const {
     return computeReprojectionError4(kid.keypointIndex, p, outReprojectionError);
 }
 
 /// \brief compute the reprojection error for this keypoint from an uncertain Homogeneous point
 template <typename C>
-bool Frame<C>::computeReprojectionErrorUhp(const KeypointIdentifier &kid,
-                                           const sm::kinematics::UncertainHomogeneousPoint &p,
-                                           double &outReprojectionError) const {
+bool Frame<C>::computeReprojectionErrorUhp(const KeypointIdentifier& kid,
+                                           const sm::kinematics::UncertainHomogeneousPoint& p,
+                                           double& outReprojectionError) const {
     return computeReprojectionErrorUhp(kid.keypointIndex, p, outReprojectionError);
 }
 
 /// \brief get the keypoint associated with this identifier.
 template <typename C>
-void Frame<C>::getKeypoint(const KeypointIdentifier &kid, keypoint_t &outKeypoint) const {
+void Frame<C>::getKeypoint(const KeypointIdentifier& kid, keypoint_t& outKeypoint) const {
     SM_ASSERT_LT_DBG(IndexOutOfBoundsException, kid.keypointIndex, numKeypoints(), "Index out of bounds");
     outKeypoint = keypoint(kid.keypointIndex);
 }
 
 /// \brief get a const ref to the list of keypoints.
 template <typename C>
-const typename Frame<C>::keypoint_list_t &Frame<C>::getKeypoints() const {
+const typename Frame<C>::keypoint_list_t& Frame<C>::getKeypoints() const {
     return _keypoints;
 }
 
 template <typename C>
-bool Frame<C>::isBinaryEqual(const FrameBase &rhs) const {
-    const Frame<C> *F = dynamic_cast<const Frame<C> *>(&rhs);
+bool Frame<C>::isBinaryEqual(const FrameBase& rhs) const {
+    const Frame<C>* F = dynamic_cast<const Frame<C>*>(&rhs);
     if (!F) {
         return false;
     }
@@ -261,7 +261,7 @@ bool Frame<C>::isBinaryEqual(const FrameBase &rhs) const {
 }
 
 template <typename C>
-bool Frame<C>::isBinaryEqual(const Frame<C> &rhs) const {
+bool Frame<C>::isBinaryEqual(const Frame<C>& rhs) const {
     bool isEqual = true;
 
     isEqual = isEqual && SM_CHECKMEMBERSSAME(rhs, _image) && SM_CHECKMEMBERSSAME(rhs, _stamp) &&
@@ -300,10 +300,10 @@ void Frame<C>::setRandom() {
 
 /// \brief get the landmark for keypoint k. Return true on success
 template <typename C>
-bool Frame<C>::getLandmark(size_t k, Eigen::Vector4d &outLandmark) const {
+bool Frame<C>::getLandmark(size_t k, Eigen::Vector4d& outLandmark) const {
     SM_ASSERT_LT_DBG(IndexOutOfBoundsException, k, numKeypoints(), "Index out of bounds");
 
-    const sm::kinematics::UncertainHomogeneousPoint *p = _keypoints[k].landmarkPtr();
+    const sm::kinematics::UncertainHomogeneousPoint* p = _keypoints[k].landmarkPtr();
 
     if (p) {
         outLandmark = p->toHomogeneous();
@@ -314,18 +314,18 @@ bool Frame<C>::getLandmark(size_t k, Eigen::Vector4d &outLandmark) const {
 
 /// \brief get the landmark for keypoint k. Return true on success
 template <typename C>
-bool Frame<C>::getLandmark(const KeypointIdentifier kid, Eigen::Vector4d &outLandmark) const {
+bool Frame<C>::getLandmark(const KeypointIdentifier kid, Eigen::Vector4d& outLandmark) const {
     return getLandmark(kid.keypointIndex, outLandmark);
 }
 
 /// \brief get the back projection for keypoint i
 template <typename C>
-void Frame<C>::getBackProjection(size_t i, BackProjection &outBackProjection) const {
+void Frame<C>::getBackProjection(size_t i, BackProjection& outBackProjection) const {
     SM_ASSERT_LT_DBG(IndexOutOfBoundsException, i, numKeypoints(), "Index out of bounds");
 
     outBackProjection.viewOrigin.setZero();
 
-    const keypoint_t &k = _keypoints[i];
+    const keypoint_t& k = _keypoints[i];
     if (k.isBackProjectionSet()) {
         outBackProjection.ray = k.backProjection()->mean();
     } else {
@@ -341,18 +341,18 @@ void Frame<C>::getBackProjection(size_t i, BackProjection &outBackProjection) co
 
 /// \brief get the back projection for keypoint kid
 template <typename C>
-void Frame<C>::getBackProjection(const KeypointIdentifier &kid, BackProjection &outBackProjection) const {
+void Frame<C>::getBackProjection(const KeypointIdentifier& kid, BackProjection& outBackProjection) const {
     getBackProjection(kid.keypointIndex, outBackProjection);
 }
 
 /// \brief get the back projection for keypoint i
 template <typename C>
-void Frame<C>::getUncertainBackProjection(size_t i, UncertainBackProjection &outBackProjection) const {
+void Frame<C>::getUncertainBackProjection(size_t i, UncertainBackProjection& outBackProjection) const {
     SM_ASSERT_LT_DBG(IndexOutOfBoundsException, i, numKeypoints(), "Index out of bounds");
 
     outBackProjection.viewOrigin.setZero();
 
-    const keypoint_t &k = _keypoints[i];
+    const keypoint_t& k = _keypoints[i];
     if (k.isBackProjectionSet()) {
         outBackProjection = *k.backProjection();
     } else {
@@ -369,8 +369,8 @@ void Frame<C>::getUncertainBackProjection(size_t i, UncertainBackProjection &out
 
 /// \brief get the back projection for keypoint kid
 template <typename C>
-void Frame<C>::getUncertainBackProjection(const KeypointIdentifier &kid,
-                                          UncertainBackProjection &outBackProjection) const {
+void Frame<C>::getUncertainBackProjection(const KeypointIdentifier& kid,
+                                          UncertainBackProjection& outBackProjection) const {
     getUncertainBackProjection(kid.keypointIndex, outBackProjection);
 }
 
@@ -386,7 +386,7 @@ void Frame<C>::computeAllBackProjections(bool doBackProjectionUncertainty) {
 
 template <typename C>
 template <class Archive>
-void Frame<C>::save(Archive &ar, const unsigned int /* version */) const {
+void Frame<C>::save(Archive& ar, const unsigned int /* version */) const {
     ar << BOOST_SERIALIZATION_BASE_OBJECT_NVP(FrameBase);
     ar << BOOST_SERIALIZATION_NVP(_image);
     ar << BOOST_SERIALIZATION_NVP(_stamp);
@@ -397,7 +397,7 @@ void Frame<C>::save(Archive &ar, const unsigned int /* version */) const {
 
 template <typename C>
 template <class Archive>
-void Frame<C>::load(Archive &ar, const unsigned int version) {
+void Frame<C>::load(Archive& ar, const unsigned int version) {
     SM_ASSERT_LE(std::runtime_error, version, (unsigned int)CLASS_SERIALIZATION_VERSION,
                  "Unsupported serialization version");
     // boost::serialization::void_cast_register< aslam::Frame< C >, aslam::FrameBase>(static_cast<aslam::Frame< C >
@@ -422,10 +422,10 @@ void Frame<C>::load(Archive &ar, const unsigned int version) {
 }
 
 template <typename C>
-void Frame<C>::addBaseKeypoints(const KeypointBase *kp, size_t n) {
+void Frame<C>::addBaseKeypoints(const KeypointBase* kp, size_t n) {
     SM_ASSERT_TRUE(Exception, kp != NULL, "Cannot add null keypoints");
     if (n > 0) {
-        const keypoint_t *k = dynamic_cast<const keypoint_t *>(kp);
+        const keypoint_t* k = dynamic_cast<const keypoint_t*>(kp);
         SM_ASSERT_TRUE(Exception, k != NULL,
                        "Unable to cast the pointer to the underlying type of the frame: " << typeid(keypoint_t).name());
         _keypoints.insert(_keypoints.end(), k, k + n);
@@ -433,9 +433,9 @@ void Frame<C>::addBaseKeypoints(const KeypointBase *kp, size_t n) {
 }
 
 template <typename C>
-void Frame<C>::addBaseKeypoint(const KeypointBase *kp) {
+void Frame<C>::addBaseKeypoint(const KeypointBase* kp) {
     SM_ASSERT_TRUE(Exception, kp != NULL, "Cannot add null keypoints");
-    const keypoint_t *k = dynamic_cast<const keypoint_t *>(kp);
+    const keypoint_t* k = dynamic_cast<const keypoint_t*>(kp);
     SM_ASSERT_TRUE(Exception, k != NULL,
                    "Unable to cast the pointer to the underlying type of the frame: " << typeid(keypoint_t).name());
     addKeypoint(*k);

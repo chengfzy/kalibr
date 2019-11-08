@@ -199,7 +199,8 @@ TEST(AslamCameraSystemTestSuite, testCameraSystemSerialization) {
 
 TEST(AslamCameraSystemTestSuite, testFrameSerialization) {
     // boost::serialization::void_cast_register< aslam::SurfDescriptor,
-    // aslam::DescriptorBase>(static_cast<aslam::SurfDescriptor *>(NULL), static_cast< aslam::DescriptorBase * >(NULL) );
+    // aslam::DescriptorBase>(static_cast<aslam::SurfDescriptor *>(NULL), static_cast< aslam::DescriptorBase * >(NULL)
+    // );
     aslam::linkCvSerialization();
 
     try {

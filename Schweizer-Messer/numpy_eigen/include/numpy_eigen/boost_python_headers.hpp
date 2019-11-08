@@ -35,14 +35,14 @@ struct referent_size;
 
 // This bit of code makes sure we have 16 extra bytes to do the pointer alignment for fixed-sized Eigen types
 template <typename T, int A, int B, int C, int D, int E>
-struct referent_size<Eigen::Matrix<T, A, B, C, D, E> &> {
+struct referent_size<Eigen::Matrix<T, A, B, C, D, E>&> {
     // Add 16 bytes so we can get alignment
     BOOST_STATIC_CONSTANT(std::size_t, value = sizeof(Eigen::Matrix<T, A, B, C, D, E>) + 16);
 };
 
 // This bit of code makes sure we have 16 extra bytes to do the pointer alignment for fixed-sized Eigen types
 template <typename T, int A, int B, int C, int D, int E>
-struct referent_size<Eigen::Matrix<T, A, B, C, D, E> const &> {
+struct referent_size<Eigen::Matrix<T, A, B, C, D, E> const&> {
     // Add 16 bytes so we can get alignment
     BOOST_STATIC_CONSTANT(std::size_t, value = sizeof(Eigen::Matrix<T, A, B, C, D, E>) + 16);
 };
@@ -63,8 +63,8 @@ namespace python {
 namespace converter {
 
 template <typename S, int A, int B, int C, int D, int E>
-struct rvalue_from_python_data<Eigen::Matrix<S, A, B, C, D, E> const &>
-    : rvalue_from_python_storage<Eigen::Matrix<S, A, B, C, D, E> const &> {
+struct rvalue_from_python_data<Eigen::Matrix<S, A, B, C, D, E> const&>
+    : rvalue_from_python_storage<Eigen::Matrix<S, A, B, C, D, E> const&> {
     typedef typename Eigen::Matrix<S, A, B, C, D, E> T;
 #if (!defined(__MWERKS__) || __MWERKS__ >= 0x3000) && (!defined(__EDG_VERSION__) || __EDG_VERSION__ >= 245) && \
     (!defined(__DECCXX_VER) || __DECCXX_VER > 60590014) &&                                                     \
@@ -74,20 +74,20 @@ struct rvalue_from_python_data<Eigen::Matrix<S, A, B, C, D, E> const &>
 #endif
 
     // The usual constructor
-    rvalue_from_python_data(rvalue_from_python_stage1_data const &_stage1) { this->stage1 = _stage1; }
+    rvalue_from_python_data(rvalue_from_python_stage1_data const& _stage1) { this->stage1 = _stage1; }
 
     // This constructor just sets m_convertible -- used by
     // implicitly_convertible<> to perform the final step of the
     // conversion, where the construct() function is already known.
-    rvalue_from_python_data(void *convertible) { this->stage1.convertible = convertible; }
+    rvalue_from_python_data(void* convertible) { this->stage1.convertible = convertible; }
 
     // Destroys any object constructed in the storage.
     ~rvalue_from_python_data() {
         // Realign the pointer and destroy
         if (this->stage1.convertible == this->storage.bytes) {
-            void *storage = reinterpret_cast<void *>(this->storage.bytes);
-            T *aligned = reinterpret_cast<T *>(
-                reinterpret_cast<void *>((reinterpret_cast<size_t>(storage) & ~(size_t(15))) + 16));
+            void* storage = reinterpret_cast<void*>(this->storage.bytes);
+            T* aligned =
+                reinterpret_cast<T*>(reinterpret_cast<void*>((reinterpret_cast<size_t>(storage) & ~(size_t(15))) + 16));
 
             // std::cout << "Destroying " << (void*)aligned << std::endl;
             aligned->T::~T();
@@ -102,13 +102,13 @@ struct rvalue_from_python_data<Eigen::Matrix<S, A, B, C, D, E> const &>
 // a (non-volatile) const reference to a plain value type.
 template <typename S, int A, int B, int C, int D, int E>
 struct arg_rvalue_from_python<Eigen::Matrix<S, A, B, C, D, E> > {
-    typedef Eigen::Matrix<S, A, B, C, D, E> const &T;
+    typedef Eigen::Matrix<S, A, B, C, D, E> const& T;
     typedef typename boost::add_reference<T
                                           // We can't add_const here, or it would be impossible to pass
                                           // auto_ptr<U> args from Python to C++
                                           >::type result_type;
 
-    arg_rvalue_from_python(PyObject *obj)
+    arg_rvalue_from_python(PyObject* obj)
         : m_data(converter::rvalue_from_python_stage1(obj, registered<T>::converters)), m_source(obj) {}
     bool convertible() const { return m_data.stage1.convertible != 0; }
 
@@ -121,28 +121,28 @@ struct arg_rvalue_from_python<Eigen::Matrix<S, A, B, C, D, E> > {
 
         // Here is the magic...
         // Realign the pointer
-        void *storage = reinterpret_cast<void *>(m_data.storage.bytes);
-        void *aligned = reinterpret_cast<void *>((reinterpret_cast<size_t>(storage) & ~(size_t(15))) + 16);
+        void* storage = reinterpret_cast<void*>(m_data.storage.bytes);
+        void* aligned = reinterpret_cast<void*>((reinterpret_cast<size_t>(storage) & ~(size_t(15))) + 16);
 
         return python::detail::void_ptr_to_reference(aligned, (result_type(*)())0);
     }
 
   private:
     rvalue_from_python_data<result_type> m_data;
-    PyObject *m_source;
+    PyObject* m_source;
 };
 
 // Used when T is a plain value (non-pointer, non-reference) type or
 // a (non-volatile) const reference to a plain value type.
 template <typename S, int A, int B, int C, int D, int E>
-struct arg_rvalue_from_python<Eigen::Matrix<S, A, B, C, D, E> const &> {
-    typedef Eigen::Matrix<S, A, B, C, D, E> const &T;
+struct arg_rvalue_from_python<Eigen::Matrix<S, A, B, C, D, E> const&> {
+    typedef Eigen::Matrix<S, A, B, C, D, E> const& T;
     typedef typename boost::add_reference<T
                                           // We can't add_const here, or it would be impossible to pass
                                           // auto_ptr<U> args from Python to C++
                                           >::type result_type;
 
-    arg_rvalue_from_python(PyObject *obj)
+    arg_rvalue_from_python(PyObject* obj)
         : m_data(converter::rvalue_from_python_stage1(obj, registered<T>::converters)), m_source(obj) {}
     bool convertible() const { return m_data.stage1.convertible != 0; }
 
@@ -155,28 +155,28 @@ struct arg_rvalue_from_python<Eigen::Matrix<S, A, B, C, D, E> const &> {
 
         // Here is the magic...
         // Realign the pointer
-        void *storage = reinterpret_cast<void *>(m_data.storage.bytes);
-        void *aligned = reinterpret_cast<void *>((reinterpret_cast<size_t>(storage) & ~(size_t(15))) + 16);
+        void* storage = reinterpret_cast<void*>(m_data.storage.bytes);
+        void* aligned = reinterpret_cast<void*>((reinterpret_cast<size_t>(storage) & ~(size_t(15))) + 16);
 
         return python::detail::void_ptr_to_reference(aligned, (result_type(*)())0);
     }
 
   private:
     rvalue_from_python_data<result_type> m_data;
-    PyObject *m_source;
+    PyObject* m_source;
 };
 
 // Used when T is a plain value (non-pointer, non-reference) type or
 // a (non-volatile) const reference to a plain value type.
 template <typename S, int A, int B, int C, int D, int E>
 struct arg_rvalue_from_python<Eigen::Matrix<S, A, B, C, D, E> const> {
-    typedef Eigen::Matrix<S, A, B, C, D, E> const &T;
+    typedef Eigen::Matrix<S, A, B, C, D, E> const& T;
     typedef typename boost::add_reference<T
                                           // We can't add_const here, or it would be impossible to pass
                                           // auto_ptr<U> args from Python to C++
                                           >::type result_type;
 
-    arg_rvalue_from_python(PyObject *obj)
+    arg_rvalue_from_python(PyObject* obj)
         : m_data(converter::rvalue_from_python_stage1(obj, registered<T>::converters)), m_source(obj) {}
     bool convertible() const { return m_data.stage1.convertible != 0; }
 
@@ -189,15 +189,15 @@ struct arg_rvalue_from_python<Eigen::Matrix<S, A, B, C, D, E> const> {
 
         // Here is the magic...
         // Realign the pointer
-        void *storage = reinterpret_cast<void *>(m_data.storage.bytes);
-        void *aligned = reinterpret_cast<void *>((reinterpret_cast<size_t>(storage) & ~(size_t(15))) + 16);
+        void* storage = reinterpret_cast<void*>(m_data.storage.bytes);
+        void* aligned = reinterpret_cast<void*>((reinterpret_cast<size_t>(storage) & ~(size_t(15))) + 16);
 
         return python::detail::void_ptr_to_reference(aligned, (result_type(*)())0);
     }
 
   private:
     rvalue_from_python_data<result_type> m_data;
-    PyObject *m_source;
+    PyObject* m_source;
 };
 
 }  // namespace converter

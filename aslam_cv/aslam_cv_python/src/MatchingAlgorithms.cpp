@@ -5,7 +5,7 @@
 #include <numpy_eigen/boost_python_headers.hpp>
 
 template <typename INDEX_T>
-void exportMatch(const std::string &indexName) {
+void exportMatch(const std::string& indexName) {
     using namespace boost::python;
     using namespace aslam;
 
@@ -63,8 +63,8 @@ void exportMatchingAlgorithms() {
 
     class_<DescriptorMatchingAlgorithm, boost::shared_ptr<DescriptorMatchingAlgorithm>,
            bases<KeypointIdentifierMatchingAlgorithm> >("DescriptorMatchingAlgorithm", init<>())
-        .def(init<const sm::PropertyTree &>())
-        .def(init<MultiFrameId, int, FrameBase *, MultiFrameId, int, FrameBase *, float>())
+        .def(init<const sm::PropertyTree&>())
+        .def(init<MultiFrameId, int, FrameBase*, MultiFrameId, int, FrameBase*, float>())
         .def("initParameters", &DescriptorMatchingAlgorithm::initParameters)
         .def("setParameters", &DescriptorMatchingAlgorithm::setParameters)
         .def("setFrames", &DescriptorMatchingAlgorithm::setFrames);

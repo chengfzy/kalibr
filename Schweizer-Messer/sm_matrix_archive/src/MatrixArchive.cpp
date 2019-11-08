@@ -25,19 +25,19 @@ void MatrixArchive::clear() {
 }
 
 // clears a specific value from the archive.
-void MatrixArchive::clear(std::string const &entryName) {
+void MatrixArchive::clear(std::string const& entryName) {
     m_values.erase(entryName);
     m_values.erase(entryName);
 }
 
-void MatrixArchive::setScalar(std::string const &scalarName, double scalar) {
+void MatrixArchive::setScalar(std::string const& scalarName, double scalar) {
     validateName(scalarName, SM_SOURCE_FILE_POS);
-    Eigen::MatrixXd &M = m_values[scalarName];
+    Eigen::MatrixXd& M = m_values[scalarName];
     M.resize(1, 1);
     M(0, 0) = scalar;
 }
 
-void MatrixArchive::setString(std::string const &stringName, std::string const &value) {
+void MatrixArchive::setString(std::string const& stringName, std::string const& value) {
     validateName(stringName, SM_SOURCE_FILE_POS);
     if (m_values.count(stringName) > 0) {
         m_values.erase(stringName);
@@ -45,13 +45,13 @@ void MatrixArchive::setString(std::string const &stringName, std::string const &
     m_strings[stringName] = value;
 }
 
-const MatrixArchive::string_map_t &MatrixArchive::getStrings() const { return m_strings; }
+const MatrixArchive::string_map_t& MatrixArchive::getStrings() const { return m_strings; }
 
-void MatrixArchive::getMatrix(std::string const &matrixName, Eigen::MatrixXd &outMatrix) const {
+void MatrixArchive::getMatrix(std::string const& matrixName, Eigen::MatrixXd& outMatrix) const {
     outMatrix = getMatrix(matrixName);
 }
 
-Eigen::MatrixXd &MatrixArchive::createMatrix(std::string const &matrixName, int rows, int cols,
+Eigen::MatrixXd& MatrixArchive::createMatrix(std::string const& matrixName, int rows, int cols,
                                              bool overwriteExisting) {
     if (!overwriteExisting) {
         matrix_map_t::const_iterator it = m_values.find(matrixName);
@@ -61,12 +61,12 @@ Eigen::MatrixXd &MatrixArchive::createMatrix(std::string const &matrixName, int 
         }
     }
 
-    Eigen::MatrixXd &val = m_values[matrixName];
+    Eigen::MatrixXd& val = m_values[matrixName];
     m_values[matrixName].resize(rows, cols);
     return val;
 }
 
-const Eigen::MatrixXd &MatrixArchive::getMatrix(std::string const &matrixName) const {
+const Eigen::MatrixXd& MatrixArchive::getMatrix(std::string const& matrixName) const {
     matrix_map_t::const_iterator it = m_values.find(matrixName);
     if (it == m_values.end()) {
         SM_THROW(MatrixArchiveException, "There is no matrix named \"" << matrixName << "\" in the archive");
@@ -74,46 +74,46 @@ const Eigen::MatrixXd &MatrixArchive::getMatrix(std::string const &matrixName) c
 
     return it->second;
 }
-Eigen::MatrixXd &MatrixArchive::getMatrix(std::string const &matrixName) {
-    return const_cast<Eigen::MatrixXd &>(const_cast<const MatrixArchive &>(*this).getMatrix(matrixName));
+Eigen::MatrixXd& MatrixArchive::getMatrix(std::string const& matrixName) {
+    return const_cast<Eigen::MatrixXd&>(const_cast<const MatrixArchive&>(*this).getMatrix(matrixName));
 }
 
-void MatrixArchive::getVector(std::string const &vectorName, Eigen::VectorXd &outVector) const {
+void MatrixArchive::getVector(std::string const& vectorName, Eigen::VectorXd& outVector) const {
     matrix_map_t::const_iterator it = m_values.find(vectorName);
     if (it == m_values.end()) {
         SM_THROW(MatrixArchiveException, "There is no vector named \"" << vectorName << "\" in the archive");
     }
-    Eigen::MatrixXd const &M = it->second;
+    Eigen::MatrixXd const& M = it->second;
     SM_ASSERT_EQ(MatrixArchiveException, M.cols(), 1, "The stored value is not a vector");
 
     outVector = M.col(0);
 }
 
-void MatrixArchive::getScalar(std::string const &scalarName, double &outScalar) const {
+void MatrixArchive::getScalar(std::string const& scalarName, double& outScalar) const {
     outScalar = getScalar(scalarName);
 }
-double MatrixArchive::getScalar(std::string const &scalarName) const {
+double MatrixArchive::getScalar(std::string const& scalarName) const {
     matrix_map_t::const_iterator it = m_values.find(scalarName);
     if (it == m_values.end()) {
         SM_THROW(MatrixArchiveException, "There is no scalar named \"" << scalarName << "\" in the archive");
     }
 
-    Eigen::MatrixXd const &M = it->second;
+    Eigen::MatrixXd const& M = it->second;
     SM_ASSERT_EQ(MatrixArchiveException, M.rows(), 1, "The stored value is not a scalar");
     SM_ASSERT_EQ(MatrixArchiveException, M.cols(), 1, "The stored value is not a scalar");
 
     return M(0, 0);
 }
 
-void MatrixArchive::getString(std::string const &stringName, std::string &stringValue) const {
+void MatrixArchive::getString(std::string const& stringName, std::string& stringValue) const {
     stringValue = getString(stringName);
 }
 
-const std::string &MatrixArchive::getString(std::string const &stringName) const {
-    return const_cast<MatrixArchive *>(this)->getString(stringName);
+const std::string& MatrixArchive::getString(std::string const& stringName) const {
+    return const_cast<MatrixArchive*>(this)->getString(stringName);
 }
 
-std::string &MatrixArchive::getString(std::string const &stringName) {
+std::string& MatrixArchive::getString(std::string const& stringName) {
     string_map_t::iterator it = m_strings.find(stringName);
     if (it == m_strings.end()) {
         SM_THROW(MatrixArchiveException, "There is no string named \"" << stringName << "\" in the archive");
@@ -121,7 +121,7 @@ std::string &MatrixArchive::getString(std::string const &stringName) {
     return it->second;
 }
 
-void MatrixArchive::validateName(std::string const &name, sm::source_file_pos const & /* sfp */) const {
+void MatrixArchive::validateName(std::string const& name, sm::source_file_pos const& /* sfp */) const {
     if (name.size() > s_fixedNameSize || name.size() == 0) {
         SM_THROW(MatrixArchiveException, "The name \"" << name
                                                        << "\" is an incorrect size. Names length must be between 1 and "
@@ -142,7 +142,7 @@ void MatrixArchive::validateName(std::string const &name, sm::source_file_pos co
 
 bool MatrixArchive::isSystemLittleEndian() const {
     short int word = 0x0001;
-    char *byte = (char *)&word;
+    char* byte = (char*)&word;
     return byte[0] != 0;
 }
 
@@ -154,11 +154,11 @@ MatrixArchive::matrix_map_t::const_iterator MatrixArchive::begin() const { retur
 
 MatrixArchive::matrix_map_t::const_iterator MatrixArchive::end() const { return m_values.end(); }
 
-MatrixArchive::matrix_map_t::const_iterator MatrixArchive::find(std::string const &name) const {
+MatrixArchive::matrix_map_t::const_iterator MatrixArchive::find(std::string const& name) const {
     return m_values.find(name);
 }
 
-void MatrixArchive::writeName(std::ostream &fout, std::string const &name) const {
+void MatrixArchive::writeName(std::ostream& fout, std::string const& name) const {
     // fixed size character name
     validateName(name, SM_SOURCE_FILE_POS);
     fout.fill(' ');
@@ -166,7 +166,7 @@ void MatrixArchive::writeName(std::ostream &fout, std::string const &name) const
     fout << name;
 }
 
-void MatrixArchive::writeMatrixBlock(std::ostream &fout, std::string const &name, Eigen::MatrixXd const &matrix) const {
+void MatrixArchive::writeMatrixBlock(std::ostream& fout, std::string const& name, Eigen::MatrixXd const& matrix) const {
     // start character
     fout.write(&s_magicCharStartAMatrixBlock, 1);
 
@@ -174,33 +174,33 @@ void MatrixArchive::writeMatrixBlock(std::ostream &fout, std::string const &name
 
     // 4 byte rows
     boost::uint32_t rows = matrix.rows();
-    fout.write(reinterpret_cast<const char *>(&rows), 4);
+    fout.write(reinterpret_cast<const char*>(&rows), 4);
 
     // 4 byte columns
     boost::uint32_t cols = matrix.cols();
-    fout.write(reinterpret_cast<const char *>(&cols), 4);
+    fout.write(reinterpret_cast<const char*>(&cols), 4);
 
     // data
     boost::uint32_t dataSize = rows * cols * sizeof(double);
-    fout.write(reinterpret_cast<const char *>(matrix.data()), dataSize);
+    fout.write(reinterpret_cast<const char*>(matrix.data()), dataSize);
 
     // std::cout << "Writing matrix " << name << ", size: " << rows << "x" << cols << ", dataSize: " << dataSize <<
     // std::endl; end character
     fout.write(&s_magicCharEnd, 1);
 }
 
-void MatrixArchive::writeMatrixBlockSwapBytes(std::ostream & /* fout */, std::string const & /* name */,
-                                              Eigen::MatrixXd const & /* matrix */) const {
+void MatrixArchive::writeMatrixBlockSwapBytes(std::ostream& /* fout */, std::string const& /* name */,
+                                              Eigen::MatrixXd const& /* matrix */) const {
     SM_THROW(MatrixArchiveException, "Not Implemented");
 }
 
-void MatrixArchive::readMatrix(std::istream &fin, Eigen::MatrixXd &matrix) const {
+void MatrixArchive::readMatrix(std::istream& fin, Eigen::MatrixXd& matrix) const {
     // 4 byte rows
     boost::uint32_t rows;
-    fin.read(reinterpret_cast<char *>(&rows), 4);
+    fin.read(reinterpret_cast<char*>(&rows), 4);
     // 4 byte columns
     boost::uint32_t cols;
-    fin.read(reinterpret_cast<char *>(&cols), 4);
+    fin.read(reinterpret_cast<char*>(&cols), 4);
 
     // data
 
@@ -208,11 +208,11 @@ void MatrixArchive::readMatrix(std::istream &fin, Eigen::MatrixXd &matrix) const
     std::streamsize dataSize = rows * cols * sizeof(double);
     // std::cout << "Reading matrix \"" << name << "\", size: " << rows << "x" << cols << ", dataSize: " << dataSize <<
     // std::endl;
-    fin.read(reinterpret_cast<char *>(matrix.data()), dataSize);
+    fin.read(reinterpret_cast<char*>(matrix.data()), dataSize);
 }
 
-void MatrixArchive::writeStringBlock(std::ostream &fout, std::string const &name,
-                                     std::string const &stringValue) const {
+void MatrixArchive::writeStringBlock(std::ostream& fout, std::string const& name,
+                                     std::string const& stringValue) const {
     // start character
     fout.write(&s_magicCharStartAStringBlock, 1);
 
@@ -220,7 +220,7 @@ void MatrixArchive::writeStringBlock(std::ostream &fout, std::string const &name
 
     // 4 byte rows
     boost::uint32_t stringSize = stringValue.size();
-    fout.write(reinterpret_cast<const char *>(&stringSize), 4);
+    fout.write(reinterpret_cast<const char*>(&stringSize), 4);
 
     fout.write(&stringValue[0], stringSize);
 
@@ -228,18 +228,18 @@ void MatrixArchive::writeStringBlock(std::ostream &fout, std::string const &name
     fout.write(&s_magicCharEnd, 1);
 }
 
-void MatrixArchive::readString(std::istream &fin, std::string &stringValue) const {
+void MatrixArchive::readString(std::istream& fin, std::string& stringValue) const {
     // 4 byte rows
     boost::uint32_t stringSize;
-    fin.read(reinterpret_cast<char *>(&stringSize), 4);
+    fin.read(reinterpret_cast<char*>(&stringSize), 4);
 
     // data
     stringValue.resize(stringSize);
     fin.read(&stringValue[0], stringSize);
 }
 
-MatrixArchive::BlockType MatrixArchive::readBlock(std::istream &fin, std::string &name, Eigen::MatrixXd &matrix,
-                                                  std::string &stringValue) const {
+MatrixArchive::BlockType MatrixArchive::readBlock(std::istream& fin, std::string& name, Eigen::MatrixXd& matrix,
+                                                  std::string& stringValue) const {
     char start, end;
     // start character
     fin.read(&start, 1);
@@ -275,44 +275,44 @@ MatrixArchive::BlockType MatrixArchive::readBlock(std::istream &fin, std::string
     return blockType;
 }
 
-void MatrixArchive::readMatrixSwapBytes(std::istream & /* fin */, std::string & /* name */,
-                                        Eigen::MatrixXd & /* matrix */) const {
+void MatrixArchive::readMatrixSwapBytes(std::istream& /* fin */, std::string& /* name */,
+                                        Eigen::MatrixXd& /* matrix */) const {
     SM_THROW(MatrixArchiveException, "Not Implemented");
 }
 
 // Loads matrices from a file into the archive.
-void MatrixArchive::load(std::string const &amaFilePath) {
+void MatrixArchive::load(std::string const& amaFilePath) {
     std::set<std::string> names;
     load(amaFilePath, names);
 }
-void MatrixArchive::load(boost::filesystem::path const &amaFilePath) {
+void MatrixArchive::load(boost::filesystem::path const& amaFilePath) {
     std::set<std::string> names;
     load(amaFilePath, names);
 }
 
 // Saves matrices from a file into the archive.
-void MatrixArchive::save(std::string const &amaFilePath) const {
+void MatrixArchive::save(std::string const& amaFilePath) const {
     std::set<std::string> names;
     save(amaFilePath, names);
 }
 
-void MatrixArchive::save(boost::filesystem::path const &amaFilePath) const {
+void MatrixArchive::save(boost::filesystem::path const& amaFilePath) const {
     std::set<std::string> names;
     save(amaFilePath, names);
 }
 
 // Appends matrices to a file.
-void MatrixArchive::append(std::string const &amaFilePath) const {
+void MatrixArchive::append(std::string const& amaFilePath) const {
     std::set<std::string> names;
     append(amaFilePath, names);
 }
 
-void MatrixArchive::append(boost::filesystem::path const &amaFilePath) const {
+void MatrixArchive::append(boost::filesystem::path const& amaFilePath) const {
     std::set<std::string> names;
     append(amaFilePath, names);
 }
 
-void MatrixArchive::save(boost::filesystem::path const &amaFilePath, std::set<std::string> const &validNames) const {
+void MatrixArchive::save(boost::filesystem::path const& amaFilePath, std::set<std::string> const& validNames) const {
     std::ofstream fout(amaFilePath.string().c_str(), std::ios::binary);
     SM_ASSERT_TRUE(MatrixArchiveException, fout.good(),
                    "Unable to open file " << amaFilePath.string() << " for writing");
@@ -322,12 +322,12 @@ void MatrixArchive::save(boost::filesystem::path const &amaFilePath, std::set<st
     fout.close();
 }
 
-void MatrixArchive::save(std::ostream &fout, std::set<std::string> const &validNames) const {
+void MatrixArchive::save(std::ostream& fout, std::set<std::string> const& validNames) const {
     saveMatrices(fout, validNames);
     saveStrings(fout, validNames);
 }
 
-void MatrixArchive::saveMatrices(std::ostream &fout, std::set<std::string> const &validNames) const {
+void MatrixArchive::saveMatrices(std::ostream& fout, std::set<std::string> const& validNames) const {
     matrix_map_t::const_iterator it = m_values.begin();
     for (; it != m_values.end(); it++) {
         if (validNames.empty() || validNames.count(it->first) > 0) {
@@ -341,7 +341,7 @@ void MatrixArchive::saveMatrices(std::ostream &fout, std::set<std::string> const
         }
     }
 }
-void MatrixArchive::saveStrings(std::ostream &fout, std::set<std::string> const &validNames) const {
+void MatrixArchive::saveStrings(std::ostream& fout, std::set<std::string> const& validNames) const {
     string_map_t::const_iterator it = m_strings.begin();
     for (; it != m_strings.end(); it++) {
         if (validNames.empty() || validNames.count(it->first) > 0) {
@@ -353,7 +353,7 @@ void MatrixArchive::saveStrings(std::ostream &fout, std::set<std::string> const 
     }
 }
 
-void MatrixArchive::load(boost::filesystem::path const &amaFilePath, std::set<std::string> const &validNames) {
+void MatrixArchive::load(boost::filesystem::path const& amaFilePath, std::set<std::string> const& validNames) {
     std::ifstream fin(amaFilePath.string().c_str(), std::ios::binary);
     SM_ASSERT_TRUE(MatrixArchiveException, fin.good(), "Unable to open file " << amaFilePath << " for reading");
 
@@ -378,8 +378,8 @@ void MatrixArchive::load(boost::filesystem::path const &amaFilePath, std::set<st
     }
 }
 
-void MatrixArchive::append(boost::filesystem::path const &amaFilePath,
-                           std::set<std::string> const & /* validNames */) const {
+void MatrixArchive::append(boost::filesystem::path const& amaFilePath,
+                           std::set<std::string> const& /* validNames */) const {
     std::ofstream fout(amaFilePath.string().c_str(), std::ios::binary | std::ios::app);
     SM_ASSERT_TRUE(MatrixArchiveException, fout.good(),
                    "Unable to open file " << amaFilePath.string() << " for writing");
@@ -387,10 +387,10 @@ void MatrixArchive::append(boost::filesystem::path const &amaFilePath,
 
 size_t MatrixArchive::maxNameSize() { return s_fixedNameSize; }
 
-void MatrixArchive::setMatrixXd(std::string const &matrixName, Eigen::MatrixXd const &matrix) {
+void MatrixArchive::setMatrixXd(std::string const& matrixName, Eigen::MatrixXd const& matrix) {
     setMatrix(matrixName, matrix);
 }
-void MatrixArchive::setVectorXd(std::string const &matrixName, Eigen::VectorXd const &matrix) {
+void MatrixArchive::setVectorXd(std::string const& matrixName, Eigen::VectorXd const& matrix) {
     setVector(matrixName, matrix);
 }
 }  // namespace sm

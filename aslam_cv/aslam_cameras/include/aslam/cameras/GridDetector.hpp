@@ -51,7 +51,7 @@ class GridDetector {
 
         /// \brief Serialization support
         template <class Archive>
-        void save(Archive &ar, const unsigned int /*version*/) const {
+        void save(Archive& ar, const unsigned int /*version*/) const {
             ar << BOOST_SERIALIZATION_NVP(plotCornerReprojection);
             ar << BOOST_SERIALIZATION_NVP(imageStepping);
             ar << BOOST_SERIALIZATION_NVP(filterCornerOutliers);
@@ -59,7 +59,7 @@ class GridDetector {
             ar << BOOST_SERIALIZATION_NVP(filterCornerMinReprojError);
         }
         template <class Archive>
-        void load(Archive &ar, const unsigned int /*version*/) {
+        void load(Archive& ar, const unsigned int /*version*/) {
             ar >> BOOST_SERIALIZATION_NVP(plotCornerReprojection);
             ar >> BOOST_SERIALIZATION_NVP(imageStepping);
             ar >> BOOST_SERIALIZATION_NVP(filterCornerOutliers);
@@ -70,7 +70,7 @@ class GridDetector {
 
     /// \brief initialize based on grid geometry
     GridDetector(boost::shared_ptr<CameraGeometryBase> geometry, GridCalibrationTargetBase::Ptr target,
-                 const GridDetector::GridDetectorOptions &options = GridDetectorOptions());
+                 const GridDetector::GridDetectorOptions& options = GridDetectorOptions());
 
     virtual ~GridDetector();
 
@@ -82,7 +82,7 @@ class GridDetector {
 
     /// \brief initialize the geometry from one grid observation
     /// \return true if successful
-    bool initCameraGeometryFromObservation(const cv::Mat &image);
+    bool initCameraGeometryFromObservation(const cv::Mat& image);
 
     /// \brief initialize the geometry from a list grid observation
     /// \return true if successful
@@ -100,17 +100,17 @@ class GridDetector {
     ///        they will be initialized.
     ///        This method will also estimate and fill in the transformation of the
     ///        camera with respect to the grid.
-    bool findTarget(const cv::Mat &image, const aslam::Time &stamp,
-                    GridCalibrationTargetObservation &outObservation) const;
+    bool findTarget(const cv::Mat& image, const aslam::Time& stamp,
+                    GridCalibrationTargetObservation& outObservation) const;
 
-    bool findTarget(const cv::Mat &image, GridCalibrationTargetObservation &outObservation) const;
-
-    /// \brief Find the target but don't estimate the transformation.
-    bool findTargetNoTransformation(const cv::Mat &image, const aslam::Time &stamp,
-                                    GridCalibrationTargetObservation &outObservation) const;
+    bool findTarget(const cv::Mat& image, GridCalibrationTargetObservation& outObservation) const;
 
     /// \brief Find the target but don't estimate the transformation.
-    bool findTargetNoTransformation(const cv::Mat &image, GridCalibrationTargetObservation &outObservation) const;
+    bool findTargetNoTransformation(const cv::Mat& image, const aslam::Time& stamp,
+                                    GridCalibrationTargetObservation& outObservation) const;
+
+    /// \brief Find the target but don't estimate the transformation.
+    bool findTargetNoTransformation(const cv::Mat& image, GridCalibrationTargetObservation& outObservation) const;
 
     ///////////////////////////////////////////////////
     // Serialization support
@@ -126,14 +126,14 @@ class GridDetector {
 
     /// \brief Serialization support
     template <class Archive>
-    void save(Archive &ar, const unsigned int /*version*/) const {
+    void save(Archive& ar, const unsigned int /*version*/) const {
         ar << BOOST_SERIALIZATION_NVP(_geometry);
         ar << BOOST_SERIALIZATION_NVP(_target);
         ar << BOOST_SERIALIZATION_NVP(_options);
     }
 
     template <class Archive>
-    void load(Archive &ar, const unsigned int /*version*/) {
+    void load(Archive& ar, const unsigned int /*version*/) {
         ar >> BOOST_SERIALIZATION_NVP(_geometry);
         ar >> BOOST_SERIALIZATION_NVP(_target);
         ar >> BOOST_SERIALIZATION_NVP(_options);

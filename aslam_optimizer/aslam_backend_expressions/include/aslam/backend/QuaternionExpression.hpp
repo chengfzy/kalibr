@@ -61,19 +61,19 @@ class QuaternionExpression : public GenericMatrixExpression<4, 1, TScalar, TNode
 
     inline value_t evaluate() const { return base_t::evaluate(); }
 
-    QuaternionExpression(const base_t &v) : base_t(v) {}
+    QuaternionExpression(const base_t& v) : base_t(v) {}
     QuaternionExpression(TScalar r, TScalar i, TScalar j, TScalar k) : base_t(createQuatVal(i, j, k, r)) {}
     QuaternionExpression(TScalar i, TScalar j, TScalar k) : base_t(createQuatVal(i, j, k)) {}
 
     template <typename TOtherNode>
-    inline self_with_default_node_t operator*(const QuaternionExpression<TScalar, EMode, TOtherNode> &other) const;
+    inline self_with_default_node_t operator*(const QuaternionExpression<TScalar, EMode, TOtherNode>& other) const;
 
     template <typename TOtherNode>
-    inline self_with_default_node_t operator+(const QuaternionExpression<TScalar, EMode, TOtherNode> &other) const {
+    inline self_with_default_node_t operator+(const QuaternionExpression<TScalar, EMode, TOtherNode>& other) const {
         return self_with_default_node_t(base_t::operator+(other));
     }
     template <typename TOtherNode>
-    inline self_with_default_node_t operator-(const QuaternionExpression<TScalar, EMode, TOtherNode> &other) const {
+    inline self_with_default_node_t operator-(const QuaternionExpression<TScalar, EMode, TOtherNode>& other) const {
         return self_with_default_node_t(base_t::operator-(other));
     }
     inline self_with_default_node_t operator-() const { return self_with_default_node_t(base_t::operator-()); }
@@ -102,8 +102,8 @@ class UnitQuaternionExpression : public QuaternionExpression<TScalar, EMode, TNo
     typedef typename base_t::value_t value_t;
     typedef GenericMatrixExpression<3, 1, TScalar> tangent_vector_expression_t;
 
-    UnitQuaternionExpression(const base_t &q) : base_t(q) {}
-    UnitQuaternionExpression(const typename base_t::base_t &q) : base_t(q) {}
+    UnitQuaternionExpression(const base_t& q) : base_t(q) {}
+    UnitQuaternionExpression(const typename base_t::base_t& q) : base_t(q) {}
     UnitQuaternionExpression(TScalar r, TScalar i, TScalar j, TScalar k)
         : base_t(assertUnitNorm(this->createQuatVal(i, j, k, r))) {}
     UnitQuaternionExpression(TScalar i, TScalar j, TScalar k) : base_t(assertUnitNorm(this->createQuatVal(i, j, k))) {}
@@ -113,7 +113,7 @@ class UnitQuaternionExpression : public QuaternionExpression<TScalar, EMode, TNo
     inline value_t evaluate() const { return assertUnitNorm(base_t::evaluate()); }
 
     template <typename TOtherNode>
-    inline self_with_default_node_t operator*(const UnitQuaternionExpression<TScalar, EMode, TOtherNode> &other) const {
+    inline self_with_default_node_t operator*(const UnitQuaternionExpression<TScalar, EMode, TOtherNode>& other) const {
         return self_with_default_node_t(base_t::operator*(other));
     }
 
@@ -124,26 +124,26 @@ class UnitQuaternionExpression : public QuaternionExpression<TScalar, EMode, TNo
     inline self_with_default_node_t conjugate() const { return self_with_default_node_t(base_t::conjugate()); }
 
     template <typename TOtherNode>
-    static tangent_vector_expression_t log(const UnitQuaternionExpression<TScalar, EMode, TOtherNode> &other);
+    static tangent_vector_expression_t log(const UnitQuaternionExpression<TScalar, EMode, TOtherNode>& other);
 
     template <typename TOtherNode>
-    static self_with_default_node_t exp(const GenericMatrixExpression<3, 1, TScalar, TOtherNode> &tangentVector);
+    static self_with_default_node_t exp(const GenericMatrixExpression<3, 1, TScalar, TOtherNode>& tangentVector);
 
     template <enum UnitQuaternionGeometry EGeometry = DefaultUnitQuaternionGeometry, typename TOtherNode>
-    inline tangent_vector_expression_t geoLog(const UnitQuaternionExpression<TScalar, EMode, TOtherNode> &other) const;
+    inline tangent_vector_expression_t geoLog(const UnitQuaternionExpression<TScalar, EMode, TOtherNode>& other) const;
 
     template <enum UnitQuaternionGeometry EGeometry = DefaultUnitQuaternionGeometry, typename TOtherNode>
     inline self_with_default_node_t geoExp(
-        const GenericMatrixExpression<3, 1, TScalar, TOtherNode> &tangentVector) const;
+        const GenericMatrixExpression<3, 1, TScalar, TOtherNode>& tangentVector) const;
 
     template <typename TOtherNode>
     inline GenericMatrixExpression<3, 1, TScalar> rotate3Vector(
-        const GenericMatrixExpression<3, 1, TScalar, TOtherNode> &vector) const;
+        const GenericMatrixExpression<3, 1, TScalar, TOtherNode>& vector) const;
 
     GenericMatrixExpression<3, 3, TScalar> toMatrixExpression() const;
 
   private:
-    inline static const value_t &assertUnitNorm(const value_t &val) {
+    inline static const value_t& assertUnitNorm(const value_t& val) {
         SM_ASSERT_NEAR_DBG(std::runtime_error, 1, val.norm(), sqrt(std::numeric_limits<TScalar>::epsilon()) * 10,
                            "This value does is not a unit quaternion!");
         return val;

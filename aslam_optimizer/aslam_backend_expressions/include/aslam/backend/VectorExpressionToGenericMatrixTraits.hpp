@@ -16,9 +16,8 @@ struct GenericMatrixTraits {
 }  // namespace internal
 
 template <typename TExpression>
-typename internal::GenericMatrixTraits<TExpression>::gme_expression_type convertToGME(const TExpression &t) {
-    return
-        typename internal::GenericMatrixTraits<TExpression>::gme_expression_type(const_cast<TExpression &>(t).root());
+typename internal::GenericMatrixTraits<TExpression>::gme_expression_type convertToGME(const TExpression& t) {
+    return typename internal::GenericMatrixTraits<TExpression>::gme_expression_type(const_cast<TExpression&>(t).root());
 }
 
 namespace internal {
@@ -45,12 +44,12 @@ struct GenericMatrixNodeTraits<VectorExpressionNode<D> > {
 
       private:
         virtual vector_t evaluateImplementation() const { return value; }
-        virtual void evaluateJacobiansImplementation(JacobianContainer &outJacobians) const {}
-        virtual void evaluateJacobiansImplementation(JacobianContainer &outJacobians,
-                                                     const Eigen::MatrixXd &applyChainRule) const {}
+        virtual void evaluateJacobiansImplementation(JacobianContainer& outJacobians) const {}
+        virtual void evaluateJacobiansImplementation(JacobianContainer& outJacobians,
+                                                     const Eigen::MatrixXd& applyChainRule) const {}
         virtual void evaluateJacobiansImplementationWithDifferential(
-            JacobianContainer &outJacobians, const differential_t &chainRuleDifferentail) const {}
-        virtual void getDesignVariablesImplementation(DesignVariable::set_t &designVariables) const {}
+            JacobianContainer& outJacobians, const differential_t& chainRuleDifferentail) const {}
+        virtual void getDesignVariablesImplementation(DesignVariable::set_t& designVariables) const {}
 
       private:
         vector_t value;

@@ -11,11 +11,11 @@
 #ifndef SM_ASSERT_HPP
 #define SM_ASSERT_HPP
 
+#include <iomanip>
 #include <sstream>
 #include <stdexcept>
 #include <typeinfo>
 #include "source_file_pos.hpp"
-#include <iomanip>
 
 //! Macro for defining an exception with a given parent
 //  (std::runtime_error should be top parent)

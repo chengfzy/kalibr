@@ -26,7 +26,7 @@ namespace cameras {
 ///   |-->x
 GridCalibrationTargetCheckerboard::GridCalibrationTargetCheckerboard(size_t rows, size_t cols, double rowSpacingMeters,
                                                                      double colSpacingMeters,
-                                                                     const CheckerboardOptions &options)
+                                                                     const CheckerboardOptions& options)
     : GridCalibrationTargetBase(rows, cols),
       _rowSpacingMeters(rowSpacingMeters),
       _colSpacingMeters(colSpacingMeters),
@@ -71,8 +71,8 @@ void GridCalibrationTargetCheckerboard::createGridPoints() {
 }
 
 /// \brief extract the calibration target points from an image and write to an observation
-bool GridCalibrationTargetCheckerboard::computeObservation(const cv::Mat &image, Eigen::MatrixXd &outImagePoints,
-                                                           std::vector<bool> &outCornerObserved) const {
+bool GridCalibrationTargetCheckerboard::computeObservation(const cv::Mat& image, Eigen::MatrixXd& outImagePoints,
+                                                           std::vector<bool>& outCornerObserved) const {
     // set the open cv flags
     int flags = 0;
     if (_options.performFastCheck) flags += cv::CALIB_CB_FAST_CHECK;

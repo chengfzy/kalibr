@@ -24,7 +24,7 @@ void exportBsd() {
     str << "BSpline" << D << "DesignVariable";
 
     class_<BSplineDesignVariable<D>, boost::shared_ptr<BSplineDesignVariable<D> > >(str.str().c_str(),
-                                                                                    init<const BSpline &>())
+                                                                                    init<const BSpline&>())
         .def("spline", &BSplineDesignVariable<D>::spline, return_value_policy<copy_const_reference>())
         .def("toExpression", &BSplineDesignVariable<D>::toExpression)
         .def("numDesignVariables", &BSplineDesignVariable<D>::numDesignVariables)
@@ -44,12 +44,12 @@ BOOST_PYTHON_MODULE(libaslam_splines_python) {
     exportBsd<10>();
 
     aslam::backend::TransformationExpression (BSplinePoseDesignVariable::*transformationAtTime1)(
-        const aslam::backend::ScalarExpression &) = &BSplinePoseDesignVariable::transformationAtTime;
+        const aslam::backend::ScalarExpression&) = &BSplinePoseDesignVariable::transformationAtTime;
     aslam::backend::TransformationExpression (BSplinePoseDesignVariable::*transformationAtTime2)(
-        const aslam::backend::ScalarExpression &, double, double) = &BSplinePoseDesignVariable::transformationAtTime;
+        const aslam::backend::ScalarExpression&, double, double) = &BSplinePoseDesignVariable::transformationAtTime;
 
     class_<BSplinePoseDesignVariable, boost::shared_ptr<BSplinePoseDesignVariable> >("BSplinePoseDesignVariable",
-                                                                                     init<const BSplinePose &>())
+                                                                                     init<const BSplinePose&>())
         .def("spline", &BSplinePoseDesignVariable::spline, return_value_policy<copy_const_reference>())
         .def("numDesignVariables", &BSplinePoseDesignVariable::numDesignVariables)
         .def("designVariable", &BSplinePoseDesignVariable::designVariable, return_internal_reference<>())
@@ -65,7 +65,7 @@ BOOST_PYTHON_MODULE(libaslam_splines_python) {
     ;
 
     class_<EuclideanBSplineDesignVariable, boost::shared_ptr<EuclideanBSplineDesignVariable>,
-           bases<BSplineDesignVariable<3> > >("EuclideanBSplineDesignVariable", init<const BSpline &>())
+           bases<BSplineDesignVariable<3> > >("EuclideanBSplineDesignVariable", init<const BSpline&>())
         .def("toEuclideanExpression", &EuclideanBSplineDesignVariable::toEuclideanExpression)
         .def("toEuclidean", &EuclideanBSplineDesignVariable::toEuclidean);
 

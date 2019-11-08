@@ -61,8 +61,8 @@ class time_duration;
 }  // namespace boost
 
 namespace aslam {
-void normalizeSecNSecSigned(int64_t &sec, int64_t &nsec);
-void normalizeSecNSecSigned(int32_t &sec, int32_t &nsec);
+void normalizeSecNSecSigned(int64_t& sec, int64_t& nsec);
+void normalizeSecNSecSigned(int32_t& sec, int32_t& nsec);
 
 /**
  * \brief Base class for Duration implementations.  Provides storage, common functions and operator overloads.
@@ -76,23 +76,23 @@ class DurationBase {
     DurationBase(int32_t _sec, int32_t _nsec);
     explicit DurationBase(double t) { fromSec(t); };
     ~DurationBase() {}
-    T operator+(const T &rhs) const;
-    T operator-(const T &rhs) const;
+    T operator+(const T& rhs) const;
+    T operator-(const T& rhs) const;
     T operator-() const;
     T operator*(double scale) const;
-    T &operator+=(const T &rhs);
-    T &operator-=(const T &rhs);
-    T &operator*=(double scale);
-    bool operator==(const T &rhs) const;
-    inline bool operator!=(const T &rhs) const { return !(*static_cast<const T *>(this) == rhs); }
-    bool operator>(const T &rhs) const;
-    bool operator<(const T &rhs) const;
-    bool operator>=(const T &rhs) const;
-    bool operator<=(const T &rhs) const;
+    T& operator+=(const T& rhs);
+    T& operator-=(const T& rhs);
+    T& operator*=(double scale);
+    bool operator==(const T& rhs) const;
+    inline bool operator!=(const T& rhs) const { return !(*static_cast<const T*>(this) == rhs); }
+    bool operator>(const T& rhs) const;
+    bool operator<(const T& rhs) const;
+    bool operator>=(const T& rhs) const;
+    bool operator<=(const T& rhs) const;
     double toSec() const { return (double)sec + 1e-9 * (double)nsec; };
     int64_t toNSec() const { return (int64_t)sec * 1000000000ll + (int64_t)nsec; };
-    T &fromSec(double t);
-    T &fromNSec(int64_t t);
+    T& fromSec(double t);
+    T& fromNSec(int64_t t);
     bool isZero();
     boost::posix_time::time_duration toBoost() const;
 };
@@ -111,7 +111,7 @@ class Duration : public DurationBase<Duration> {
     Duration(int32_t _sec, int32_t _nsec) : DurationBase<Duration>(_sec, _nsec) {}
 
     explicit Duration(double t) { fromSec(t); }
-    explicit Duration(const Rate &);
+    explicit Duration(const Rate&);
     /**
      * \brief sleep for the amount of time specified by this Duration.  If a signal interrupts the sleep, resleeps for
      * the time remaining.
@@ -134,7 +134,7 @@ class WallDuration : public DurationBase<WallDuration> {
     WallDuration(int32_t _sec, int32_t _nsec) : DurationBase<WallDuration>(_sec, _nsec) {}
 
     explicit WallDuration(double t) { fromSec(t); }
-    explicit WallDuration(const Rate &);
+    explicit WallDuration(const Rate&);
     /**
      * \brief sleep for the amount of time specified by this Duration.  If a signal interrupts the sleep, resleeps for
      * the time remaining.
@@ -142,8 +142,8 @@ class WallDuration : public DurationBase<WallDuration> {
     bool sleep() const;
 };
 
-std::ostream &operator<<(std::ostream &os, const Duration &rhs);
-std::ostream &operator<<(std::ostream &os, const WallDuration &rhs);
+std::ostream& operator<<(std::ostream& os, const Duration& rhs);
+std::ostream& operator<<(std::ostream& os, const WallDuration& rhs);
 
 }  // namespace aslam
 
@@ -151,9 +151,9 @@ namespace boost {
 namespace serialization {
 
 template <class Archive>
-void serialize(Archive &ar, aslam::Duration &d, const unsigned int /* version */) {
-    ar &BOOST_SERIALIZATION_NVP(d.sec);
-    ar &BOOST_SERIALIZATION_NVP(d.nsec);
+void serialize(Archive& ar, aslam::Duration& d, const unsigned int /* version */) {
+    ar& BOOST_SERIALIZATION_NVP(d.sec);
+    ar& BOOST_SERIALIZATION_NVP(d.nsec);
 }
 
 }  // namespace serialization

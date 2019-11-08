@@ -7,19 +7,18 @@
 using namespace boost::python;
 using namespace aslam::backend;
 
-DesignVariable *(OptimizationProblemBase::*dvptr)(size_t) = &OptimizationProblemBase::designVariable;
+DesignVariable* (OptimizationProblemBase::*dvptr)(size_t) = &OptimizationProblemBase::designVariable;
 
-ErrorTerm *(OptimizationProblemBase::*etptr)(size_t i) = &OptimizationProblemBase::errorTerm;
+ErrorTerm* (OptimizationProblemBase::*etptr)(size_t i) = &OptimizationProblemBase::errorTerm;
 
 void (OptimizationProblem::*adv)(boost::shared_ptr<DesignVariable>) = &OptimizationProblem::addDesignVariable;
 
-void (OptimizationProblem::*aet)(const boost::shared_ptr<ErrorTerm> &) = &OptimizationProblem::addErrorTerm;
+void (OptimizationProblem::*aet)(const boost::shared_ptr<ErrorTerm>&) = &OptimizationProblem::addErrorTerm;
 
 void (SimpleOptimizationProblem::*sadv)(boost::shared_ptr<DesignVariable>) =
     &SimpleOptimizationProblem::addDesignVariable;
 
-void (SimpleOptimizationProblem::*saet)(const boost::shared_ptr<ErrorTerm> &) =
-    &SimpleOptimizationProblem::addErrorTerm;
+void (SimpleOptimizationProblem::*saet)(const boost::shared_ptr<ErrorTerm>&) = &SimpleOptimizationProblem::addErrorTerm;
 
 void exportOptimizationProblem() {
     class_<OptimizationProblemBase, boost::shared_ptr<OptimizationProblemBase>, boost::noncopyable>(

@@ -20,7 +20,7 @@ inline double rand1() {
     // Define a uniform random number distribution which produces "double"
     // values between 0 and 1 (0 inclusive, 1 exclusive).
     static boost::uniform_real<> uni_dist(0, 1);
-    static boost::variate_generator<base_generator_type &, boost::uniform_real<> > uni(generator, uni_dist);
+    static boost::variate_generator<base_generator_type&, boost::uniform_real<> > uni(generator, uni_dist);
 
     return uni();
 }
@@ -40,14 +40,14 @@ sparse_block_matrix::SparseBlockMatrix<M> buildRandomMatrix(Eigen::MatrixXi rows
         for (int rb = 0; rb < Mx.bRows(); rb++) {
             if (rand1() < probabilityOfABlockBeingFilled) {
                 // check all versions of the "block" function.
-                matrix_t *B = Mx.block(rb, cb);
-                EXPECT_EQ((matrix_t *)NULL, B) << "Block at " << rb << "," << cb << " should be null";
+                matrix_t* B = Mx.block(rb, cb);
+                EXPECT_EQ((matrix_t*)NULL, B) << "Block at " << rb << "," << cb << " should be null";
 
                 B = Mx.block(rb, cb, false);
-                EXPECT_EQ((matrix_t *)NULL, B) << "Block at " << rb << "," << cb << " should be null";
+                EXPECT_EQ((matrix_t*)NULL, B) << "Block at " << rb << "," << cb << " should be null";
 
                 B = Mx.block(rb, cb, true);
-                EXPECT_NE((matrix_t *)NULL, B);
+                EXPECT_NE((matrix_t*)NULL, B);
                 EXPECT_EQ(B->rows(), Mx.rowsOfBlock(rb));
                 EXPECT_EQ(B->cols(), Mx.colsOfBlock(cb));
                 B->setRandom();
@@ -58,11 +58,11 @@ sparse_block_matrix::SparseBlockMatrix<M> buildRandomMatrix(Eigen::MatrixXi rows
 
             } else {
                 // Check both versions of this function
-                matrix_t *B = Mx.block(rb, cb);
-                EXPECT_EQ((matrix_t *)NULL, B) << "Block at " << rb << "," << cb << " should be null";
+                matrix_t* B = Mx.block(rb, cb);
+                EXPECT_EQ((matrix_t*)NULL, B) << "Block at " << rb << "," << cb << " should be null";
 
                 B = Mx.block(rb, cb, false);
-                EXPECT_EQ((matrix_t *)NULL, B) << "Block at " << rb << "," << cb << " should be null";
+                EXPECT_EQ((matrix_t*)NULL, B) << "Block at " << rb << "," << cb << " should be null";
             }
         }
     }
@@ -84,16 +84,16 @@ TEST(sparse_block_matrixTestSuite, testBlock) {
     for (int cb = 0; cb < Mx.bCols(); cb++) {
         for (int rb = 0; rb < Mx.bRows(); rb++) {
             // This shouldn't allocate
-            MatrixXd *B = Mx.block(rb, cb);
-            ASSERT_EQ((MatrixXd *)NULL, B) << "Block at " << rb << "," << cb << " should be null";
+            MatrixXd* B = Mx.block(rb, cb);
+            ASSERT_EQ((MatrixXd*)NULL, B) << "Block at " << rb << "," << cb << " should be null";
 
             // This shouldn't allocate
             B = Mx.block(rb, cb, false);
-            ASSERT_EQ((MatrixXd *)NULL, B) << "Block at " << rb << "," << cb << " should be null";
+            ASSERT_EQ((MatrixXd*)NULL, B) << "Block at " << rb << "," << cb << " should be null";
 
             // This should allocate.
             B = Mx.block(rb, cb, true);
-            ASSERT_NE((MatrixXd *)NULL, B);
+            ASSERT_NE((MatrixXd*)NULL, B);
             ASSERT_EQ(B->rows(), Mx.rowsOfBlock(rb));
             ASSERT_EQ(B->cols(), Mx.colsOfBlock(cb));
         }
@@ -124,8 +124,8 @@ TEST(sparse_block_matrixTestSuite, testOperator) {
     }
 
     // Now fill a block.
-    SparseBlockMatrix<MatrixXd>::Block *B = M.block(1, 0, true);
-    ASSERT_NE(B, (SparseBlockMatrix<MatrixXd>::Block *)NULL);
+    SparseBlockMatrix<MatrixXd>::Block* B = M.block(1, 0, true);
+    ASSERT_NE(B, (SparseBlockMatrix<MatrixXd>::Block*)NULL);
     ASSERT_EQ(B->rows(), 2);
     ASSERT_EQ(B->cols(), 2);
     (*B)(0, 0) = 1.0;
@@ -158,7 +158,7 @@ TEST(sparse_block_matrixTestSuite, testClone) {
     // Create an empty matrix.
     sparse_block_matrix::SparseBlockMatrix<MatrixXd> ME = buildRandomMatrix<MatrixXd>(rows, cols, -1.0);
 
-    sparse_block_matrix::SparseBlockMatrix<MatrixXd> *ME2 = ME.clone();
+    sparse_block_matrix::SparseBlockMatrix<MatrixXd>* ME2 = ME.clone();
     sparse_block_matrix::SparseBlockMatrix<MatrixXd> ME3;
     ME.cloneInto(ME3);
 
@@ -177,7 +177,7 @@ TEST(sparse_block_matrixTestSuite, testClone) {
     // Create an not empty matrix.
     sparse_block_matrix::SparseBlockMatrix<MatrixXd> M1 = buildRandomMatrix<MatrixXd>(rows, cols, 0.5);
 
-    sparse_block_matrix::SparseBlockMatrix<MatrixXd> *M2 = M1.clone();
+    sparse_block_matrix::SparseBlockMatrix<MatrixXd>* M2 = M1.clone();
     sparse_block_matrix::SparseBlockMatrix<MatrixXd> M3;
     M1.cloneInto(M3);
 
@@ -228,10 +228,10 @@ TEST(sparse_block_matrixTestSuite, testTranspose) {
 
     Eigen::MatrixXd D1t = M1.toDense().transpose();
 
-    sparse_block_matrix::SparseBlockMatrix<MatrixXd> *M1t = NULL;
+    sparse_block_matrix::SparseBlockMatrix<MatrixXd>* M1t = NULL;
     // First the NULL version.
     ASSERT_TRUE(M1.transpose(M1t));
-    ASSERT_NE((sparse_block_matrix::SparseBlockMatrix<MatrixXd> *)NULL, M1t);
+    ASSERT_NE((sparse_block_matrix::SparseBlockMatrix<MatrixXd>*)NULL, M1t);
 
     {
         SCOPED_TRACE("");
@@ -244,7 +244,7 @@ TEST(sparse_block_matrixTestSuite, testTranspose) {
 
     // Now the non null version.
     sparse_block_matrix::SparseBlockMatrix<MatrixXd> M2t(M1t->rowBlockIndices(), M1t->colBlockIndices(), true);
-    sparse_block_matrix::SparseBlockMatrix<MatrixXd> *M2tp = &M2t;
+    sparse_block_matrix::SparseBlockMatrix<MatrixXd>* M2tp = &M2t;
     ASSERT_TRUE(M1.transpose(M2tp));
 
     {
@@ -256,7 +256,7 @@ TEST(sparse_block_matrixTestSuite, testTranspose) {
 
     // What if there is cruff in the transpose matrix? This fails.
     sparse_block_matrix::SparseBlockMatrix<MatrixXd> M3t = buildRandomMatrix<MatrixXd>(cols, rows, 0.5);
-    sparse_block_matrix::SparseBlockMatrix<MatrixXd> *M3tp = &M2t;
+    sparse_block_matrix::SparseBlockMatrix<MatrixXd>* M3tp = &M2t;
     ASSERT_TRUE(M1.transpose(M3tp));
 
     {
@@ -295,7 +295,7 @@ TEST(sparse_block_matrixTestSuite, testEigenVectorMultiplication) {
     M1.multiply(&dstp, src);
 
     // existing impl.
-    double *dstp2 = NULL;
+    double* dstp2 = NULL;
     //
     M1.multiply(dstp2, &src[0]);
 
@@ -308,7 +308,7 @@ TEST(sparse_block_matrixTestSuite, testEigenVectorMultiplication) {
     sm::eigen::assertNear(dstDense, dstp2Map, 1e-6, SM_SOURCE_FILE_POS);
 
     double src4[15];
-    double *dstp4 = new double[15];
+    double* dstp4 = new double[15];
     for (int i = 0; i < 15; i++) dstp4[i] = 0;
     VectorXd src3 = VectorXd::Random(15);
     VectorXd dstp3(7);
@@ -348,7 +348,7 @@ TEST(sparse_block_matrixTestSuite, testScaleMatrix) {
 
     try {
         sm::eigen::assertNear((M1 * scale).toDense(), (M1.toDense() * scale).eval(), 1e-6, SM_SOURCE_FILE_POS);
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         FAIL() << e.what();
     }
 }
@@ -369,7 +369,7 @@ TEST(sparse_block_matrixTestSuite, testMatrixMatrixMultiplication) {
 
     try {
         sm::eigen::assertNear((M1 * M2).toDense(), (M1.toDense() * M2.toDense()).eval(), 1e-6, SM_SOURCE_FILE_POS);
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         FAIL() << e.what();
     }
 }

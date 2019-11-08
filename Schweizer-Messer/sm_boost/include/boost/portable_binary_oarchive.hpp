@@ -41,8 +41,8 @@ class portable_binary_oarchive_exception : public virtual boost::archive::archiv
     typedef enum { invalid_flags } exception_code;
     portable_binary_oarchive_exception(exception_code /* c */) {}
     portable_binary_oarchive_exception() {}
-    virtual const char *what() const throw() {
-        const char *msg = "programmer error";
+    virtual const char* what() const throw() {
+        const char* msg = "programmer error";
         switch (code) {
             case invalid_flags:
                 msg = "cannot be both big and little endian";
@@ -85,25 +85,25 @@ class portable_binary_oarchive
 
     // default fall through for any types not specified here
     template <class T>
-    void save(const T &t) {
+    void save(const T& t) {
         save_impl(t, sizeof(T));
     }
-    void save(const std::string &t) { this->primitive_base_t::save(t); }
+    void save(const std::string& t) { this->primitive_base_t::save(t); }
 #ifndef BOOST_NO_STD_WSTRING
-    void save(const std::wstring &t) { this->primitive_base_t::save(t); }
+    void save(const std::wstring& t) { this->primitive_base_t::save(t); }
 #endif
-    void save(const float &t) {
+    void save(const float& t) {
         this->primitive_base_t::save(t);
         // floats not supported
         // BOOST_STATIC_ASSERT(false);
     }
-    void save(const double &t) {
+    void save(const double& t) {
         this->primitive_base_t::save(t);
         // doubles not supported
         // BOOST_STATIC_ASSERT(false);
     }
-    void save(const char &t) { this->primitive_base_t::save(t); }
-    void save(const unsigned char &t) { this->primitive_base_t::save(t); }
+    void save(const char& t) { this->primitive_base_t::save(t); }
+    void save(const unsigned char& t) { this->primitive_base_t::save(t); }
 
     // default processing - kick back to base class.  Note the
     // extra stuff to get it passed borland compilers
@@ -111,40 +111,40 @@ class portable_binary_oarchive
     template <class T>
 // breaking changes in boost >=1.59
 #if BOOST_VERSION >= 105900
-    void save_override(T &t) {
+    void save_override(T& t) {
         this->detail_common_oarchive::save_override(t);
     }
     // explicitly convert to char * to avoid compile ambiguities
-    void save_override(const boost::archive::class_name_type &t) {
+    void save_override(const boost::archive::class_name_type& t) {
         const std::string s(t);
         *this << s;
     }
     // binary files don't include the optional information
-    void save_override(const boost::archive::class_id_optional_type & /* t */) {}
+    void save_override(const boost::archive::class_id_optional_type& /* t */) {}
 #else
-    void save_override(T &t, BOOST_PFTO int) {
+    void save_override(T& t, BOOST_PFTO int) {
         this->detail_common_oarchive::save_override(t, 0);
     }
     // explicitly convert to char * to avoid compile ambiguities
-    void save_override(const boost::archive::class_name_type &t, int) {
+    void save_override(const boost::archive::class_name_type& t, int) {
         const std::string s(t);
         *this << s;
     }
     // binary files don't include the optional information
-    void save_override(const boost::archive::class_id_optional_type & /* t */, int) {}
+    void save_override(const boost::archive::class_id_optional_type& /* t */, int) {}
 #endif
 
     void init(unsigned int flags);
 
   public:
-    portable_binary_oarchive(std::ostream &os, unsigned flags = 0)
+    portable_binary_oarchive(std::ostream& os, unsigned flags = 0)
         : primitive_base_t(*os.rdbuf(), 0 != (flags & boost::archive::no_codecvt)),
           archive_base_t(flags),
           m_flags(flags & (endian_big | endian_little)) {
         init(flags);
     }
 
-    portable_binary_oarchive(std::basic_streambuf<std::ostream::char_type, std::ostream::traits_type> &bsb,
+    portable_binary_oarchive(std::basic_streambuf<std::ostream::char_type, std::ostream::traits_type>& bsb,
                              unsigned int flags)
         : primitive_base_t(bsb, 0 != (flags & boost::archive::no_codecvt)), archive_base_t(flags), m_flags(0) {
         init(flags);

@@ -27,7 +27,7 @@ class DesignVariableUnitQuaternion : public DesignVariableGenericVector<4, Scala
 
   protected:
     /// \brief Update the design variable.
-    virtual void updateImplementation(const double *dp, int size) {
+    virtual void updateImplementation(const double* dp, int size) {
         SM_ASSERT_EQ(std::runtime_error, size, 3, "update size must match the vector dimension.")
         this->_p_v = this->_currentValue;
         this->_currentValue = Calculator::template update<Geometry_>(
@@ -36,10 +36,10 @@ class DesignVariableUnitQuaternion : public DesignVariableGenericVector<4, Scala
     /// \brief what is the number of dimensions of the perturbation variable.
     virtual int minimalDimensionsImplementation() const { return 3; }
 
-    virtual void evaluateJacobiansImplementation(JacobianContainer &outJacobians,
-                                                 const typename base_t::differential_t &diff) const {
+    virtual void evaluateJacobiansImplementation(JacobianContainer& outJacobians,
+                                                 const typename base_t::differential_t& diff) const {
         if (Geometry_ == UnitQuaternionGeometry::RIGHT_TRANSLATED) {
-            diff.addToJacobianContainer(outJacobians, (const DesignVariable *)this,
+            diff.addToJacobianContainer(outJacobians, (const DesignVariable*)this,
                                         Calculator::template dUpdate<Geometry_>(this->evaluate()));
         }
     }

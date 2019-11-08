@@ -33,7 +33,7 @@ struct ExpressionTraits {
 template <typename TExpression>
 struct ExpressionEvaluationTraits {
     typedef typename ExpressionValueTraits<TExpression>::value_t value_t;
-    static value_t evaluate(const TExpression &expr) { return expr.evaluate(); }
+    static value_t evaluate(const TExpression& expr) { return expr.evaluate(); }
 };
 
 template <typename TExpression>
@@ -43,22 +43,22 @@ struct ExpressionNodeFunctor {
     typedef Eigen::Matrix<double, Eigen::Dynamic, 1> input_t;
     typedef Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic> jacobian_t;
 
-    ExpressionNodeFunctor(TExpression &exp, const std::vector<DesignVariable *> &dvs) : _expression(exp), _dvs(dvs) {}
+    ExpressionNodeFunctor(TExpression& exp, const std::vector<DesignVariable*>& dvs) : _expression(exp), _dvs(dvs) {}
 
     // TODO optimize : this update should directly affect the design variables without having this extra input_t.
 
-    input_t update(const input_t &x, int c, scalar_t delta) {
+    input_t update(const input_t& x, int c, scalar_t delta) {
         input_t xnew = x;
         xnew[c] += delta;
         return xnew;
     }
 
-    value_t operator()(const input_t &dr) {
+    value_t operator()(const input_t& dr) {
         int offset = 0;
         for (auto d : _dvs) {
             SM_ASSERT_LE(std::runtime_error, offset + d->minimalDimensions(), dr.size(),
                          "Bug in ExpressionNodeFunctor!");
-            d->update((const double *)&dr[offset], d->minimalDimensions());
+            d->update((const double*)&dr[offset], d->minimalDimensions());
             offset += d->minimalDimensions();
         }
 
@@ -70,8 +70,8 @@ struct ExpressionNodeFunctor {
         return p;
     }
 
-    TExpression &_expression;
-    const std::vector<DesignVariable *> &_dvs;
+    TExpression& _expression;
+    const std::vector<DesignVariable*>& _dvs;
 };
 
 template <typename TExpression>
@@ -79,7 +79,7 @@ struct ExpressionNumDiffTraits {
     typedef typename ExpressionValueTraits<TExpression>::value_t value_t;
     typedef typename ExpressionTraits<TExpression>::scalar_t scalar_t;
     inline static Eigen::MatrixXd numericallyCalcJacobian(TExpression expression, int jacobianCols,
-                                                          std::vector<DesignVariable *> dvs, double eps) {
+                                                          std::vector<DesignVariable*> dvs, double eps) {
         typename ExpressionNodeFunctor<TExpression>::input_t dp(jacobianCols);
         dp.setZero();
         sm::eigen::NumericalDiff<ExpressionNodeFunctor<TExpression>> numdiff(
@@ -97,7 +97,7 @@ class ExpressionTester {
     typedef typename ExpressionValueTraits<TExpression>::value_t value_t;
     typedef typename ExpressionTraits<TExpression>::scalar_t scalar_t;
 
-    ExpressionTester(const TExpression &exp, int expectedNumberOfDesignVariables, bool setBlockIndices, bool setActive,
+    ExpressionTester(const TExpression& exp, int expectedNumberOfDesignVariables, bool setBlockIndices, bool setActive,
                      bool printResult = false,
                      double tolerance = test::ExpressionTraits<TExpression>::defaultTolerance(),
                      double eps = test::ExpressionTraits<TExpression>::defaulEps())
@@ -109,21 +109,21 @@ class ExpressionTester {
           _colIndices(),
           _dvs(prepareAndCheckDesignVariables(exp, setBlockIndices, setActive, _colIndices)) {}
 
-    inline static std::vector<DesignVariable *> prepareAndCheckDesignVariables(const TExpression &exp,
-                                                                               bool setBlockIndices, bool setActive,
-                                                                               std::vector<int> &colIndices) {
+    inline static std::vector<DesignVariable*> prepareAndCheckDesignVariables(const TExpression& exp,
+                                                                              bool setBlockIndices, bool setActive,
+                                                                              std::vector<int>& colIndices) {
         DesignVariable::set_t designVariables;
         exp.getDesignVariables(designVariables);
 
-        std::vector<DesignVariable *> dvs(designVariables.begin(), designVariables.end());
+        std::vector<DesignVariable*> dvs(designVariables.begin(), designVariables.end());
         if (!setBlockIndices) {
             sort(dvs.begin(), dvs.end(),
-                 [](DesignVariable *a, DesignVariable *b) { return a->blockIndex() < b->blockIndex(); });
+                 [](DesignVariable* a, DesignVariable* b) { return a->blockIndex() < b->blockIndex(); });
         }
 
         int minimalDimensionSum = 0;
         int blockIndex = 0;
-        for (DesignVariable *dp : dvs) {
+        for (DesignVariable* dp : dvs) {
             minimalDimensionSum += dp->minimalDimensions();
             colIndices.push_back(minimalDimensionSum);
             if (setBlockIndices) {
@@ -146,12 +146,12 @@ class ExpressionTester {
         ExpressionJacobianTestTraits<TExpression>::testJacobian(*this);
     }
 
-    const TExpression &getExp() const { return _exp; }
+    const TExpression& getExp() const { return _exp; }
     bool getPrintResult() const { return _printResult; }
     double getEps() const { return _eps; }
     double getTolerance() const { return _tolerance; }
-    const std::vector<DesignVariable *> &getDesignVariables() const { return _dvs; }
-    inline Eigen::MatrixXd getJacobian(const JacobianContainer &jc) const { return jc.asDenseMatrix(_colIndices); }
+    const std::vector<DesignVariable*>& getDesignVariables() const { return _dvs; }
+    inline Eigen::MatrixXd getJacobian(const JacobianContainer& jc) const { return jc.asDenseMatrix(_colIndices); }
 
   private:
     TExpression _exp;
@@ -160,7 +160,7 @@ class ExpressionTester {
     double _tolerance;
     double _eps;
     std::vector<int> _colIndices;
-    std::vector<DesignVariable *> _dvs;
+    std::vector<DesignVariable*> _dvs;
 };
 
 template <typename TExpression>
@@ -169,8 +169,8 @@ class ExpressionJacobianTestTraits {
     typedef typename ExpressionValueTraits<TExpression>::value_t value_t;
     typedef typename ExpressionTraits<TExpression>::scalar_t scalar_t;
 
-    static void testJacobian(const ExpressionTester<TExpression> &expressionTester) {
-        const TExpression &expression = expressionTester.getExp();
+    static void testJacobian(const ExpressionTester<TExpression>& expressionTester) {
+        const TExpression& expression = expressionTester.getExp();
         auto val = ExpressionEvaluationTraits<TExpression>::evaluate(expression);
         const size_t rows = val.rows();
 

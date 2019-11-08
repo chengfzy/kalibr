@@ -14,7 +14,7 @@ void exportCameraGeometryDvc() {
     class_<CameraGeometryDesignVariableContainer, boost::shared_ptr<CameraGeometryDesignVariableContainer>,
            boost::noncopyable>(
         "CameraGeometryDesignVariableContainer",
-        init<const boost::shared_ptr<cameras::CameraGeometryBase> &, bool, bool, bool>(
+        init<const boost::shared_ptr<cameras::CameraGeometryBase>&, bool, bool, bool>(
             "CameraGeometryDesignVariableContainer( camera, estimateProjection, estimateDistortion, estimateShutter)"))
         .def("keypointTime", &CameraGeometryDesignVariableContainer::keypointTime,
              "ScalarExpression keypointTime( imageTimestamp, keypointMeasurement)")
@@ -38,10 +38,10 @@ void exportCameraGeometryDvc() {
 
     class_<ReprojectionError, boost::shared_ptr<ReprojectionError>, bases<aslam::backend::ErrorTerm>,
            boost::noncopyable>("ReprojectionError",
-                               init<const Eigen::VectorXd &, const Eigen::MatrixXd &, backend::HomogeneousExpression,
-                                    cameras::CameraGeometryBase *>("ReprojectionError( y, invR, p_c, camera )"))
-        .def(init<const Eigen::VectorXd &, const Eigen::MatrixXd &, backend::HomogeneousExpression,
-                  CameraGeometryDesignVariableContainer *>(
+                               init<const Eigen::VectorXd&, const Eigen::MatrixXd&, backend::HomogeneousExpression,
+                                    cameras::CameraGeometryBase*>("ReprojectionError( y, invR, p_c, camera )"))
+        .def(init<const Eigen::VectorXd&, const Eigen::MatrixXd&, backend::HomogeneousExpression,
+                  CameraGeometryDesignVariableContainer*>(
             "ReprojectionError( y, invR, p_c, cameraGeometryDesignVariableContainer )"))
         .def("getCamera", &ReprojectionError::getCamera, return_internal_reference<>())
         .def("getKeypoint", &ReprojectionError::getKeypoint)

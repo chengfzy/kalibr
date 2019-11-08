@@ -48,14 +48,14 @@ struct ExpressionDimensionTraits<GenericScalarExpression<TScalar>> {
 template <typename TExpression>
 struct ExpressionToEigenVectorTraits {
     template <typename TValue>
-    static const TValue &toEigenErrorVector(const TValue &error) {
+    static const TValue& toEigenErrorVector(const TValue& error) {
         return error;
     }
 };
 
 template <typename TScalar>
 struct ExpressionToEigenVectorTraits<GenericScalarExpression<TScalar>> {
-    static Eigen::Matrix<double, 1, 1> toEigenErrorVector(const TScalar &error) {
+    static Eigen::Matrix<double, 1, 1> toEigenErrorVector(const TScalar& error) {
         Eigen::Matrix<double, 1, 1> ret;
         ret << (double)error;
         return ret;
@@ -70,10 +70,10 @@ class ExpressionErrorTerm : public aslam::backend::ErrorTermFs<IDimension> {
     typedef aslam::backend::ErrorTermFs<IDimension> parent_t;
     typedef Eigen::Matrix<double, IDimension, 1> PointT;
 
-    ExpressionErrorTerm(const TExpression &expression) : _expression(expression) {
+    ExpressionErrorTerm(const TExpression& expression) : _expression(expression) {
         DesignVariable::set_t vSet;
         _expression.getDesignVariables(vSet);
-        std::vector<DesignVariable *> vs;
+        std::vector<DesignVariable*> vs;
         vs.reserve(vSet.size());
         std::copy(vSet.begin(), vSet.end(), back_inserter(vs));
         parent_t::setDesignVariables(vs);
@@ -89,7 +89,7 @@ class ExpressionErrorTerm : public aslam::backend::ErrorTermFs<IDimension> {
     }
 
     /// \brief evaluate the jacobian
-    virtual void evaluateJacobiansImplementation(JacobianContainer &jacobians) {
+    virtual void evaluateJacobiansImplementation(JacobianContainer& jacobians) {
         _expression.evaluateJacobians(jacobians);
     }
 
@@ -111,7 +111,7 @@ inline ::boost::shared_ptr<ExpressionErrorTerm<TExpression, IDimension>> toError
 template <typename TExpression, int IDimension = internal::ExpressionDimensionTraits<TExpression>::Dimension,
           typename DERIVED_MATRIX>
 inline ::boost::shared_ptr<ErrorTerm> toErrorTerm(TExpression expression,
-                                                  const Eigen::MatrixBase<DERIVED_MATRIX> &invR) {
+                                                  const Eigen::MatrixBase<DERIVED_MATRIX>& invR) {
     auto errorTerm = toErrorTerm(expression);
     errorTerm->setInvR(invR);
     return errorTerm;
@@ -119,7 +119,7 @@ inline ::boost::shared_ptr<ErrorTerm> toErrorTerm(TExpression expression,
 template <typename TExpression, int IDimension = internal::ExpressionDimensionTraits<TExpression>::Dimension,
           typename DERIVED_MATRIX>
 inline ::boost::shared_ptr<ErrorTerm> toErrorTermSqrt(TExpression expression,
-                                                      const Eigen::MatrixBase<DERIVED_MATRIX> &sqrtInvR) {
+                                                      const Eigen::MatrixBase<DERIVED_MATRIX>& sqrtInvR) {
     auto errorTerm = toErrorTerm(expression);
     errorTerm->setSqrtInvR(sqrtInvR);
     return errorTerm;

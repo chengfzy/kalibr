@@ -53,8 +53,8 @@ class portable_binary_iarchive_exception : public virtual boost::archive::archiv
     portable_binary_iarchive_exception()
         : boost::archive::archive_exception(boost::archive::archive_exception::other_exception) {}
 
-    virtual const char *what() const throw() {
-        const char *msg = "programmer error";
+    virtual const char* what() const throw() {
+        const char* msg = "programmer error";
         switch (code) {
             case incompatible_integer_size:
                 msg = "integer cannot be represented";
@@ -98,51 +98,51 @@ class portable_binary_iarchive
   protected:
 #endif
     unsigned int m_flags;
-    void load_impl(boost::intmax_t &l, char maxsize);
+    void load_impl(boost::intmax_t& l, char maxsize);
 
     // default fall through for any types not specified here
     template <class T>
-    void load(T &t) {
+    void load(T& t) {
         boost::intmax_t l;
         load_impl(l, sizeof(T));
         // use cast to avoid compile time warning
         // t = static_cast< T >(l);
         t = T(l);
     }
-    void load(boost::serialization::item_version_type &t) {
+    void load(boost::serialization::item_version_type& t) {
         boost::intmax_t l;
         load_impl(l, sizeof(boost::serialization::item_version_type));
         // use cast to avoid compile time warning
         t = boost::serialization::item_version_type(l);
     }
-    void load(boost::archive::version_type &t) {
+    void load(boost::archive::version_type& t) {
         boost::intmax_t l;
         load_impl(l, sizeof(boost::archive::version_type));
         // use cast to avoid compile time warning
         t = boost::archive::version_type(l);
     }
-    void load(boost::archive::class_id_type &t) {
+    void load(boost::archive::class_id_type& t) {
         boost::intmax_t l;
         load_impl(l, sizeof(boost::archive::class_id_type));
         // use cast to avoid compile time warning
         t = boost::archive::class_id_type(static_cast<int>(l));
     }
-    void load(std::string &t) { this->primitive_base_t::load(t); }
+    void load(std::string& t) { this->primitive_base_t::load(t); }
 #ifndef BOOST_NO_STD_WSTRING
-    void load(std::wstring &t) { this->primitive_base_t::load(t); }
+    void load(std::wstring& t) { this->primitive_base_t::load(t); }
 #endif
-    void load(float &t) {
+    void load(float& t) {
         this->primitive_base_t::load(t);
         // floats not supported
         // BOOST_STATIC_ASSERT(false);
     }
-    void load(double &t) {
+    void load(double& t) {
         this->primitive_base_t::load(t);
         // doubles not supported
         // BOOST_STATIC_ASSERT(false);
     }
-    void load(char &t) { this->primitive_base_t::load(t); }
-    void load(unsigned char &t) { this->primitive_base_t::load(t); }
+    void load(char& t) { this->primitive_base_t::load(t); }
+    void load(unsigned char& t) { this->primitive_base_t::load(t); }
     // intermediate level to support override of operators
     // fot templates in the absence of partial function
     // template ordering
@@ -150,29 +150,29 @@ class portable_binary_iarchive
     template <class T>
 // breaking changes in boost >=1.59
 #if BOOST_VERSION >= 105900
-    void load_override(T &t) {
+    void load_override(T& t) {
         this->detail_common_iarchive::load_override(t);
     }
-    void load_override(boost::archive::class_name_type &t);
-    void load_override(boost::archive::class_id_optional_type & /* t */) {}
+    void load_override(boost::archive::class_name_type& t);
+    void load_override(boost::archive::class_id_optional_type& /* t */) {}
 #else
-    void load_override(T &t, BOOST_PFTO int) {
+    void load_override(T& t, BOOST_PFTO int) {
         this->detail_common_iarchive::load_override(t, 0);
     }
-    void load_override(boost::archive::class_name_type &t, int);
+    void load_override(boost::archive::class_name_type& t, int);
     // binary files don't include the optional information
-    void load_override(boost::archive::class_id_optional_type & /* t */, int) {}
+    void load_override(boost::archive::class_id_optional_type& /* t */, int) {}
 #endif
 
     void init(unsigned int flags);
 
   public:
-    portable_binary_iarchive(std::istream &is, unsigned flags = 0)
+    portable_binary_iarchive(std::istream& is, unsigned flags = 0)
         : primitive_base_t(*is.rdbuf(), 0 != (flags & boost::archive::no_codecvt)), archive_base_t(flags), m_flags(0) {
         init(flags);
     }
 
-    portable_binary_iarchive(std::basic_streambuf<std::istream::char_type, std::istream::traits_type> &bsb,
+    portable_binary_iarchive(std::basic_streambuf<std::istream::char_type, std::istream::traits_type>& bsb,
                              unsigned int flags)
         : primitive_base_t(bsb, 0 != (flags & boost::archive::no_codecvt)), archive_base_t(flags), m_flags(0) {
         init(flags);

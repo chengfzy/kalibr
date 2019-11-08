@@ -4,14 +4,14 @@
 using namespace boost::python;
 using namespace sm::kinematics;
 
-tuple transformationAndJacobianTuple(Eigen::Matrix4d const &T_a_b, Eigen::Vector4d const &v_b) {
+tuple transformationAndJacobianTuple(Eigen::Matrix4d const& T_a_b, Eigen::Vector4d const& v_b) {
     Eigen::Vector4d out_v_a;
     Eigen::Matrix<double, 4, 6> out_B;
     transformationAndJacobian(T_a_b, v_b, out_v_a, out_B);
     return make_tuple(out_v_a, out_B);
 }
 
-tuple inverseTransformationAndJacobianTuple(Eigen::Matrix4d const &T_ba, Eigen::Vector4d const &v_b) {
+tuple inverseTransformationAndJacobianTuple(Eigen::Matrix4d const& T_ba, Eigen::Vector4d const& v_b) {
     Eigen::Vector4d out_v_a;
     Eigen::Matrix<double, 4, 6> out_B;
     inverseTransformationAndJacobian(T_ba, v_b, out_v_a, out_B);
@@ -37,7 +37,7 @@ void export_transformations() {
     Eigen::Matrix4d (*toTEuler1)(double, double, double, double, double, double) = &toTEuler;
     def("toTEuler", toTEuler1, "Create a 4x4 transformation matrix from 6 parameters");
 
-    Eigen::Matrix4d (*toTEuler2)(Eigen::Matrix<double, 6, 1> const &) = &toTEuler;
+    Eigen::Matrix4d (*toTEuler2)(Eigen::Matrix<double, 6, 1> const&) = &toTEuler;
     def("toTEuler", toTEuler2, "Create a 4x4 transformation matrix from a 6x1 column of parameters");
     def("fromTEuler", fromTEuler, "Create 6x1 column of parameters from a 4x4 transformation matrix");
     def("transformationAndJacobian", transformationAndJacobianTuple,

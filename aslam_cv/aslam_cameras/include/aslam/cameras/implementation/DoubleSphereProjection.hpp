@@ -17,7 +17,7 @@ DoubleSphereProjection<DISTORTION_T>::DoubleSphereProjection()
 }
 
 template <typename DISTORTION_T>
-DoubleSphereProjection<DISTORTION_T>::DoubleSphereProjection(const sm::PropertyTree &config)
+DoubleSphereProjection<DISTORTION_T>::DoubleSphereProjection(const sm::PropertyTree& config)
     : _distortion(sm::PropertyTree(config, "distortion")) {
     _xi = config.getDouble("xi");
     _alpha = config.getDouble("alpha");
@@ -76,15 +76,15 @@ DoubleSphereProjection<DISTORTION_T>::~DoubleSphereProjection() {}
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K>
 bool DoubleSphereProjection<DISTORTION_T>::euclideanToKeypoint(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_K> &outKeypointConst) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_K>& outKeypointConst) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
-    Eigen::MatrixBase<DERIVED_K> &outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K> &>(outKeypointConst);
+    Eigen::MatrixBase<DERIVED_K>& outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K>&>(outKeypointConst);
     outKeypoint.derived().resize(2);
 
-    const double &x = p[0];
-    const double &y = p[1];
-    const double &z = p[2];
+    const double& x = p[0];
+    const double& y = p[1];
+    const double& z = p[2];
 
     double xx = x * x;
     double yy = y * y;
@@ -119,26 +119,26 @@ bool DoubleSphereProjection<DISTORTION_T>::euclideanToKeypoint(
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-bool DoubleSphereProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                               const Eigen::MatrixBase<DERIVED_K> &outKeypointConst,
-                                                               const Eigen::MatrixBase<DERIVED_JP> &outJp) const {
+bool DoubleSphereProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                               const Eigen::MatrixBase<DERIVED_K>& outKeypointConst,
+                                                               const Eigen::MatrixBase<DERIVED_JP>& outJp) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JP>, 2, 3);
 
-    Eigen::MatrixBase<DERIVED_K> &outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K> &>(outKeypointConst);
+    Eigen::MatrixBase<DERIVED_K>& outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K>&>(outKeypointConst);
     outKeypoint.derived().resize(2);
 
     // Jacobian:
-    Eigen::MatrixBase<DERIVED_JP> &J = const_cast<Eigen::MatrixBase<DERIVED_JP> &>(outJp);
+    Eigen::MatrixBase<DERIVED_JP>& J = const_cast<Eigen::MatrixBase<DERIVED_JP>&>(outJp);
     J.derived().resize(KeypointDimension, 3);
     J.setZero();
 
     // project the point
 
-    const double &x = p[0];
-    const double &y = p[1];
-    const double &z = p[2];
+    const double& x = p[0];
+    const double& y = p[1];
+    const double& z = p[2];
 
     double xx = x * x;
     double yy = y * y;
@@ -192,7 +192,7 @@ bool DoubleSphereProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::Matr
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K>
 bool DoubleSphereProjection<DISTORTION_T>::homogeneousToKeypoint(
-    const Eigen::MatrixBase<DERIVED_P> &ph, const Eigen::MatrixBase<DERIVED_K> &outKeypoint) const {
+    const Eigen::MatrixBase<DERIVED_P>& ph, const Eigen::MatrixBase<DERIVED_K>& outKeypoint) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
@@ -204,14 +204,14 @@ bool DoubleSphereProjection<DISTORTION_T>::homogeneousToKeypoint(
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-bool DoubleSphereProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P> &ph,
-                                                                 const Eigen::MatrixBase<DERIVED_K> &outKeypoint,
-                                                                 const Eigen::MatrixBase<DERIVED_JP> &outJp) const {
+bool DoubleSphereProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P>& ph,
+                                                                 const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
+                                                                 const Eigen::MatrixBase<DERIVED_JP>& outJp) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JP>, 2, 4);
 
-    Eigen::MatrixBase<DERIVED_JP> &J = const_cast<Eigen::MatrixBase<DERIVED_JP> &>(outJp);
+    Eigen::MatrixBase<DERIVED_JP>& J = const_cast<Eigen::MatrixBase<DERIVED_JP>&>(outJp);
     J.derived().resize(KeypointDimension, 4);
     J.setZero();
 
@@ -229,11 +229,11 @@ bool DoubleSphereProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::Ma
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P>
 bool DoubleSphereProjection<DISTORTION_T>::keypointToEuclidean(
-    const Eigen::MatrixBase<DERIVED_K> &keypoint, const Eigen::MatrixBase<DERIVED_P> &outPointConst) const {
+    const Eigen::MatrixBase<DERIVED_K>& keypoint, const Eigen::MatrixBase<DERIVED_P>& outPointConst) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
-    Eigen::MatrixBase<DERIVED_P> &outPoint = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPointConst);
+    Eigen::MatrixBase<DERIVED_P>& outPoint = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPointConst);
     outPoint.derived().resize(3);
 
     // Unproject...
@@ -258,14 +258,14 @@ bool DoubleSphereProjection<DISTORTION_T>::keypointToEuclidean(
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-bool DoubleSphereProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                               const Eigen::MatrixBase<DERIVED_P> &outPointConst,
-                                                               const Eigen::MatrixBase<DERIVED_JK> &outJk) const {
+bool DoubleSphereProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                               const Eigen::MatrixBase<DERIVED_P>& outPointConst,
+                                                               const Eigen::MatrixBase<DERIVED_JK>& outJk) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JK>, 3, 2);
 
-    Eigen::MatrixBase<DERIVED_P> &outPoint = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPointConst);
+    Eigen::MatrixBase<DERIVED_P>& outPoint = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPointConst);
     outPoint.derived().resize(3);
 
     // Unproject...
@@ -315,8 +315,8 @@ bool DoubleSphereProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::Matr
     double d_k_d_mx = d_k_d_r2 * 2 * mx;
     double d_k_d_my = d_k_d_r2 * 2 * my;
 
-    Eigen::MatrixBase<DERIVED_JK> &mbJk = const_cast<Eigen::MatrixBase<DERIVED_JK> &>(outJk);
-    DERIVED_JK &Jk = mbJk.derived();
+    Eigen::MatrixBase<DERIVED_JK>& mbJk = const_cast<Eigen::MatrixBase<DERIVED_JK>&>(outJk);
+    DERIVED_JK& Jk = mbJk.derived();
 
     Jk(0, 0) = _recip_fu * (mx * d_k_d_mx + k);
     Jk(1, 0) = _recip_fu * my * d_k_d_mx;
@@ -331,12 +331,12 @@ bool DoubleSphereProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::Matr
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P>
-bool DoubleSphereProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                                 const Eigen::MatrixBase<DERIVED_P> &outPoint) const {
+bool DoubleSphereProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                                 const Eigen::MatrixBase<DERIVED_P>& outPoint) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
-    Eigen::MatrixBase<DERIVED_P> &p = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPoint);
+    Eigen::MatrixBase<DERIVED_P>& p = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPoint);
     p.derived().resize(4);
     p[3] = 0.0;
     return keypointToEuclidean(keypoint, p.derived().template head<3>());
@@ -344,18 +344,18 @@ bool DoubleSphereProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::Ma
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-bool DoubleSphereProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                                 const Eigen::MatrixBase<DERIVED_P> &outPoint,
-                                                                 const Eigen::MatrixBase<DERIVED_JK> &outJk) const {
+bool DoubleSphereProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                                 const Eigen::MatrixBase<DERIVED_P>& outPoint,
+                                                                 const Eigen::MatrixBase<DERIVED_JK>& outJk) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JK>, 4, 2);
 
-    Eigen::MatrixBase<DERIVED_JK> &Jk = const_cast<Eigen::MatrixBase<DERIVED_JK> &>(outJk);
+    Eigen::MatrixBase<DERIVED_JK>& Jk = const_cast<Eigen::MatrixBase<DERIVED_JK>&>(outJk);
     Jk.derived().resize(4, 2);
     Jk.setZero();
 
-    Eigen::MatrixBase<DERIVED_P> &p = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPoint);
+    Eigen::MatrixBase<DERIVED_P>& p = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPoint);
     p.derived().resize(4);
     p[3] = 0.0;
 
@@ -365,17 +365,17 @@ bool DoubleSphereProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::Ma
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JI>
 void DoubleSphereProjection<DISTORTION_T>::euclideanToKeypointIntrinsicsJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JI> &outJi) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JI>& outJi) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JI>, (int)KeypointDimension, 6);
 
-    Eigen::MatrixBase<DERIVED_JI> &J = const_cast<Eigen::MatrixBase<DERIVED_JI> &>(outJi);
+    Eigen::MatrixBase<DERIVED_JI>& J = const_cast<Eigen::MatrixBase<DERIVED_JI>&>(outJi);
     J.derived().resize(KeypointDimension, 6);
     J.setZero();
 
-    const double &x = p[0];
-    const double &y = p[1];
-    const double &z = p[2];
+    const double& x = p[0];
+    const double& y = p[1];
+    const double& z = p[2];
 
     const double xx = x * x;
     const double yy = y * y;
@@ -420,10 +420,10 @@ void DoubleSphereProjection<DISTORTION_T>::euclideanToKeypointIntrinsicsJacobian
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JD>
 void DoubleSphereProjection<DISTORTION_T>::euclideanToKeypointDistortionJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JD> &outJd) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JD>& outJd) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
 
-    Eigen::MatrixBase<DERIVED_JD> &J = const_cast<Eigen::MatrixBase<DERIVED_JD> &>(outJd);
+    Eigen::MatrixBase<DERIVED_JD>& J = const_cast<Eigen::MatrixBase<DERIVED_JD>&>(outJd);
 
     // currently no distortion implemented
     J.derived().resize(2, 0);
@@ -432,7 +432,7 @@ void DoubleSphereProjection<DISTORTION_T>::euclideanToKeypointDistortionJacobian
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JI>
 void DoubleSphereProjection<DISTORTION_T>::homogeneousToKeypointIntrinsicsJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JI> &outJi) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JI>& outJi) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
 
     if (p[3] < 0.0) {
@@ -445,7 +445,7 @@ void DoubleSphereProjection<DISTORTION_T>::homogeneousToKeypointIntrinsicsJacobi
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JD>
 void DoubleSphereProjection<DISTORTION_T>::homogeneousToKeypointDistortionJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JD> &outJd) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JD>& outJd) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
 
     if (p[3] < 0.0) {
@@ -457,7 +457,7 @@ void DoubleSphereProjection<DISTORTION_T>::homogeneousToKeypointDistortionJacobi
 
 template <typename DISTORTION_T>
 template <class Archive>
-void DoubleSphereProjection<DISTORTION_T>::load(Archive &ar, const unsigned int version) {
+void DoubleSphereProjection<DISTORTION_T>::load(Archive& ar, const unsigned int version) {
     SM_ASSERT_LE(std::runtime_error, version, (unsigned int)CLASS_SERIALIZATION_VERSION,
                  "Unsupported serialization version");
 
@@ -476,7 +476,7 @@ void DoubleSphereProjection<DISTORTION_T>::load(Archive &ar, const unsigned int 
 
 template <typename DISTORTION_T>
 template <class Archive>
-void DoubleSphereProjection<DISTORTION_T>::save(Archive &ar, const unsigned int /* version */) const {
+void DoubleSphereProjection<DISTORTION_T>::save(Archive& ar, const unsigned int /* version */) const {
     ar << BOOST_SERIALIZATION_NVP(_xi);
     ar << BOOST_SERIALIZATION_NVP(_alpha);
     ar << BOOST_SERIALIZATION_NVP(_fu);
@@ -539,7 +539,7 @@ Eigen::Vector3d DoubleSphereProjection<DISTORTION_T>::createRandomVisiblePoint(d
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K>
-bool DoubleSphereProjection<DISTORTION_T>::isValid(const Eigen::MatrixBase<DERIVED_K> &keypoint) const {
+bool DoubleSphereProjection<DISTORTION_T>::isValid(const Eigen::MatrixBase<DERIVED_K>& keypoint) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
     return keypoint(0) >= 0 && keypoint(0) < ru() && keypoint(1) >= 0 && keypoint(1) < rv();
@@ -552,7 +552,7 @@ bool DoubleSphereProjection<DISTORTION_T>::isUndistortedKeypointValid(const doub
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K>
-bool DoubleSphereProjection<DISTORTION_T>::isLiftable(const Eigen::MatrixBase<DERIVED_K> &keypoint) const {
+bool DoubleSphereProjection<DISTORTION_T>::isLiftable(const Eigen::MatrixBase<DERIVED_K>& keypoint) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
     // Unproject...
@@ -567,14 +567,14 @@ bool DoubleSphereProjection<DISTORTION_T>::isLiftable(const Eigen::MatrixBase<DE
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P>
-bool DoubleSphereProjection<DISTORTION_T>::isEuclideanVisible(const Eigen::MatrixBase<DERIVED_P> &p) const {
+bool DoubleSphereProjection<DISTORTION_T>::isEuclideanVisible(const Eigen::MatrixBase<DERIVED_P>& p) const {
     keypoint_t k;
     return euclideanToKeypoint(p, k);
 }
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P>
-bool DoubleSphereProjection<DISTORTION_T>::isHomogeneousVisible(const Eigen::MatrixBase<DERIVED_P> &ph) const {
+bool DoubleSphereProjection<DISTORTION_T>::isHomogeneousVisible(const Eigen::MatrixBase<DERIVED_P>& ph) const {
     keypoint_t k;
     return homogeneousToKeypoint(ph, k);
 }
@@ -591,7 +591,7 @@ void DoubleSphereProjection<DISTORTION_T>::updateTemporaries() {
 
 // aslam::backend compatibility
 template <typename DISTORTION_T>
-void DoubleSphereProjection<DISTORTION_T>::update(const double *v) {
+void DoubleSphereProjection<DISTORTION_T>::update(const double* v) {
     _xi += v[0];
     _alpha += v[1];
     _fu += v[2];
@@ -613,12 +613,12 @@ Eigen::Vector2i DoubleSphereProjection<DISTORTION_T>::parameterSize() const {
 }
 
 template <typename DISTORTION_T>
-void DoubleSphereProjection<DISTORTION_T>::getParameters(Eigen::MatrixXd &P) const {
+void DoubleSphereProjection<DISTORTION_T>::getParameters(Eigen::MatrixXd& P) const {
     P.resize(6, 1);
     P << _xi, _alpha, _fu, _fv, _cu, _cv;
 }
 template <typename DISTORTION_T>
-void DoubleSphereProjection<DISTORTION_T>::setParameters(const Eigen::MatrixXd &P) {
+void DoubleSphereProjection<DISTORTION_T>::setParameters(const Eigen::MatrixXd& P) {
     SM_ASSERT_EQ(std::runtime_error, P.rows(), 6, "Incorrect size");
     SM_ASSERT_EQ(std::runtime_error, P.cols(), 1, "Incorrect size");
     _xi = P(0, 0);
@@ -632,7 +632,7 @@ void DoubleSphereProjection<DISTORTION_T>::setParameters(const Eigen::MatrixXd &
 }
 
 template <typename DISTORTION_T>
-bool DoubleSphereProjection<DISTORTION_T>::isBinaryEqual(const DoubleSphereProjection<distortion_t> &rhs) const {
+bool DoubleSphereProjection<DISTORTION_T>::isBinaryEqual(const DoubleSphereProjection<distortion_t>& rhs) const {
     return _xi == rhs._xi && _alpha == rhs._alpha && _fu == rhs._fu && _fv == rhs._fv && _cu == rhs._cu &&
            _cv == rhs._cv && _ru == rhs._ru && _rv == rhs._rv && _recip_fu == rhs._recip_fu &&
            _recip_fv == rhs._recip_fv && _fu_over_fv == rhs._fu_over_fv &&
@@ -662,7 +662,7 @@ void DoubleSphereProjection<DISTORTION_T>::resizeIntrinsics(double scale) {
 /// \return true on success
 template <typename DISTORTION_T>
 bool DoubleSphereProjection<DISTORTION_T>::initializeIntrinsics(
-    const std::vector<GridCalibrationTargetObservation> &observations) {
+    const std::vector<GridCalibrationTargetObservation>& observations) {
     SM_DEFINE_EXCEPTION(Exception, std::runtime_error);
     SM_ASSERT_TRUE(Exception, observations.size() != 0, "Need min. one observation");
 
@@ -691,8 +691,8 @@ bool DoubleSphereProjection<DISTORTION_T>::initializeIntrinsics(
 
 template <typename DISTORTION_T>
 size_t DoubleSphereProjection<DISTORTION_T>::computeReprojectionError(
-    const GridCalibrationTargetObservation &obs, const sm::kinematics::Transformation &T_target_camera,
-    double &outErr) const {
+    const GridCalibrationTargetObservation& obs, const sm::kinematics::Transformation& T_target_camera,
+    double& outErr) const {
     outErr = 0.0;
     size_t count = 0;
     sm::kinematics::Transformation T_camera_target = T_target_camera.inverse();
@@ -716,8 +716,8 @@ size_t DoubleSphereProjection<DISTORTION_T>::computeReprojectionError(
 /// These functions were developed with the help of Lionel Heng and the excellent camodocal
 /// https://github.com/hengli/camodocal
 template <typename DISTORTION_T>
-bool DoubleSphereProjection<DISTORTION_T>::estimateTransformation(const GridCalibrationTargetObservation &obs,
-                                                                  sm::kinematics::Transformation &out_T_t_c) const {
+bool DoubleSphereProjection<DISTORTION_T>::estimateTransformation(const GridCalibrationTargetObservation& obs,
+                                                                  sm::kinematics::Transformation& out_T_t_c) const {
     using detail::square;
     std::vector<cv::Point2f> Ms;
     std::vector<cv::Point3f> Ps;

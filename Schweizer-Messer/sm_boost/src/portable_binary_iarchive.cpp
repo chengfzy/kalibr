@@ -19,7 +19,7 @@
 namespace boost {
 namespace archive {
 
-void portable_binary_iarchive::load_impl(boost::intmax_t &l, char maxsize) {
+void portable_binary_iarchive::load_impl(boost::intmax_t& l, char maxsize) {
     char size;
     l = 0;
     this->primitive_base_t::load(size);
@@ -33,7 +33,7 @@ void portable_binary_iarchive::load_impl(boost::intmax_t &l, char maxsize) {
 
     if (size > maxsize) boost::serialization::throw_exception(portable_binary_iarchive_exception());
 
-    char *cptr = reinterpret_cast<char *>(&l);
+    char* cptr = reinterpret_cast<char*>(&l);
 #ifdef BOOST_BIG_ENDIAN
     cptr += (sizeof(boost::intmax_t) - size);
 #endif
@@ -49,7 +49,7 @@ void portable_binary_iarchive::load_impl(boost::intmax_t &l, char maxsize) {
     if (negative) l = -l;
 }
 
-void portable_binary_iarchive::load_override(boost::archive::class_name_type &t
+void portable_binary_iarchive::load_override(boost::archive::class_name_type& t
 // breaking changes in boost >=1.59
 #if BOOST_VERSION >= 105900
 #else

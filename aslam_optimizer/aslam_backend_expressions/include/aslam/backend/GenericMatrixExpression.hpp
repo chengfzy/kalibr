@@ -47,11 +47,11 @@ class GenericMatrixExpression {
     GenericMatrixExpression(node_ptr_t root);
 
     /// \brief Initialize from an existing node. The node will not be deleted.
-    GenericMatrixExpression(node_t *root);
+    GenericMatrixExpression(node_t* root);
 
     /// \brief Initialize a constant expression from an matrix. The matrix will be copied.
     template <typename DERIVED>
-    GenericMatrixExpression(const Eigen::MatrixBase<DERIVED> &mat);
+    GenericMatrixExpression(const Eigen::MatrixBase<DERIVED>& mat);
 
     virtual ~GenericMatrixExpression() {}
 
@@ -69,29 +69,29 @@ class GenericMatrixExpression {
 
     template <int IColsOther, typename TOtherNode>
     GenericMatrixExpression<IRows, IColsOther, TScalar> operator*(
-        const GenericMatrixExpression<ICols, IColsOther, TScalar, TOtherNode> &other) const;
+        const GenericMatrixExpression<ICols, IColsOther, TScalar, TOtherNode>& other) const;
 
     inline operator GenericMatrixExpression<IRows, ICols, TScalar>() const;
 
-    default_self_t operator*(const ScalarExpression &scalarExpression) const;
+    default_self_t operator*(const ScalarExpression& scalarExpression) const;
     default_self_t operator*(TScalar scalar) const;
     default_self_t operator-() const;
     template <typename TOtherNode>
-    default_self_t operator+(const GenericMatrixExpression<IRows, ICols, TScalar, TOtherNode> &other) const;
+    default_self_t operator+(const GenericMatrixExpression<IRows, ICols, TScalar, TOtherNode>& other) const;
     template <typename TOtherNode>
-    default_self_t operator-(const GenericMatrixExpression<IRows, ICols, TScalar, TOtherNode> &other) const;
+    default_self_t operator-(const GenericMatrixExpression<IRows, ICols, TScalar, TOtherNode>& other) const;
 
     template <int IColsOther, typename TOtherNode,
               typename std::enable_if<IRows == 3 && (ICols == 1 || IColsOther == 1), int>::type = 0>
     GenericMatrixExpression<3, (ICols == 1 ? IColsOther : ICols), TScalar> cross(
-        const GenericMatrixExpression<3, IColsOther, TScalar, TOtherNode> &other) const;
+        const GenericMatrixExpression<3, IColsOther, TScalar, TOtherNode>& other) const;
 
     /// \brief Evaluate the Jacobians
-    void evaluateJacobians(JacobianContainer &outJacobians) const;
-    void evaluateJacobians(JacobianContainer &outJacobians, const Eigen::MatrixXd &applyChainRule) const;
-    void evaluateJacobians(JacobianContainer &outJacobians, const differential_t &diff) const;
+    void evaluateJacobians(JacobianContainer& outJacobians) const;
+    void evaluateJacobians(JacobianContainer& outJacobians, const Eigen::MatrixXd& applyChainRule) const;
+    void evaluateJacobians(JacobianContainer& outJacobians, const differential_t& diff) const;
 
-    void getDesignVariables(DesignVariable::set_t &designVariables) const;
+    void getDesignVariables(DesignVariable::set_t& designVariables) const;
 
     inline node_ptr_t root() const { return _root; }
 
@@ -115,32 +115,32 @@ class GenericMatrixExpression {
 
         virtual ~UnaryOperationResult() {}
 
-        inline apply_diff_return_t applyDiff(const typename operand_t::tangent_vector_t & /* tangent_vector */) const {
+        inline apply_diff_return_t applyDiff(const typename operand_t::tangent_vector_t& /* tangent_vector */) const {
             throw std::runtime_error("This method must be shadowed or not used!");
         }
 
-        static inline self_t create(const TOperand &operand) {
-            TDerived *p = new TDerived();
+        static inline self_t create(const TOperand& operand) {
+            TDerived* p = new TDerived();
             p->_operand = operand.root();
             return self_t(node_ptr_t(p));
         }
         template <typename TData>
-        static inline self_t create(const TOperand &operand, TData data) {
-            TDerived *p = new TDerived(data);
+        static inline self_t create(const TOperand& operand, TData data) {
+            TDerived* p = new TDerived(data);
             p->_operand = operand.root();
             return self_t(node_ptr_t(p));
         }
 
       protected:
         inline UnaryOperationResult() {}
-        const operand_node_t &getOperandNode() const { return *_operand; }
-        virtual void getDesignVariablesImplementation(DesignVariable::set_t &designVariables) const {
+        const operand_node_t& getOperandNode() const { return *_operand; }
+        virtual void getDesignVariablesImplementation(DesignVariable::set_t& designVariables) const {
             _operand->getDesignVariables(designVariables);
         }
         virtual void evaluateJacobiansImplementation(
-            JacobianContainer &outJacobians, const typename node_t::differential_t &chainRuleDifferentail) const {
+            JacobianContainer& outJacobians, const typename node_t::differential_t& chainRuleDifferentail) const {
             this->getOperandNode().evaluateJacobians(outJacobians,
-                                                     Diff(*static_cast<const TDerived *>(this), chainRuleDifferentail));
+                                                     Diff(*static_cast<const TDerived*>(this), chainRuleDifferentail));
         }
 
       private:
@@ -148,18 +148,18 @@ class GenericMatrixExpression {
 
         class Diff
             : public ComposedDifferential<typename operand_t::tangent_vector_t, apply_diff_return_t, TScalar, Diff> {
-            const TDerived &_derivedNode;
+            const TDerived& _derivedNode;
 
           public:
             typedef ComposedDifferential<typename operand_t::tangent_vector_t, apply_diff_return_t, TScalar, Diff>
                 base_t;
             typedef typename base_t::domain_t domain_t;
 
-            inline Diff(const TDerived &derivedNode, const typename TDerived::differential_t &diff)
+            inline Diff(const TDerived& derivedNode, const typename TDerived::differential_t& diff)
                 : base_t(diff), _derivedNode(derivedNode) {}
             ~Diff() {}
 
-            inline apply_diff_return_t apply(const typename operand_t::tangent_vector_t &tangent_vector) const {
+            inline apply_diff_return_t apply(const typename operand_t::tangent_vector_t& tangent_vector) const {
                 return _derivedNode.applyDiff(tangent_vector);
             }
         };
@@ -177,15 +177,15 @@ class GenericMatrixExpression {
         typedef typename TLhs::node_t lhs_node_t;
         typedef typename TRhs::node_t rhs_node_t;
 
-        inline apply_diff_return_t applyLhsDiff(const typename lhs_t::tangent_vector_t &tangent_vector) const {
+        inline apply_diff_return_t applyLhsDiff(const typename lhs_t::tangent_vector_t& tangent_vector) const {
             throw std::runtime_error("This method must be shadowed or not used!");
         }
-        inline apply_diff_return_t applyRhsDiff(const typename rhs_t::tangent_vector_t &tangent_vector) const {
+        inline apply_diff_return_t applyRhsDiff(const typename rhs_t::tangent_vector_t& tangent_vector) const {
             throw std::runtime_error("This method must be shadowed or not used!");
         }
 
-        static inline self_t create(const TLhs &l, const TRhs &r) {
-            TDerived *p = new TDerived();
+        static inline self_t create(const TLhs& l, const TRhs& r) {
+            TDerived* p = new TDerived();
             p->_lhs = l.root();
             p->_rhs = r.root();
             return self_t(node_ptr_t(p));
@@ -193,18 +193,18 @@ class GenericMatrixExpression {
 
       protected:
         inline BinaryOperationResult() {}
-        const lhs_node_t &getLhsNode() const { return *_lhs; }
-        const rhs_node_t &getRhsNode() const { return *_rhs; }
-        virtual void getDesignVariablesImplementation(DesignVariable::set_t &designVariables) const {
+        const lhs_node_t& getLhsNode() const { return *_lhs; }
+        const rhs_node_t& getRhsNode() const { return *_rhs; }
+        virtual void getDesignVariablesImplementation(DesignVariable::set_t& designVariables) const {
             _lhs->getDesignVariables(designVariables);
             _rhs->getDesignVariables(designVariables);
         }
-        virtual void evaluateJacobiansImplementation(JacobianContainer &outJacobians,
-                                                     const typename node_t::differential_t &diff) const {
+        virtual void evaluateJacobiansImplementation(JacobianContainer& outJacobians,
+                                                     const typename node_t::differential_t& diff) const {
             this->getLhsNode().evaluateJacobians(
-                outJacobians, Diff<lhs_t, &TDerived::applyLhsDiff>(*static_cast<const TDerived *>(this), diff));
+                outJacobians, Diff<lhs_t, &TDerived::applyLhsDiff>(*static_cast<const TDerived*>(this), diff));
             this->getRhsNode().evaluateJacobians(
-                outJacobians, Diff<rhs_t, &TDerived::applyRhsDiff>(*static_cast<const TDerived *>(this), diff));
+                outJacobians, Diff<rhs_t, &TDerived::applyRhsDiff>(*static_cast<const TDerived*>(this), diff));
         }
 
       private:
@@ -212,20 +212,20 @@ class GenericMatrixExpression {
         typename TRhs::node_ptr_t _rhs;
 
         template <typename TSide,
-                  apply_diff_return_t (TDerived::*FApply)(const typename TSide::tangent_vector_t &) const>
+                  apply_diff_return_t (TDerived::*FApply)(const typename TSide::tangent_vector_t&) const>
         class Diff : public ComposedDifferential<typename TSide::tangent_vector_t, apply_diff_return_t, TScalar,
                                                  Diff<TSide, FApply> > {
-            const TDerived &_derivedNode;
+            const TDerived& _derivedNode;
 
           public:
             typedef ComposedDifferential<typename TSide::tangent_vector_t, apply_diff_return_t, TScalar, Diff> base_t;
             typedef typename base_t::domain_t domain_t;
 
-            inline Diff(const TDerived &derivedNode, const typename TDerived::differential_t &diff)
+            inline Diff(const TDerived& derivedNode, const typename TDerived::differential_t& diff)
                 : base_t(diff), _derivedNode(derivedNode) {}
             ~Diff() {}
 
-            inline apply_diff_return_t apply(const typename TSide::tangent_vector_t &tangent_vector) const {
+            inline apply_diff_return_t apply(const typename TSide::tangent_vector_t& tangent_vector) const {
                 return (_derivedNode.*FApply)(tangent_vector);
             }
         };

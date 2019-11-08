@@ -10,7 +10,7 @@ void exportNCameras() {
         "NCameraProcessor",
         init<size_t, bool, bool>(
             "NCameraProcessor(size_t nThreads, bool doBackProjection, bool doBackProjectionUncertainty)"))
-        .def(init<const sm::PropertyTree &>())
+        .def(init<const sm::PropertyTree&>())
         //     void addCamera(boost::shared_ptr<UndistorterBase> & undistorter,
         //                    boost::shared_ptr<FrameBuilder> & frameBuilder,
         //                    const sm::kinematics::Transformation & T_v_c);
@@ -24,7 +24,7 @@ void exportNCameras() {
         ;
 
     class_<NCameraPipeline, boost::shared_ptr<NCameraPipeline>, boost::noncopyable>(
-        "NCameraPipeline", init<const sm::PropertyTree &>("NCameraPipeline(const sm::PropertyTree & config)"))
+        "NCameraPipeline", init<const sm::PropertyTree&>("NCameraPipeline(const sm::PropertyTree & config)"))
         .def("addImage", &NCameraPipeline::addEigenImage)
         .def("getCameraSystem", &NCameraPipeline::getCameraSystem);
 }

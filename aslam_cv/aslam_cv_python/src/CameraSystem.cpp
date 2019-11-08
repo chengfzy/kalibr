@@ -37,7 +37,7 @@ void exportCameraSystem() {
 
     class_<NCameraSystem, boost::shared_ptr<NCameraSystem>, boost::noncopyable, bases<CameraSystemBase> >(
         "NCameraSystem", init<>())
-        .def(init<const sm::PropertyTree &>())
+        .def(init<const sm::PropertyTree&>())
         .def("addCamera", &NCameraSystem::addCamera)
 
         ;

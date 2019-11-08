@@ -33,72 +33,72 @@ class DepthProjection {
     DepthProjection(double focalLengthU, double focalLengthV, double imageCenterU, double imageCenterV, int resolutionU,
                     int resolutionV);
 
-    DepthProjection(const sm::PropertyTree &config);
+    DepthProjection(const sm::PropertyTree& config);
 
     /// \brief destructor.
     virtual ~DepthProjection();
 
     template <typename DERIVED_P, typename DERIVED_K>
-    bool euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                             const Eigen::MatrixBase<DERIVED_K> &outKeypoint) const;
+    bool euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                             const Eigen::MatrixBase<DERIVED_K>& outKeypoint) const;
 
     template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-    bool euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_K> &outKeypoint,
-                             const Eigen::MatrixBase<DERIVED_JP> &outJp) const;
+    bool euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
+                             const Eigen::MatrixBase<DERIVED_JP>& outJp) const;
 
     template <typename DERIVED_P, typename DERIVED_K>
-    bool homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                               const Eigen::MatrixBase<DERIVED_K> &outKeypoint) const;
+    bool homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                               const Eigen::MatrixBase<DERIVED_K>& outKeypoint) const;
 
     template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-    bool homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_K> &outKeypoint,
-                               const Eigen::MatrixBase<DERIVED_JP> &outJp) const;
+    bool homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
+                               const Eigen::MatrixBase<DERIVED_JP>& outJp) const;
 
     template <typename DERIVED_K, typename DERIVED_P>
-    bool keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                             const Eigen::MatrixBase<DERIVED_P> &outPoint) const;
+    bool keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                             const Eigen::MatrixBase<DERIVED_P>& outPoint) const;
 
     template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-    bool keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K> &keypoint, const Eigen::MatrixBase<DERIVED_P> &outPoint,
-                             const Eigen::MatrixBase<DERIVED_JK> &outJk) const;
+    bool keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& keypoint, const Eigen::MatrixBase<DERIVED_P>& outPoint,
+                             const Eigen::MatrixBase<DERIVED_JK>& outJk) const;
 
     template <typename DERIVED_K, typename DERIVED_P>
-    bool keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                               const Eigen::MatrixBase<DERIVED_P> &outPoint) const;
+    bool keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                               const Eigen::MatrixBase<DERIVED_P>& outPoint) const;
 
     template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-    bool keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                               const Eigen::MatrixBase<DERIVED_P> &outPoint,
-                               const Eigen::MatrixBase<DERIVED_JK> &outJk) const;
+    bool keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                               const Eigen::MatrixBase<DERIVED_P>& outPoint,
+                               const Eigen::MatrixBase<DERIVED_JK>& outJk) const;
 
     template <typename DERIVED_P, typename DERIVED_JI>
-    void euclideanToKeypointIntrinsicsJacobian(const Eigen::MatrixBase<DERIVED_P> &p,
-                                               const Eigen::MatrixBase<DERIVED_JI> &outJi) const;
+    void euclideanToKeypointIntrinsicsJacobian(const Eigen::MatrixBase<DERIVED_P>& p,
+                                               const Eigen::MatrixBase<DERIVED_JI>& outJi) const;
 
     template <typename DERIVED_P, typename DERIVED_JD>
-    void euclideanToKeypointDistortionJacobian(const Eigen::MatrixBase<DERIVED_P> &p,
-                                               const Eigen::MatrixBase<DERIVED_JD> &outJd) const;
+    void euclideanToKeypointDistortionJacobian(const Eigen::MatrixBase<DERIVED_P>& p,
+                                               const Eigen::MatrixBase<DERIVED_JD>& outJd) const;
 
     template <typename DERIVED_P, typename DERIVED_JI>
-    void homogeneousToKeypointIntrinsicsJacobian(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                 const Eigen::MatrixBase<DERIVED_JI> &outJi) const;
+    void homogeneousToKeypointIntrinsicsJacobian(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                 const Eigen::MatrixBase<DERIVED_JI>& outJi) const;
 
     template <typename DERIVED_P, typename DERIVED_JD>
-    void homogeneousToKeypointDistortionJacobian(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                 const Eigen::MatrixBase<DERIVED_JD> &outJd) const;
+    void homogeneousToKeypointDistortionJacobian(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                 const Eigen::MatrixBase<DERIVED_JD>& outJd) const;
 
     template <typename DERIVED_K>
-    bool isValid(const Eigen::MatrixBase<DERIVED_K> &keypoint) const;
+    bool isValid(const Eigen::MatrixBase<DERIVED_K>& keypoint) const;
 
     template <typename DERIVED_P>
-    bool isEuclideanVisible(const Eigen::MatrixBase<DERIVED_P> &p) const;
+    bool isEuclideanVisible(const Eigen::MatrixBase<DERIVED_P>& p) const;
 
     template <typename DERIVED_P>
-    bool isHomogeneousVisible(const Eigen::MatrixBase<DERIVED_P> &ph) const;
+    bool isHomogeneousVisible(const Eigen::MatrixBase<DERIVED_P>& ph) const;
 
     /// \brief initialize the intrinsics based on one view of a gridded calibration target
     /// \return true on success
-    bool initializeIntrinsics(const std::vector<GridCalibrationTargetObservation> & /*observations*/) {
+    bool initializeIntrinsics(const std::vector<GridCalibrationTargetObservation>& /*observations*/) {
         SM_THROW(std::runtime_error, "initializeIntrinsics(): not implemented for DepthProjection!");
         return false;
     }
@@ -107,26 +107,26 @@ class DepthProjection {
     ///        On success out_T_t_c is filled in with the transformation that takes points from
     ///        the camera frame to the target frame
     /// \return true on success
-    bool estimateTransformation(const GridCalibrationTargetObservation & /* obs */,
-                                sm::kinematics::Transformation & /* out_T_t_c */) const {
+    bool estimateTransformation(const GridCalibrationTargetObservation& /* obs */,
+                                sm::kinematics::Transformation& /* out_T_t_c */) const {
         return false;
     }
 
     // aslam::backend compatibility
-    void update(const double *v);
+    void update(const double* v);
     int minimalDimensions() const;
-    void getParameters(Eigen::MatrixXd &P) const;
-    void setParameters(const Eigen::MatrixXd &P);
+    void getParameters(Eigen::MatrixXd& P) const;
+    void setParameters(const Eigen::MatrixXd& P);
     Eigen::Vector2i parameterSize() const;
 
     enum { CLASS_SERIALIZATION_VERSION = 0 };
     BOOST_SERIALIZATION_SPLIT_MEMBER();
 
     template <class Archive>
-    void load(Archive &ar, const unsigned int version);
+    void load(Archive& ar, const unsigned int version);
 
     template <class Archive>
-    void save(Archive &ar, const unsigned int version) const;
+    void save(Archive& ar, const unsigned int version) const;
 
     // \brief creates a random valid keypoint.
     virtual Eigen::VectorXd createRandomKeypoint() const;
@@ -136,8 +136,8 @@ class DepthProjection {
 
     bool isProjectionInvertible() const { return false; }
 
-    distortion_t &distortion() { return _distortion; };
-    const distortion_t &distortion() const { return _distortion; };
+    distortion_t& distortion() { return _distortion; };
+    const distortion_t& distortion() const { return _distortion; };
 
     double focalLengthCol() const { return _fu; }
     double focalLengthRow() const { return _fv; }
@@ -160,7 +160,7 @@ class DepthProjection {
     /// \todo Fill in
     static DepthProjection<DISTORTION_T> getTestProjection() { return DepthProjection<DISTORTION_T>(); }
 
-    bool isBinaryEqual(const DepthProjection<DISTORTION_T> & /* rhs */) const { return false; }
+    bool isBinaryEqual(const DepthProjection<DISTORTION_T>& /* rhs */) const { return false; }
 
   private:
     /// \brief The horizontal focal length in pixels.

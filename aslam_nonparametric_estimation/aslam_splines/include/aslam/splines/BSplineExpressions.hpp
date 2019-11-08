@@ -21,39 +21,39 @@ class BSplinePoseDesignVariable;
 // aslam::backend::TransformationExpression transformation(double tk);
 class BSplineTransformationExpressionNode : public aslam::backend::TransformationExpressionNode {
   public:
-    BSplineTransformationExpressionNode(bsplines::BSplinePose *spline,
-                                        const std::vector<aslam::backend::DesignVariable *> &designVariables,
+    BSplineTransformationExpressionNode(bsplines::BSplinePose* spline,
+                                        const std::vector<aslam::backend::DesignVariable*>& designVariables,
                                         double time);
     virtual ~BSplineTransformationExpressionNode();
 
   protected:
     virtual Eigen::Matrix4d toTransformationMatrixImplementation();
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians) const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians,
-                                                 const Eigen::MatrixXd &applyChainRule) const;
-    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t &designVariables) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
+    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t& designVariables) const;
 
-    bsplines::BSplinePose *_spline;
-    std::vector<aslam::backend::DesignVariable *> _designVariables;
+    bsplines::BSplinePose* _spline;
+    std::vector<aslam::backend::DesignVariable*> _designVariables;
     double _time;
 };
 
 // aslam::backend::TransformationExpression transformation(double tk);
 class BSplineRotationExpressionNode : public aslam::backend::RotationExpressionNode {
   public:
-    BSplineRotationExpressionNode(bsplines::BSplinePose *spline,
-                                  const std::vector<aslam::backend::DesignVariable *> &designVariables, double time);
+    BSplineRotationExpressionNode(bsplines::BSplinePose* spline,
+                                  const std::vector<aslam::backend::DesignVariable*>& designVariables, double time);
     virtual ~BSplineRotationExpressionNode();
 
   protected:
     virtual Eigen::Matrix3d toRotationMatrixImplementation() const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians) const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians,
-                                                 const Eigen::MatrixXd &applyChainRule) const;
-    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t &designVariables) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
+    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t& designVariables) const;
 
-    bsplines::BSplinePose *_spline;
-    std::vector<aslam::backend::DesignVariable *> _designVariables;
+    bsplines::BSplinePose* _spline;
+    std::vector<aslam::backend::DesignVariable*> _designVariables;
     double _time;
 };
 
@@ -61,38 +61,38 @@ class BSplineRotationExpressionNode : public aslam::backend::RotationExpressionN
 // aslam::backend::TransformationExpression transformation(double tk);
 class BSplinePositionExpressionNode : public aslam::backend::EuclideanExpressionNode {
   public:
-    BSplinePositionExpressionNode(bsplines::BSplinePose *spline,
-                                  const std::vector<aslam::backend::DesignVariable *> &designVariables, double time);
+    BSplinePositionExpressionNode(bsplines::BSplinePose* spline,
+                                  const std::vector<aslam::backend::DesignVariable*>& designVariables, double time);
     virtual ~BSplinePositionExpressionNode();
 
   protected:
     virtual Eigen::Vector3d toEuclideanImplementation() const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians) const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians,
-                                                 const Eigen::MatrixXd &applyChainRule) const;
-    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t &designVariables) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
+    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t& designVariables) const;
 
-    bsplines::BSplinePose *_spline;
-    std::vector<aslam::backend::DesignVariable *> _designVariables;
+    bsplines::BSplinePose* _spline;
+    std::vector<aslam::backend::DesignVariable*> _designVariables;
     double _time;
 };
 
 // Fabio:
 class BSplineVelocityExpressionNode : public aslam::backend::EuclideanExpressionNode {
   public:
-    BSplineVelocityExpressionNode(bsplines::BSplinePose *spline,
-                                  const std::vector<aslam::backend::DesignVariable *> &designVariables, double time);
+    BSplineVelocityExpressionNode(bsplines::BSplinePose* spline,
+                                  const std::vector<aslam::backend::DesignVariable*>& designVariables, double time);
     virtual ~BSplineVelocityExpressionNode();
 
   protected:
     virtual Eigen::Vector3d toEuclideanImplementation() const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians) const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians,
-                                                 const Eigen::MatrixXd &applyChainRule) const;
-    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t &designVariables) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
+    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t& designVariables) const;
 
-    bsplines::BSplinePose *_spline;
-    std::vector<aslam::backend::DesignVariable *> _designVariables;
+    bsplines::BSplinePose* _spline;
+    std::vector<aslam::backend::DesignVariable*> _designVariables;
     double _time;
 };
 
@@ -100,77 +100,76 @@ class BSplineVelocityExpressionNode : public aslam::backend::EuclideanExpression
 
 class BSplineAccelerationExpressionNode : public aslam::backend::EuclideanExpressionNode {
   public:
-    BSplineAccelerationExpressionNode(bsplines::BSplinePose *spline,
-                                      const std::vector<aslam::backend::DesignVariable *> &designVariables,
-                                      double time);
+    BSplineAccelerationExpressionNode(bsplines::BSplinePose* spline,
+                                      const std::vector<aslam::backend::DesignVariable*>& designVariables, double time);
     virtual ~BSplineAccelerationExpressionNode();
 
   protected:
     virtual Eigen::Vector3d toEuclideanImplementation() const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians) const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians,
-                                                 const Eigen::MatrixXd &applyChainRule) const;
-    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t &designVariables) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
+    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t& designVariables) const;
 
-    bsplines::BSplinePose *_spline;
-    std::vector<aslam::backend::DesignVariable *> _designVariables;
+    bsplines::BSplinePose* _spline;
+    std::vector<aslam::backend::DesignVariable*> _designVariables;
     double _time;
 };
 
 class BSplineAccelerationBodyFrameExpressionNode : public aslam::backend::EuclideanExpressionNode {
   public:
-    BSplineAccelerationBodyFrameExpressionNode(bsplines::BSplinePose *spline,
-                                               const std::vector<aslam::backend::DesignVariable *> &designVariables,
+    BSplineAccelerationBodyFrameExpressionNode(bsplines::BSplinePose* spline,
+                                               const std::vector<aslam::backend::DesignVariable*>& designVariables,
                                                double time);
     virtual ~BSplineAccelerationBodyFrameExpressionNode();
 
   protected:
     virtual Eigen::Vector3d toEuclideanImplementation() const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians) const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians,
-                                                 const Eigen::MatrixXd &applyChainRule) const;
-    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t &designVariables) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
+    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t& designVariables) const;
 
-    bsplines::BSplinePose *_spline;
-    std::vector<aslam::backend::DesignVariable *> _designVariables;
+    bsplines::BSplinePose* _spline;
+    std::vector<aslam::backend::DesignVariable*> _designVariables;
     double _time;
 };
 
 class BSplineAngularVelocityBodyFrameExpressionNode : public aslam::backend::EuclideanExpressionNode {
   public:
-    BSplineAngularVelocityBodyFrameExpressionNode(bsplines::BSplinePose *spline,
-                                                  const std::vector<aslam::backend::DesignVariable *> &designVariables,
+    BSplineAngularVelocityBodyFrameExpressionNode(bsplines::BSplinePose* spline,
+                                                  const std::vector<aslam::backend::DesignVariable*>& designVariables,
                                                   double time);
     virtual ~BSplineAngularVelocityBodyFrameExpressionNode();
 
   protected:
     virtual Eigen::Vector3d toEuclideanImplementation() const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians) const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians,
-                                                 const Eigen::MatrixXd &applyChainRule) const;
-    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t &designVariables) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
+    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t& designVariables) const;
 
-    bsplines::BSplinePose *_spline;
-    std::vector<aslam::backend::DesignVariable *> _designVariables;
+    bsplines::BSplinePose* _spline;
+    std::vector<aslam::backend::DesignVariable*> _designVariables;
     double _time;
 };
 
 class BSplineAngularAccelerationBodyFrameExpressionNode : public aslam::backend::EuclideanExpressionNode {
   public:
     BSplineAngularAccelerationBodyFrameExpressionNode(
-        bsplines::BSplinePose *spline, const std::vector<aslam::backend::DesignVariable *> &designVariables,
+        bsplines::BSplinePose* spline, const std::vector<aslam::backend::DesignVariable*>& designVariables,
         double time);
     virtual ~BSplineAngularAccelerationBodyFrameExpressionNode();
 
   protected:
     virtual Eigen::Vector3d toEuclideanImplementation() const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians) const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians,
-                                                 const Eigen::MatrixXd &applyChainRule) const;
-    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t &designVariables) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
+    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t& designVariables) const;
 
-    bsplines::BSplinePose *_spline;
-    std::vector<aslam::backend::DesignVariable *> _designVariables;
+    bsplines::BSplinePose* _spline;
+    std::vector<aslam::backend::DesignVariable*> _designVariables;
     double _time;
 };
 
@@ -178,20 +177,20 @@ template <int DIM>
 class BSplineVectorExpressionNode : public aslam::backend::VectorExpressionNode<DIM> {
   public:
     typedef typename aslam::backend::VectorExpressionNode<DIM>::vector_t vector_t;
-    BSplineVectorExpressionNode(bsplines::BSpline *spline, int derivativeOrder,
-                                const std::vector<aslam::backend::DesignVariable *> &designVariables, double time);
+    BSplineVectorExpressionNode(bsplines::BSpline* spline, int derivativeOrder,
+                                const std::vector<aslam::backend::DesignVariable*>& designVariables, double time);
     virtual ~BSplineVectorExpressionNode();
 
   protected:
     virtual vector_t evaluateImplementation() const;
 
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians) const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians,
-                                                 const Eigen::MatrixXd &applyChainRule) const;
-    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t &designVariables) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
+    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t& designVariables) const;
 
-    bsplines::BSpline *_spline;
-    std::vector<aslam::backend::DesignVariable *> _designVariables;
+    bsplines::BSpline* _spline;
+    std::vector<aslam::backend::DesignVariable*> _designVariables;
     double _time;
     int _derivativeOrder;
 };
@@ -199,19 +198,19 @@ class BSplineVectorExpressionNode : public aslam::backend::VectorExpressionNode<
 // aslam::backend::TransformationExpression transformation(double tk);
 class TransformationTimeOffsetExpressionNode : public aslam::backend::TransformationExpressionNode {
   public:
-    TransformationTimeOffsetExpressionNode(BSplinePoseDesignVariable *bspline,
-                                           const aslam::backend::ScalarExpression &time, double bufferTmin = 0,
+    TransformationTimeOffsetExpressionNode(BSplinePoseDesignVariable* bspline,
+                                           const aslam::backend::ScalarExpression& time, double bufferTmin = 0,
                                            double bufferTmax = 0);
     virtual ~TransformationTimeOffsetExpressionNode();
 
   protected:
     virtual Eigen::Matrix4d toTransformationMatrixImplementation();
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians) const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians,
-                                                 const Eigen::MatrixXd &applyChainRule) const;
-    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t &designVariables) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
+    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t& designVariables) const;
 
-    BSplinePoseDesignVariable *_spline;
+    BSplinePoseDesignVariable* _spline;
     aslam::backend::ScalarExpression _time;
 
     int _bufferLeft;
@@ -223,20 +222,20 @@ class TransformationTimeOffsetExpressionNode : public aslam::backend::Transforma
 
 class BSplineEuclideanExpressionNode : public aslam::backend::EuclideanExpressionNode {
   public:
-    BSplineEuclideanExpressionNode(bsplines::BSpline *spline,
-                                   const std::vector<aslam::backend::DesignVariable *> &designVariables, double time,
+    BSplineEuclideanExpressionNode(bsplines::BSpline* spline,
+                                   const std::vector<aslam::backend::DesignVariable*>& designVariables, double time,
                                    int derivativeOrder);
     virtual ~BSplineEuclideanExpressionNode();
 
   protected:
     virtual Eigen::Vector3d toEuclideanImplementation() const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians) const;
-    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer &outJacobians,
-                                                 const Eigen::MatrixXd &applyChainRule) const;
-    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t &designVariables) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians) const;
+    virtual void evaluateJacobiansImplementation(aslam::backend::JacobianContainer& outJacobians,
+                                                 const Eigen::MatrixXd& applyChainRule) const;
+    virtual void getDesignVariablesImplementation(aslam::backend::DesignVariable::set_t& designVariables) const;
 
-    bsplines::BSpline *_spline;
-    std::vector<aslam::backend::DesignVariable *> _designVariables;
+    bsplines::BSpline* _spline;
+    std::vector<aslam::backend::DesignVariable*> _designVariables;
     double _time;
     int _order;
 };

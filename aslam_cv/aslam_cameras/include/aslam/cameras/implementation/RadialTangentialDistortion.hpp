@@ -2,10 +2,10 @@ namespace aslam {
 namespace cameras {
 
 template <typename DERIVED_Y>
-void RadialTangentialDistortion::distort(const Eigen::MatrixBase<DERIVED_Y> &yconst) const {
+void RadialTangentialDistortion::distort(const Eigen::MatrixBase<DERIVED_Y>& yconst) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_Y>, 2);
 
-    Eigen::MatrixBase<DERIVED_Y> &y = const_cast<Eigen::MatrixBase<DERIVED_Y> &>(yconst);
+    Eigen::MatrixBase<DERIVED_Y>& y = const_cast<Eigen::MatrixBase<DERIVED_Y>&>(yconst);
     y.derived().resize(2);
 
     double mx2_u, my2_u, mxy_u, rho2_u, rad_dist_u;
@@ -20,18 +20,18 @@ void RadialTangentialDistortion::distort(const Eigen::MatrixBase<DERIVED_Y> &yco
 }
 
 template <typename DERIVED_Y, typename DERIVED_JY>
-void RadialTangentialDistortion::distort(const Eigen::MatrixBase<DERIVED_Y> &yconst,
-                                         const Eigen::MatrixBase<DERIVED_JY> &outJy) const {
+void RadialTangentialDistortion::distort(const Eigen::MatrixBase<DERIVED_Y>& yconst,
+                                         const Eigen::MatrixBase<DERIVED_JY>& outJy) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_Y>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JY>, 2, 2);
 
     double mx2_u, my2_u, mxy_u, rho2_u, rad_dist_u;
 
-    Eigen::MatrixBase<DERIVED_JY> &J = const_cast<Eigen::MatrixBase<DERIVED_JY> &>(outJy);
+    Eigen::MatrixBase<DERIVED_JY>& J = const_cast<Eigen::MatrixBase<DERIVED_JY>&>(outJy);
     J.derived().resize(2, 2);
     J.setZero();
 
-    Eigen::MatrixBase<DERIVED_Y> &y = const_cast<Eigen::MatrixBase<DERIVED_Y> &>(yconst);
+    Eigen::MatrixBase<DERIVED_Y>& y = const_cast<Eigen::MatrixBase<DERIVED_Y>&>(yconst);
     y.derived().resize(2);
 
     mx2_u = y[0] * y[0];
@@ -51,10 +51,10 @@ void RadialTangentialDistortion::distort(const Eigen::MatrixBase<DERIVED_Y> &yco
 }
 
 template <typename DERIVED>
-void RadialTangentialDistortion::undistort(const Eigen::MatrixBase<DERIVED> &yconst) const {
+void RadialTangentialDistortion::undistort(const Eigen::MatrixBase<DERIVED>& yconst) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED>, 2);
 
-    Eigen::MatrixBase<DERIVED> &y = const_cast<Eigen::MatrixBase<DERIVED> &>(yconst);
+    Eigen::MatrixBase<DERIVED>& y = const_cast<Eigen::MatrixBase<DERIVED>&>(yconst);
     y.derived().resize(2);
 
     Eigen::Vector2d ybar = y;
@@ -79,12 +79,12 @@ void RadialTangentialDistortion::undistort(const Eigen::MatrixBase<DERIVED> &yco
 }
 
 template <typename DERIVED, typename DERIVED_JY>
-void RadialTangentialDistortion::undistort(const Eigen::MatrixBase<DERIVED> &yconst,
-                                           const Eigen::MatrixBase<DERIVED_JY> &outJy) const {
+void RadialTangentialDistortion::undistort(const Eigen::MatrixBase<DERIVED>& yconst,
+                                           const Eigen::MatrixBase<DERIVED_JY>& outJy) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JY>, 2, 2);
 
-    Eigen::MatrixBase<DERIVED> &y = const_cast<Eigen::MatrixBase<DERIVED> &>(yconst);
+    Eigen::MatrixBase<DERIVED>& y = const_cast<Eigen::MatrixBase<DERIVED>&>(yconst);
     y.derived().resize(2);
 
     // we use f^-1 ' = ( f'(f^-1) ) '
@@ -97,7 +97,7 @@ void RadialTangentialDistortion::undistort(const Eigen::MatrixBase<DERIVED> &yco
     distort(kp, Jd);
 
     // now y = f^-1(y0)
-    DERIVED_JY &J = const_cast<DERIVED_JY &>(outJy.derived());
+    DERIVED_JY& J = const_cast<DERIVED_JY&>(outJy.derived());
 
     J = Jd.inverse();
 
@@ -123,8 +123,8 @@ void RadialTangentialDistortion::undistort(const Eigen::MatrixBase<DERIVED> &yco
 }
 
 template <typename DERIVED_Y, typename DERIVED_JD>
-void RadialTangentialDistortion::distortParameterJacobian(const Eigen::MatrixBase<DERIVED_Y> &imageY,
-                                                          const Eigen::MatrixBase<DERIVED_JD> &outJd) const {
+void RadialTangentialDistortion::distortParameterJacobian(const Eigen::MatrixBase<DERIVED_Y>& imageY,
+                                                          const Eigen::MatrixBase<DERIVED_JD>& outJd) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_Y>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JD>, 2, 4);
 
@@ -133,7 +133,7 @@ void RadialTangentialDistortion::distortParameterJacobian(const Eigen::MatrixBas
     double r2 = y0 * y0 + y1 * y1;
     double r4 = r2 * r2;
 
-    Eigen::MatrixBase<DERIVED_JD> &J = const_cast<Eigen::MatrixBase<DERIVED_JD> &>(outJd);
+    Eigen::MatrixBase<DERIVED_JD>& J = const_cast<Eigen::MatrixBase<DERIVED_JD>&>(outJd);
     J.derived().resize(2, 4);
     J.setZero();
 
@@ -149,7 +149,7 @@ void RadialTangentialDistortion::distortParameterJacobian(const Eigen::MatrixBas
 }
 
 template <class Archive>
-void RadialTangentialDistortion::save(Archive &ar, const unsigned int /* version */) const {
+void RadialTangentialDistortion::save(Archive& ar, const unsigned int /* version */) const {
     ar << BOOST_SERIALIZATION_NVP(_k1);
     ar << BOOST_SERIALIZATION_NVP(_k2);
     ar << BOOST_SERIALIZATION_NVP(_p1);
@@ -157,7 +157,7 @@ void RadialTangentialDistortion::save(Archive &ar, const unsigned int /* version
 }
 
 template <class Archive>
-void RadialTangentialDistortion::load(Archive &ar, const unsigned int version) {
+void RadialTangentialDistortion::load(Archive& ar, const unsigned int version) {
     SM_ASSERT_LE(std::runtime_error, version, (unsigned int)CLASS_SERIALIZATION_VERSION,
                  "Unsupported serialization version");
 

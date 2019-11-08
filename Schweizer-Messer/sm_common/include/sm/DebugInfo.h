@@ -13,7 +13,6 @@ enum DebugInfoType {
     Paragraph,
 };
 
-
 // print debug information
 void printInfo(const std::string& title, DebugInfoType type = DebugInfoType::Section, bool breakLine = true);
 

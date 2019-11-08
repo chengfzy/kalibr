@@ -4,7 +4,7 @@
 using namespace boost::python;
 using namespace sm::kinematics;
 
-Eigen::Matrix3d crossMxWrap(const Eigen::Vector3d &v) { return crossMx(v[0], v[1], v[2]); }
+Eigen::Matrix3d crossMxWrap(const Eigen::Vector3d& v) { return crossMx(v[0], v[1], v[2]); }
 
 void export_rotations() {
     using namespace boost::python;
@@ -25,19 +25,19 @@ void export_rotations() {
     //   Eigen::Matrix3d rph2r(double x, double y, double z);
     def("rph2R", rph2r1);
 
-    Eigen::Matrix3d (*rph2r2)(Eigen::Vector3d const &) = &rph2R;
+    Eigen::Matrix3d (*rph2r2)(Eigen::Vector3d const&) = &rph2R;
     //   Eigen::Matrix3d rph2r(Eigen::Vector3d const & x);
     def("rph2R", rph2r2);
 
     Eigen::Matrix3d (*rph2C1)(double, double, double) = &rph2C;
     def("rph2C", rph2C1);
 
-    Eigen::Matrix3d (*rph2C2)(Eigen::Vector3d const &) = &rph2C;
+    Eigen::Matrix3d (*rph2C2)(Eigen::Vector3d const&) = &rph2C;
     def("rph2C", rph2C2);
 
     def("C2rph", C2rph);
 
-    Eigen::Vector3d (*r2rph1)(Eigen::Matrix3d const &) = &R2rph;
+    Eigen::Vector3d (*r2rph1)(Eigen::Matrix3d const&) = &R2rph;
     //   Eigen::Vector3d r2rph(Eigen::Matrix3d const & C);
     def("R2rph", r2rph1);
     //   Eigen::Matrix3d rph_S(Eigen::Vector3d const & rph);
@@ -58,11 +58,11 @@ void export_rotations() {
     Eigen::Matrix3d (*axisAngle2r1)(double, double, double) = &axisAngle2R;
     def("axisAngle2R", axisAngle2r1);
     //   Eigen::Matrix3d axisAngle2r(Eigen::Vector3d const & x);
-    Eigen::Matrix3d (*axisAngle2r2)(Eigen::Vector3d const &) = &axisAngle2R;
+    Eigen::Matrix3d (*axisAngle2r2)(Eigen::Vector3d const&) = &axisAngle2R;
     def("axisAngle2R", axisAngle2r2);
 
     //   Eigen::Vector3d r2AxisAngle(Eigen::Matrix3d const & C);
-    Eigen::Vector3d (*r2AxisAngle1)(Eigen::Matrix3d const &) = &R2AxisAngle;
+    Eigen::Vector3d (*r2AxisAngle1)(Eigen::Matrix3d const&) = &R2AxisAngle;
     def("R2AxisAngle", r2AxisAngle1);
     //   // quaternion rotation
     //   vector4 r2quat(Eigen::Matrix3d R);

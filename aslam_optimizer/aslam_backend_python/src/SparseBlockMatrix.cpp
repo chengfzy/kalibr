@@ -8,16 +8,16 @@ using namespace boost::python;
 using namespace sparse_block_matrix;
 
 template <typename SBM>
-void clearSBM(SBM *sbm) {
+void clearSBM(SBM* sbm) {
     sbm->clear();
 }
 
 template <typename SBM>
-typename SBM::SparseMatrixBlock blockSBM(const SBM *sbm, int r, int c) {
+typename SBM::SparseMatrixBlock blockSBM(const SBM* sbm, int r, int c) {
     if (r < 0 || r >= sbm->bRows()) throw std::runtime_error("Row index out of bounds");
     if (c < 0 || c >= sbm->bCols()) throw std::runtime_error("Column index out of bounds");
 
-    const typename SBM::SparseMatrixBlock *mat = sbm->block(r, c);
+    const typename SBM::SparseMatrixBlock* mat = sbm->block(r, c);
     if (mat) {
         return *mat;
     } else {
@@ -29,24 +29,24 @@ typename SBM::SparseMatrixBlock blockSBM(const SBM *sbm, int r, int c) {
 }
 
 template <typename SBM>
-void setBlockSBM(SBM *sbm, int r, int c, const typename SBM::SparseMatrixBlock &mat) {
+void setBlockSBM(SBM* sbm, int r, int c, const typename SBM::SparseMatrixBlock& mat) {
     if (r < 0 || r >= sbm->bRows()) throw std::runtime_error("Row index out of bounds");
     if (c < 0 || c >= sbm->bCols()) throw std::runtime_error("Column index out of bounds");
 
-    typename SBM::SparseMatrixBlock *blk = sbm->block(r, c, true);
+    typename SBM::SparseMatrixBlock* blk = sbm->block(r, c, true);
     if (!blk) throw std::runtime_error("Unexpected error: block is null");
 
     *blk = mat;
 }
 
 template <typename SBM>
-Eigen::MatrixXd toDenseSymmetric(SBM *sbm) {
+Eigen::MatrixXd toDenseSymmetric(SBM* sbm) {
     // return sbm->toDense().selfadjointView<Eigen::Upper>();
     return sbm->toDense().template selfadjointView<Eigen::Upper>();
 }
 
 template <typename SBM>
-double at(SBM *sbm, int r, int c) {
+double at(SBM* sbm, int r, int c) {
     return (*sbm)(r, c);
 }
 
@@ -54,7 +54,7 @@ void exportSBM() {
     typedef SparseBlockMatrix<Eigen::MatrixXd> mat_t;
 
     boost::python::class_<mat_t>("SparseBlockMatrixXd", init<>())
-        .def(init<const Eigen::VectorXi &, const Eigen::VectorXi &, bool>(
+        .def(init<const Eigen::VectorXi&, const Eigen::VectorXi&, bool>(
             ("SparseBlockMatrixXd(rbi, cbi, hasStorage)\n\nrbi:  a vector of ints containing the row layout of the "
              "blocks. The component i of the array should contain the index of the first row of the block i+1\ncbi:  a "
              "vector of ints containing the column layout of the blocks. The component i of the array should contain "

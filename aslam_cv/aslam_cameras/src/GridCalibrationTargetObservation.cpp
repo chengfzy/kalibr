@@ -18,8 +18,8 @@ GridCalibrationTargetObservation::GridCalibrationTargetObservation(GridCalibrati
 
 GridCalibrationTargetObservation::~GridCalibrationTargetObservation() {}
 
-void GridCalibrationTargetObservation::setTarget(GridCalibrationTargetBase::Ptr target) {
-    SM_ASSERT_TRUE(Exception, target.get() != NULL, "Refusing to set a null target");
+void GridCalibrationTargetObservation::setTarget(const GridCalibrationTargetBase::Ptr& target) {
+    SM_ASSERT_TRUE(Exception, target.get() != nullptr, "Refusing to set a null target");
     _target = target;
     _points = Eigen::MatrixXd::Zero(target->size(), 2);
     _success.clear();
@@ -27,7 +27,7 @@ void GridCalibrationTargetObservation::setTarget(GridCalibrationTargetBase::Ptr 
 }
 
 /// \brief get all (observed) corners in image coordinates
-unsigned int GridCalibrationTargetObservation::getCornersTargetFrame(std::vector<cv::Point3f> &outCornerList) const {
+unsigned int GridCalibrationTargetObservation::getCornersTargetFrame(std::vector<cv::Point3f>& outCornerList) const {
     SM_ASSERT_TRUE(Exception, _target.get() != NULL, "The target is not set");
 
     // max. number of corner in the grid
@@ -52,7 +52,7 @@ unsigned int GridCalibrationTargetObservation::getCornersTargetFrame(std::vector
 
 /// \brief get all (observed) corners in target frame coordinates
 ///        returns the number of observed corners
-unsigned int GridCalibrationTargetObservation::getCornersImageFrame(std::vector<cv::Point2f> &outCornerList) const {
+unsigned int GridCalibrationTargetObservation::getCornersImageFrame(std::vector<cv::Point2f>& outCornerList) const {
     SM_ASSERT_TRUE(Exception, _target.get() != NULL, "The target is not set");
 
     // max. number of corner in the grid
@@ -83,7 +83,7 @@ unsigned int GridCalibrationTargetObservation::getCornersImageFrame(std::vector<
 /// \brief get the the reprojected corners of all observed corners
 ///        returns the number of observed corners
 unsigned int GridCalibrationTargetObservation::getCornerReprojection(
-    const boost::shared_ptr<CameraGeometryBase> cameraGeometry, std::vector<cv::Point2f> &outPointReproj) const {
+    const boost::shared_ptr<CameraGeometryBase> cameraGeometry, std::vector<cv::Point2f>& outPointReproj) const {
     // check if transformation has been calculated
     SM_ASSERT_TRUE(Exception, _T_t_c_isSet,
                    "Extrinsics not set. Reprojection can only be calculated if the extrinsics have been calculated. "
@@ -119,7 +119,7 @@ unsigned int GridCalibrationTargetObservation::getCornerReprojection(
 /// \brief get the point index of all (observed) corners (order corresponds to the output of getCornersImageFrame and
 /// getCornersTargetFrame)
 ///        returns the number of observed corners
-unsigned int GridCalibrationTargetObservation::getCornersIdx(std::vector<unsigned int> &outCornerIdx) const {
+unsigned int GridCalibrationTargetObservation::getCornersIdx(std::vector<unsigned int>& outCornerIdx) const {
     SM_ASSERT_TRUE(Exception, _target.get() != NULL, "The target is not set");
 
     // max. number of corner in the grid
@@ -134,7 +134,7 @@ unsigned int GridCalibrationTargetObservation::getCornersIdx(std::vector<unsigne
 }
 
 /// \brief update an image observation
-void GridCalibrationTargetObservation::updateImagePoint(size_t i, const Eigen::Vector2d &point) {
+void GridCalibrationTargetObservation::updateImagePoint(size_t i, const Eigen::Vector2d& point) {
     SM_ASSERT_TRUE(Exception, _target.get() != NULL, "The target is not set");
     SM_ASSERT_LT(Exception, i, _success.size(), "Index out of bounds. The list has " << _success.size() << " points");
     // SM_DEBUG_STREAM("Updating point " << i << ". Point matrix: (" << _points.rows() << ", " << _points.cols() <<
@@ -150,7 +150,7 @@ void GridCalibrationTargetObservation::removeImagePoint(size_t i) {
     _success[i] = false;
 }
 
-bool GridCalibrationTargetObservation::imagePoint(size_t i, Eigen::Vector2d &outPoint) const {
+bool GridCalibrationTargetObservation::imagePoint(size_t i, Eigen::Vector2d& outPoint) const {
     SM_ASSERT_TRUE(Exception, _target.get() != NULL, "The target is not set");
     SM_ASSERT_LT(Exception, i, _success.size(), "Index out of bounds. The list has " << _success.size() << " points");
     outPoint = _points.row(i);
@@ -159,7 +159,7 @@ bool GridCalibrationTargetObservation::imagePoint(size_t i, Eigen::Vector2d &out
 
 /// \brief get a point from the target expressed in the target frame
 /// \return true if the grid point was seen in this image.
-bool GridCalibrationTargetObservation::imageGridPoint(size_t r, size_t c, Eigen::Vector2d &outPoint) const {
+bool GridCalibrationTargetObservation::imageGridPoint(size_t r, size_t c, Eigen::Vector2d& outPoint) const {
     SM_ASSERT_TRUE(Exception, _target.get() != NULL, "The target is not set");
     return imagePoint(_target->gridCoordinatesToPoint(r, c), outPoint);
 }

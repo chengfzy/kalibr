@@ -80,9 +80,9 @@ Eigen::Matrix3d rph2R(double x, double y, double z) {
 
     return C;
 }
-Eigen::Matrix3d rph2R(Eigen::Vector3d const &x) { return rph2R(x[0], x[1], x[2]); }
+Eigen::Matrix3d rph2R(Eigen::Vector3d const& x) { return rph2R(x[0], x[1], x[2]); }
 
-Eigen::Vector3d R2rph(Eigen::Matrix3d const &C) {
+Eigen::Vector3d R2rph(Eigen::Matrix3d const& C) {
     double phi = asin(C(2, 0));
     double theta = atan2(C(2, 1), C(2, 2));
     double psi = atan2(C(1, 0), C(0, 0));
@@ -113,11 +113,11 @@ Eigen::Matrix<Scalar_, 3, 3> crossMx(Scalar_ x, Scalar_ y, Scalar_ z) {
 template Eigen::Matrix<double, 3, 3> crossMx(double x, double y, double z);
 template Eigen::Matrix<float, 3, 3> crossMx(float x, float y, float z);
 
-template Eigen::Matrix<double, 3, 3> crossMx(Eigen::MatrixBase<Eigen::Matrix<double, 3, 1> > const &);
-template Eigen::Matrix<float, 3, 3> crossMx(Eigen::MatrixBase<Eigen::Matrix<float, 3, 1> > const &);
+template Eigen::Matrix<double, 3, 3> crossMx(Eigen::MatrixBase<Eigen::Matrix<double, 3, 1> > const&);
+template Eigen::Matrix<float, 3, 3> crossMx(Eigen::MatrixBase<Eigen::Matrix<float, 3, 1> > const&);
 
-template Eigen::Matrix<double, 3, 3> crossMx(Eigen::MatrixBase<Eigen::Matrix<double, Eigen::Dynamic, 1> > const &);
-template Eigen::Matrix<float, 3, 3> crossMx(Eigen::MatrixBase<Eigen::Matrix<float, Eigen::Dynamic, 1> > const &);
+template Eigen::Matrix<double, 3, 3> crossMx(Eigen::MatrixBase<Eigen::Matrix<double, Eigen::Dynamic, 1> > const&);
+template Eigen::Matrix<float, 3, 3> crossMx(Eigen::MatrixBase<Eigen::Matrix<float, Eigen::Dynamic, 1> > const&);
 
 // Axis Angle rotation.
 Eigen::Matrix3d axisAngle2R(double a, double ax, double ay, double az) {
@@ -158,9 +158,9 @@ Eigen::Matrix3d axisAngle2R(double x, double y, double z) {
     return axisAngle2R(a, x * d, y * d, z * d);
 }
 
-Eigen::Matrix3d axisAngle2R(Eigen::Vector3d const &x) { return axisAngle2R(x[0], x[1], x[2]); }
+Eigen::Matrix3d axisAngle2R(Eigen::Vector3d const& x) { return axisAngle2R(x[0], x[1], x[2]); }
 
-Eigen::Vector3d R2AxisAngle(Eigen::Matrix3d const &C) {
+Eigen::Vector3d R2AxisAngle(Eigen::Matrix3d const& C) {
     // Sometimes, because of roundoff error, the value of tr ends up outside
     // the valid range of arccos. Truncate to the valid range.
     double tr = std::max(-1.0, std::min((C(0, 0) + C(1, 1) + C(2, 2) - 1.0) * 0.5, 1.0));
@@ -195,19 +195,19 @@ Eigen::Matrix3d Cz(double radians) { return Rz(-radians); }
 
 Eigen::Matrix3d rph2C(double x, double y, double z) { return rph2R(-x, -y, -z); }
 
-Eigen::Matrix3d rph2C(Eigen::Vector3d const &x) { return rph2C(x[0], x[1], x[2]); }
-Eigen::Matrix3d rph2C(Eigen::VectorXd const &x) {
+Eigen::Matrix3d rph2C(Eigen::Vector3d const& x) { return rph2C(x[0], x[1], x[2]); }
+Eigen::Matrix3d rph2C(Eigen::VectorXd const& x) {
     SM_ASSERT_EQ_DBG(std::runtime_error, x.size(), 3, "The input vector must have 3 components");
     return rph2C(x[0], x[1], x[2]);
 }
 
-Eigen::Matrix3d rph2C(Eigen::MatrixXd const &A, unsigned column) {
+Eigen::Matrix3d rph2C(Eigen::MatrixXd const& A, unsigned column) {
     SM_ASSERT_EQ_DBG(std::runtime_error, A.rows(), 3, "The input matrix must have 3 rows");
     SM_ASSERT_LT_DBG(std::runtime_error, column, A.cols(), "The requested column is out of bounds");
     return rph2C(A(0, column), A(1, column), A(2, column));
 }
 
-Eigen::Vector3d C2rph(Eigen::MatrixXd const &C) {
+Eigen::Vector3d C2rph(Eigen::MatrixXd const& C) {
     SM_ASSERT_EQ_DBG(std::runtime_error, C.rows(), 3, "The input matrix must be 3x3");
     SM_ASSERT_EQ_DBG(std::runtime_error, C.cols(), 3, "The input matrix must be 3x3");
 
@@ -220,7 +220,7 @@ Eigen::Vector3d C2rph(Eigen::MatrixXd const &C) {
     return rph;
 }
 
-Eigen::Vector3d C2rph(Eigen::Matrix3d const &C) {
+Eigen::Vector3d C2rph(Eigen::Matrix3d const& C) {
     Eigen::Vector3d rph;
 
     rph[1] = asin(C(2, 0));

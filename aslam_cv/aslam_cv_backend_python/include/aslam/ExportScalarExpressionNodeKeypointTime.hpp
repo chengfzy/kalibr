@@ -15,7 +15,7 @@ void exportScalarExpressionNodeKeypointTime(std::string name) {
     class_<backend::ScalarExpressionNodeKeypointTime<CAMERA_T>,
            boost::shared_ptr<backend::ScalarExpressionNodeKeypointTime<CAMERA_T> > >(
         (name + "ScalarExpressionNodeKeypointTime").c_str(),
-        init<const aslam::Time &, const Eigen::VectorXd &,
+        init<const aslam::Time&, const Eigen::VectorXd&,
              boost::shared_ptr<aslam::backend::CameraDesignVariable<CAMERA_T> > >(
             "ScalarExpressionNodeKeypointTime(frame timestamp, keypoint, camera design variable)"))
         .def("toScalar", &backend::ScalarExpressionNodeKeypointTime<CAMERA_T>::toScalar);

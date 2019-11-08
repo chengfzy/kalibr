@@ -5,7 +5,7 @@ namespace splines {
 
 /// \brief this guy takes a copy.
 template <int D>
-BSplineDesignVariable<D>::BSplineDesignVariable(const bsplines::BSpline &bspline) : _bspline(bspline) {
+BSplineDesignVariable<D>::BSplineDesignVariable(const bsplines::BSpline& bspline) : _bspline(bspline) {
     // here is where the magic happens.
 
     // Create all of the design variables as maps into the vector of spline coefficients.
@@ -20,7 +20,7 @@ BSplineDesignVariable<D>::~BSplineDesignVariable() {}
 
 /// \brief get the spline.
 template <int D>
-const bsplines::BSpline &BSplineDesignVariable<D>::spline() {
+const bsplines::BSpline& BSplineDesignVariable<D>::spline() {
     return _bspline;
 }
 
@@ -30,7 +30,7 @@ size_t BSplineDesignVariable<D>::numDesignVariables() {
 }
 
 template <int D>
-aslam::backend::DesignVariableMappedVector<D> *BSplineDesignVariable<D>::designVariable(size_t i) {
+aslam::backend::DesignVariableMappedVector<D>* BSplineDesignVariable<D>::designVariable(size_t i) {
     SM_ASSERT_LT(aslam::Exception, i, _designVariables.size(), "Index out of bounds");
     return &_designVariables[i];
 }
@@ -38,7 +38,7 @@ aslam::backend::DesignVariableMappedVector<D> *BSplineDesignVariable<D>::designV
 template <int D>
 aslam::backend::VectorExpression<D> BSplineDesignVariable<D>::toExpression(double tk, int derivativeOrder) {
     Eigen::VectorXi dvidxs = _bspline.localVvCoefficientVectorIndices(tk);
-    std::vector<aslam::backend::DesignVariable *> dvs;
+    std::vector<aslam::backend::DesignVariable*> dvs;
     for (int i = 0; i < dvidxs.size(); ++i) {
         dvs.push_back(&_designVariables[dvidxs[i]]);
     }
@@ -49,18 +49,18 @@ aslam::backend::VectorExpression<D> BSplineDesignVariable<D>::toExpression(doubl
 }
 
 template <int D>
-std::vector<aslam::backend::DesignVariable *> BSplineDesignVariable<D>::getDesignVariables(double tk) const {
+std::vector<aslam::backend::DesignVariable*> BSplineDesignVariable<D>::getDesignVariables(double tk) const {
     Eigen::VectorXi dvidxs = _bspline.localVvCoefficientVectorIndices(tk);
-    std::vector<aslam::backend::DesignVariable *> dvs;
+    std::vector<aslam::backend::DesignVariable*> dvs;
     for (int i = 0; i < dvidxs.size(); ++i) {
-        dvs.push_back(const_cast<aslam::backend::DesignVariableMappedVector<D> *>(&_designVariables[dvidxs[i]]));
+        dvs.push_back(const_cast<aslam::backend::DesignVariableMappedVector<D>*>(&_designVariables[dvidxs[i]]));
     }
 
     return dvs;
 }
 
 template <int D>
-void BSplineDesignVariable<D>::addSegment(double t, const Eigen::VectorXd &p) {
+void BSplineDesignVariable<D>::addSegment(double t, const Eigen::VectorXd& p) {
     _bspline.addCurveSegment(t, p);
     _designVariables.push_back(new aslam::backend::DesignVariableMappedVector<D>(
         _bspline.fixedSizeVvCoefficientVector<D>(_bspline.numVvCoefficients() - 1)));
@@ -70,7 +70,7 @@ void BSplineDesignVariable<D>::addSegment(double t, const Eigen::VectorXd &p) {
 }
 
 template <int D>
-void BSplineDesignVariable<D>::addSegment2(double t, const Eigen::VectorXd &p, double lambda) {
+void BSplineDesignVariable<D>::addSegment2(double t, const Eigen::VectorXd& p, double lambda) {
     _bspline.addCurveSegment2(t, p, lambda);
     _designVariables.push_back(new aslam::backend::DesignVariableMappedVector<D>(
         _bspline.fixedSizeVvCoefficientVector<D>(_bspline.numVvCoefficients() - 1)));

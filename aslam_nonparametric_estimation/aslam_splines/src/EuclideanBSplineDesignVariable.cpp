@@ -3,14 +3,14 @@
 namespace aslam {
 namespace splines {
 
-EuclideanBSplineDesignVariable::EuclideanBSplineDesignVariable(const bsplines::BSpline &bspline)
+EuclideanBSplineDesignVariable::EuclideanBSplineDesignVariable(const bsplines::BSpline& bspline)
     : BSplineDesignVariable<3>(bspline) {}
 
 EuclideanBSplineDesignVariable::~EuclideanBSplineDesignVariable() {}
 
 aslam::backend::EuclideanExpression EuclideanBSplineDesignVariable::toEuclideanExpression(double time, int order) {
     Eigen::VectorXi dvidxs = _bspline.localVvCoefficientVectorIndices(time);
-    std::vector<aslam::backend::DesignVariable *> dvs;
+    std::vector<aslam::backend::DesignVariable*> dvs;
     for (int i = 0; i < dvidxs.size(); ++i) {
         dvs.push_back(&_designVariables[dvidxs[i]]);
     }

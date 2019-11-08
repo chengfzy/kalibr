@@ -27,7 +27,7 @@ OmniCameraGeometry::~OmniCameraGeometry() {}
 
 // This updates the intrinsic parameters with a small step: i <-- i + di
 // The Jacobians above are with respect to this update function.
-void OmniCameraGeometry::updateIntrinsicsOplus(double *di) {
+void OmniCameraGeometry::updateIntrinsicsOplus(double* di) {
     _xi += di[0];
     _k1 += di[1];
     _k2 += di[2];
@@ -42,7 +42,7 @@ void OmniCameraGeometry::updateIntrinsicsOplus(double *di) {
 
 // The amount of time elapsed between the start of the image and the
 // keypoint. For a global shutter camera, this can return Duration(0).
-Duration OmniCameraGeometry::temporalOffset(const keypoint_t &keypoint) const { return Duration(0); }
+Duration OmniCameraGeometry::temporalOffset(const keypoint_t& keypoint) const { return Duration(0); }
 
 OmniCameraGeometry::keypoint_t OmniCameraGeometry::maxKeypoint() const { return keypoint_t(_width, _height); }
 
@@ -65,7 +65,7 @@ OmniCameraGeometry OmniCameraGeometry::createTestGeometry() {
  * \param Y Y coordinate of the point on the sphere
  * \param Z Z coordinate of the point on the sphere
  */
-void OmniCameraGeometry::lift_sphere(double u, double v, double *X, double *Y, double *Z) const {
+void OmniCameraGeometry::lift_sphere(double u, double v, double* X, double* Y, double* Z) const {
     double mx_d, my_d, mx_u, my_u;
     double lambda;
 
@@ -107,7 +107,7 @@ void OmniCameraGeometry::lift_sphere(double u, double v, double *X, double *Y, d
  * \param Y Y coordinate of the projective ray
  * \param Z Z coordinate of the projective ray
  */
-void OmniCameraGeometry::lift_projective(double u, double v, double *X, double *Y, double *Z) const {
+void OmniCameraGeometry::lift_projective(double u, double v, double* X, double* Y, double* Z) const {
     double mx_d, my_d, mx_u, my_u;
     double rho2_d;
 
@@ -154,7 +154,7 @@ void OmniCameraGeometry::lift_projective(double u, double v, double *X, double *
  * \param u return value, contains the image point u coordinate
  * \param v return value, contains the image point v coordinate
  */
-void OmniCameraGeometry::space2plane(double x, double y, double z, double *u, double *v) const {
+void OmniCameraGeometry::space2plane(double x, double y, double z, double* u, double* v) const {
     double mx_u, my_u, mx_d, my_d;
 
     // Project points to the normalised plane
@@ -184,8 +184,8 @@ void OmniCameraGeometry::space2plane(double x, double y, double z, double *u, do
  * \param u return value, contains the image point u coordinate
  * \param v return value, contains the image point v coordinate
  */
-void OmniCameraGeometry::space2plane(double x, double y, double z, double *u, double *v, double *dudx, double *dvdx,
-                                     double *dudy, double *dvdy, double *dudz, double *dvdz) const {
+void OmniCameraGeometry::space2plane(double x, double y, double z, double* u, double* v, double* dudx, double* dvdx,
+                                     double* dudy, double* dvdy, double* dudz, double* dvdz) const {
     double mx_u, my_u, mx_d, my_d;
     double norm, inv_denom;
     double dxdmx, dydmx, dxdmy, dydmy;
@@ -240,7 +240,7 @@ void OmniCameraGeometry::space2plane(double x, double y, double z, double *u, do
  * \param u return value, contains the image point u coordinate
  * \param v return value, contains the image point v coordinate
  */
-void OmniCameraGeometry::undist2plane(double mx_u, double my_u, double *u, double *v) const {
+void OmniCameraGeometry::undist2plane(double mx_u, double my_u, double* u, double* v) const {
     double mx_d, my_d;
 
     // Apply distortion
@@ -263,7 +263,7 @@ void OmniCameraGeometry::undist2plane(double mx_u, double my_u, double *u, doubl
  * \param dx return value, to obtain the distorted point : mx_d = mx_u+dx_u
  * \param dy return value, to obtain the distorted point : my_d = my_u+dy_u
  */
-void OmniCameraGeometry::distortion(double mx_u, double my_u, double *dx_u, double *dy_u) const {
+void OmniCameraGeometry::distortion(double mx_u, double my_u, double* dx_u, double* dy_u) const {
     double mx2_u, my2_u, mxy_u, rho2_u, rad_dist_u;
 
     mx2_u = mx_u * mx_u;
@@ -284,8 +284,8 @@ void OmniCameraGeometry::distortion(double mx_u, double my_u, double *dx_u, doub
  * \param dx return value, to obtain the distorted point : mx_d = mx_u+dx_u
  * \param dy return value, to obtain the distorted point : my_d = my_u+dy_u
  */
-void OmniCameraGeometry::distortion(double mx_u, double my_u, double *dx_u, double *dy_u, double *dxdmx, double *dydmx,
-                                    double *dxdmy, double *dydmy) const {
+void OmniCameraGeometry::distortion(double mx_u, double my_u, double* dx_u, double* dy_u, double* dxdmx, double* dydmx,
+                                    double* dxdmy, double* dydmy) const {
     double mx2_u, my2_u, mxy_u, rho2_u, rad_dist_u;
 
     mx2_u = mx_u * mx_u;
@@ -311,7 +311,7 @@ void OmniCameraGeometry::updateTemporaries() {
     _one_over_xixi_m_1 = 1.0 / (_xi * _xi - 1.0);
 }
 
-void OmniCameraGeometry::setIntrinsicsVectorImplementation(const Eigen::VectorXd &V) {
+void OmniCameraGeometry::setIntrinsicsVectorImplementation(const Eigen::VectorXd& V) {
     _xi = V[0];
     _k1 = V[1];
     _k2 = V[2];
@@ -404,7 +404,7 @@ Eigen::VectorXd OmniCameraGeometry::createRandomKeypoint() const {
 }
 
 // Use Gauss-Newton to undistort.
-void OmniCameraGeometry::undistortGN(double u_d, double v_d, double *u, double *v) const {
+void OmniCameraGeometry::undistortGN(double u_d, double v_d, double* u, double* v) const {
     *u = u_d;
     *v = v_d;
 
@@ -440,7 +440,7 @@ void OmniCameraGeometry::undistortGN(double u_d, double v_d, double *u, double *
 ///
 /// These functions were developed with the help of Lionel Heng and the excellent camodocal
 /// https://github.com/hengli/camodocal
-bool OmniProjection::initializeIntrinsics(const GridCalibrationTargetObservation &obs) {
+bool OmniProjection::initializeIntrinsics(const GridCalibrationTargetObservation& obs) {
     if (!obs.target()) {
         return false;
     }
@@ -459,7 +459,7 @@ bool OmniProjection::initializeIntrinsics(const GridCalibrationTargetObservation
     _distortion.clear();
 
     // Grab a reference to the target for easy access.
-    const GridCalibrationTarget &target = *obs.target();
+    const GridCalibrationTarget& target = *obs.target();
 
     /// Initialize some temporaries needed.
     double gamma0 = 0.0;
@@ -538,9 +538,9 @@ bool OmniProjection::initializeIntrinsics(const GridCalibrationTargetObservation
 
 }  // initializeIntrinsics()
 
-bool OmniProjection::computeReprojectionError(const GridCalibrationTargetObservation &obs,
-                                              const sm::kinematics::Transformation &T_target_camera,
-                                              double &outErr) const {
+bool OmniProjection::computeReprojectionError(const GridCalibrationTargetObservation& obs,
+                                              const sm::kinematics::Transformation& T_target_camera,
+                                              double& outErr) const {
     outErr = 0.0;
     size_t count = 0;
     sm::kinematics::Transformation T_camera_target = T_target_camera.inverse();
@@ -563,8 +563,8 @@ bool OmniProjection::computeReprojectionError(const GridCalibrationTargetObserva
 ///
 /// These functions were developed with the help of Lionel Heng and the excellent camodocal
 /// https://github.com/hengli/camodocal
-bool OmniProjection::estimateTransformation(const GridCalibrationTargetObservation &obs,
-                                            sm::kinematics::Transformation &out_T_t_c) const {
+bool OmniProjection::estimateTransformation(const GridCalibrationTargetObservation& obs,
+                                            sm::kinematics::Transformation& out_T_t_c) const {
     // Convert all chessboard corners to a fakey pinhole view.
     // Call the OpenCV pnp function.
 }

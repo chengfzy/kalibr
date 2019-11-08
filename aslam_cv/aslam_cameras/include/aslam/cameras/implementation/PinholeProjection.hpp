@@ -11,7 +11,7 @@ PinholeProjection<DISTORTION_T>::PinholeProjection() : _fu(0.0), _fv(0.0), _cu(0
 }
 
 template <typename DISTORTION_T>
-PinholeProjection<DISTORTION_T>::PinholeProjection(const sm::PropertyTree &config)
+PinholeProjection<DISTORTION_T>::PinholeProjection(const sm::PropertyTree& config)
     : _distortion(sm::PropertyTree(config, "distortion")) {
     _fu = config.getDouble("fu");
     _fv = config.getDouble("fv");
@@ -49,11 +49,11 @@ PinholeProjection<DISTORTION_T>::~PinholeProjection() {}
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K>
-bool PinholeProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                          const Eigen::MatrixBase<DERIVED_K> &outKeypointConst) const {
+bool PinholeProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                          const Eigen::MatrixBase<DERIVED_K>& outKeypointConst) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
-    Eigen::MatrixBase<DERIVED_K> &outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K> &>(outKeypointConst);
+    Eigen::MatrixBase<DERIVED_K>& outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K>&>(outKeypointConst);
 
     outKeypoint.derived().resize(2);
     double rz = 1.0 / p[2];
@@ -70,18 +70,18 @@ bool PinholeProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBas
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-bool PinholeProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P> &p,
-                                                          const Eigen::MatrixBase<DERIVED_K> &outKeypointConst,
-                                                          const Eigen::MatrixBase<DERIVED_JP> &outJp) const {
+bool PinholeProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
+                                                          const Eigen::MatrixBase<DERIVED_K>& outKeypointConst,
+                                                          const Eigen::MatrixBase<DERIVED_JP>& outJp) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JP>, 2, 3);
 
-    Eigen::MatrixBase<DERIVED_K> &outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K> &>(outKeypointConst);
+    Eigen::MatrixBase<DERIVED_K>& outKeypoint = const_cast<Eigen::MatrixBase<DERIVED_K>&>(outKeypointConst);
     outKeypoint.derived().resize(2);
 
     // Jacobian:
-    Eigen::MatrixBase<DERIVED_JP> &J = const_cast<Eigen::MatrixBase<DERIVED_JP> &>(outJp);
+    Eigen::MatrixBase<DERIVED_JP>& J = const_cast<Eigen::MatrixBase<DERIVED_JP>&>(outJp);
     J.derived().resize(KeypointDimension, 3);
     J.setZero();
 
@@ -110,8 +110,8 @@ bool PinholeProjection<DISTORTION_T>::euclideanToKeypoint(const Eigen::MatrixBas
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K>
-bool PinholeProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P> &ph,
-                                                            const Eigen::MatrixBase<DERIVED_K> &outKeypoint) const {
+bool PinholeProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P>& ph,
+                                                            const Eigen::MatrixBase<DERIVED_K>& outKeypoint) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
@@ -124,14 +124,14 @@ bool PinholeProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixB
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
-bool PinholeProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P> &ph,
-                                                            const Eigen::MatrixBase<DERIVED_K> &outKeypoint,
-                                                            const Eigen::MatrixBase<DERIVED_JP> &outJp) const {
+bool PinholeProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P>& ph,
+                                                            const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
+                                                            const Eigen::MatrixBase<DERIVED_JP>& outJp) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JP>, 2, 4);
 
-    Eigen::MatrixBase<DERIVED_JP> &J = const_cast<Eigen::MatrixBase<DERIVED_JP> &>(outJp);
+    Eigen::MatrixBase<DERIVED_JP>& J = const_cast<Eigen::MatrixBase<DERIVED_JP>&>(outJp);
     J.derived().resize(KeypointDimension, 4);
     J.setZero();
 
@@ -152,8 +152,8 @@ bool PinholeProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixB
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P>
-bool PinholeProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                          const Eigen::MatrixBase<DERIVED_P> &outPointConst) const {
+bool PinholeProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                          const Eigen::MatrixBase<DERIVED_P>& outPointConst) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
@@ -163,7 +163,7 @@ bool PinholeProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBas
     kp[1] = (kp[1] - _cv) / _fv;
     _distortion.undistort(kp);  // revert distortion
 
-    Eigen::MatrixBase<DERIVED_P> &outPoint = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPointConst);
+    Eigen::MatrixBase<DERIVED_P>& outPoint = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPointConst);
     outPoint.derived().resize(3);
 
     outPoint[0] = kp[0];
@@ -175,9 +175,9 @@ bool PinholeProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBas
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-bool PinholeProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                          const Eigen::MatrixBase<DERIVED_P> &outPointConst,
-                                                          const Eigen::MatrixBase<DERIVED_JK> &outJk) const {
+bool PinholeProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                          const Eigen::MatrixBase<DERIVED_P>& outPointConst,
+                                                          const Eigen::MatrixBase<DERIVED_JK>& outJk) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JK>, 3, 2);
@@ -191,14 +191,14 @@ bool PinholeProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBas
 
     _distortion.undistort(kp, Jd);  // revert distortion
 
-    Eigen::MatrixBase<DERIVED_P> &outPoint = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPointConst);
+    Eigen::MatrixBase<DERIVED_P>& outPoint = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPointConst);
     outPoint.derived().resize(3);
 
     outPoint[0] = kp[0];
     outPoint[1] = kp[1];
     outPoint[2] = 1;
 
-    Eigen::MatrixBase<DERIVED_JK> &J = const_cast<Eigen::MatrixBase<DERIVED_JK> &>(outJk);
+    Eigen::MatrixBase<DERIVED_JK>& J = const_cast<Eigen::MatrixBase<DERIVED_JK>&>(outJk);
     J.derived().resize(3, KeypointDimension);
     J.setZero();
 
@@ -215,12 +215,12 @@ bool PinholeProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBas
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P>
-bool PinholeProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                            const Eigen::MatrixBase<DERIVED_P> &outPoint) const {
+bool PinholeProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                            const Eigen::MatrixBase<DERIVED_P>& outPoint) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
 
-    Eigen::MatrixBase<DERIVED_P> &p = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPoint);
+    Eigen::MatrixBase<DERIVED_P>& p = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPoint);
     p.derived().resize(4);
     p[3] = 0.0;
     return keypointToEuclidean(keypoint, p.derived().template head<3>());
@@ -228,19 +228,19 @@ bool PinholeProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixB
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P, typename DERIVED_JK>
-bool PinholeProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K> &keypoint,
-                                                            const Eigen::MatrixBase<DERIVED_P> &outPoint,
-                                                            const Eigen::MatrixBase<DERIVED_JK> &outJk) const {
+bool PinholeProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixBase<DERIVED_K>& keypoint,
+                                                            const Eigen::MatrixBase<DERIVED_P>& outPoint,
+                                                            const Eigen::MatrixBase<DERIVED_JK>& outJk) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_K>, 2);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JK>, 4, 2);
 
-    Eigen::MatrixBase<DERIVED_JK> &Jk = const_cast<Eigen::MatrixBase<DERIVED_JK> &>(outJk);
+    Eigen::MatrixBase<DERIVED_JK>& Jk = const_cast<Eigen::MatrixBase<DERIVED_JK>&>(outJk);
 
     Jk.derived().resize(4, 2);
     Jk.setZero();
 
-    Eigen::MatrixBase<DERIVED_P> &p = const_cast<Eigen::MatrixBase<DERIVED_P> &>(outPoint);
+    Eigen::MatrixBase<DERIVED_P>& p = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPoint);
     p[3] = 0.0;
 
     return keypointToEuclidean(keypoint, p.template head<3>(), Jk.template topLeftCorner<3, 2>());
@@ -249,11 +249,11 @@ bool PinholeProjection<DISTORTION_T>::keypointToHomogeneous(const Eigen::MatrixB
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JI>
 void PinholeProjection<DISTORTION_T>::euclideanToKeypointIntrinsicsJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JI> &outJi) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JI>& outJi) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JI>, 2, 4);
 
-    Eigen::MatrixBase<DERIVED_JI> &J = const_cast<Eigen::MatrixBase<DERIVED_JI> &>(outJi);
+    Eigen::MatrixBase<DERIVED_JI>& J = const_cast<Eigen::MatrixBase<DERIVED_JI>&>(outJi);
     J.derived().resize(KeypointDimension, 4);
     J.setZero();
 
@@ -274,7 +274,7 @@ void PinholeProjection<DISTORTION_T>::euclideanToKeypointIntrinsicsJacobian(
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JD>
 void PinholeProjection<DISTORTION_T>::euclideanToKeypointDistortionJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JD> &outJd) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JD>& outJd) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 3);
 
     double rz = 1.0 / p[2];
@@ -284,7 +284,7 @@ void PinholeProjection<DISTORTION_T>::euclideanToKeypointDistortionJacobian(
 
     _distortion.distortParameterJacobian(kp, outJd);
 
-    Eigen::MatrixBase<DERIVED_JD> &J = const_cast<Eigen::MatrixBase<DERIVED_JD> &>(outJd);
+    Eigen::MatrixBase<DERIVED_JD>& J = const_cast<Eigen::MatrixBase<DERIVED_JD>&>(outJd);
     J.derived().resize(KeypointDimension, _distortion.minimalDimensions());
 
     J.row(0) *= _fu;
@@ -294,7 +294,7 @@ void PinholeProjection<DISTORTION_T>::euclideanToKeypointDistortionJacobian(
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JI>
 void PinholeProjection<DISTORTION_T>::homogeneousToKeypointIntrinsicsJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JI> &outJi) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JI>& outJi) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_JI>, 2, 4);
 
@@ -308,7 +308,7 @@ void PinholeProjection<DISTORTION_T>::homogeneousToKeypointIntrinsicsJacobian(
 template <typename DISTORTION_T>
 template <typename DERIVED_P, typename DERIVED_JD>
 void PinholeProjection<DISTORTION_T>::homogeneousToKeypointDistortionJacobian(
-    const Eigen::MatrixBase<DERIVED_P> &p, const Eigen::MatrixBase<DERIVED_JD> &outJd) const {
+    const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_JD>& outJd) const {
     EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Eigen::MatrixBase<DERIVED_P>, 4);
 
     if (p[3] < 0.0) {
@@ -320,7 +320,7 @@ void PinholeProjection<DISTORTION_T>::homogeneousToKeypointDistortionJacobian(
 
 template <typename DISTORTION_T>
 template <class Archive>
-void PinholeProjection<DISTORTION_T>::save(Archive &ar, const unsigned int /* version */) const {
+void PinholeProjection<DISTORTION_T>::save(Archive& ar, const unsigned int /* version */) const {
     ar << BOOST_SERIALIZATION_NVP(_fu);
     ar << BOOST_SERIALIZATION_NVP(_fv);
     ar << BOOST_SERIALIZATION_NVP(_cu);
@@ -332,7 +332,7 @@ void PinholeProjection<DISTORTION_T>::save(Archive &ar, const unsigned int /* ve
 
 template <typename DISTORTION_T>
 template <class Archive>
-void PinholeProjection<DISTORTION_T>::load(Archive &ar, const unsigned int version) {
+void PinholeProjection<DISTORTION_T>::load(Archive& ar, const unsigned int version) {
     SM_ASSERT_LE(std::runtime_error, version, (unsigned int)CLASS_SERIALIZATION_VERSION,
                  "Unsupported serialization version");
 
@@ -377,26 +377,26 @@ Eigen::Vector3d PinholeProjection<DISTORTION_T>::createRandomVisiblePoint(double
 
 template <typename DISTORTION_T>
 template <typename DERIVED_K>
-bool PinholeProjection<DISTORTION_T>::isValid(const Eigen::MatrixBase<DERIVED_K> &keypoint) const {
+bool PinholeProjection<DISTORTION_T>::isValid(const Eigen::MatrixBase<DERIVED_K>& keypoint) const {
     return keypoint[0] >= 0 && keypoint[1] >= 0 && keypoint[0] < (double)_ru && keypoint[1] < (double)_rv;
 }
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P>
-bool PinholeProjection<DISTORTION_T>::isEuclideanVisible(const Eigen::MatrixBase<DERIVED_P> &p) const {
+bool PinholeProjection<DISTORTION_T>::isEuclideanVisible(const Eigen::MatrixBase<DERIVED_P>& p) const {
     keypoint_t k;
     return euclideanToKeypoint(p, k);
 }
 
 template <typename DISTORTION_T>
 template <typename DERIVED_P>
-bool PinholeProjection<DISTORTION_T>::isHomogeneousVisible(const Eigen::MatrixBase<DERIVED_P> &ph) const {
+bool PinholeProjection<DISTORTION_T>::isHomogeneousVisible(const Eigen::MatrixBase<DERIVED_P>& ph) const {
     keypoint_t k;
     return homogeneousToKeypoint(ph, k);
 }
 
 template <typename DISTORTION_T>
-void PinholeProjection<DISTORTION_T>::update(const double *v) {
+void PinholeProjection<DISTORTION_T>::update(const double* v) {
     _fu += v[0];
     _fv += v[1];
     _cu += v[2];
@@ -412,7 +412,7 @@ int PinholeProjection<DISTORTION_T>::minimalDimensions() const {
 }
 
 template <typename DISTORTION_T>
-void PinholeProjection<DISTORTION_T>::getParameters(Eigen::MatrixXd &P) const {
+void PinholeProjection<DISTORTION_T>::getParameters(Eigen::MatrixXd& P) const {
     P.resize(4, 1);
     P(0, 0) = _fu;
     P(1, 0) = _fv;
@@ -421,7 +421,7 @@ void PinholeProjection<DISTORTION_T>::getParameters(Eigen::MatrixXd &P) const {
 }
 
 template <typename DISTORTION_T>
-void PinholeProjection<DISTORTION_T>::setParameters(const Eigen::MatrixXd &P) {
+void PinholeProjection<DISTORTION_T>::setParameters(const Eigen::MatrixXd& P) {
     _fu = P(0, 0);
     _fv = P(1, 0);
     _cu = P(2, 0);
@@ -442,7 +442,7 @@ void PinholeProjection<DISTORTION_T>::updateTemporaries() {
 }
 
 template <typename DISTORTION_T>
-bool PinholeProjection<DISTORTION_T>::isBinaryEqual(const PinholeProjection<DISTORTION_T> &rhs) const {
+bool PinholeProjection<DISTORTION_T>::isBinaryEqual(const PinholeProjection<DISTORTION_T>& rhs) const {
     return _fu == rhs._fu && _fv == rhs._fv && _cu == rhs._cu && _cv == rhs._cv && _ru == rhs._ru && _rv == rhs._rv &&
            _recip_fu == rhs._recip_fu && _recip_fv == rhs._recip_fv && _fu_over_fv == rhs._fu_over_fv &&
            _distortion.isBinaryEqual(rhs._distortion);
@@ -467,7 +467,7 @@ void PinholeProjection<DISTORTION_T>::resizeIntrinsics(double scale) {
 
 /// \brief Get a set of border rays
 template <typename DISTORTION_T>
-void PinholeProjection<DISTORTION_T>::getBorderRays(Eigen::MatrixXd &rays) {
+void PinholeProjection<DISTORTION_T>::getBorderRays(Eigen::MatrixXd& rays) {
     rays.resize(4, 8);
     keypointToHomogeneous(Eigen::Vector2d(0.0, 0.0), rays.col(0));
     keypointToHomogeneous(Eigen::Vector2d(0.0, _rv * 0.5), rays.col(1));
@@ -515,7 +515,7 @@ class PinholeHelpers {
         return ipts;
     }
 
-    static void fitCircle(const std::vector<cv::Point2d> &points, double &centerX, double &centerY, double &radius) {
+    static void fitCircle(const std::vector<cv::Point2d>& points, double& centerX, double& centerY, double& radius) {
         // D. Umbach, and K. Jones, A Few Methods for Fitting Circles to Data,
         // IEEE Transactions on Instrumentation and Measurement, 2000
         // We use the modified least squares method.
@@ -582,7 +582,7 @@ class PinholeHelpers {
 // this algorithm can be used with high distortion lenses
 template <typename DISTORTION_T>
 bool PinholeProjection<DISTORTION_T>::initializeIntrinsics(
-    const std::vector<GridCalibrationTargetObservation> &observations) {
+    const std::vector<GridCalibrationTargetObservation>& observations) {
     SM_DEFINE_EXCEPTION(Exception, std::runtime_error);
     SM_ASSERT_TRUE(Exception, observations.size() != 0, "Need min. one observation");
 
@@ -606,9 +606,9 @@ bool PinholeProjection<DISTORTION_T>::initializeIntrinsics(
     std::vector<double> f_guesses;
 
     for (size_t i = 0; i < nImages; ++i) {
-        const GridCalibrationTargetObservation &obs = observations.at(i);
+        const GridCalibrationTargetObservation& obs = observations.at(i);
         SM_ASSERT_TRUE(Exception, obs.target(), "The GridCalibrationTargetObservation has no target object");
-        const GridCalibrationTargetBase &target = *obs.target();
+        const GridCalibrationTargetBase& target = *obs.target();
 
         std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>> center(target.rows());
         double radius[target.rows()];
@@ -659,9 +659,9 @@ bool PinholeProjection<DISTORTION_T>::initializeIntrinsics(
 }
 
 template <typename DISTORTION_T>
-size_t PinholeProjection<DISTORTION_T>::computeReprojectionError(const GridCalibrationTargetObservation &obs,
-                                                                 const sm::kinematics::Transformation &T_target_camera,
-                                                                 double &outErr) const {
+size_t PinholeProjection<DISTORTION_T>::computeReprojectionError(const GridCalibrationTargetObservation& obs,
+                                                                 const sm::kinematics::Transformation& T_target_camera,
+                                                                 double& outErr) const {
     outErr = 0.0;
     size_t count = 0;
     sm::kinematics::Transformation T_camera_target = T_target_camera.inverse();
@@ -681,8 +681,8 @@ size_t PinholeProjection<DISTORTION_T>::computeReprojectionError(const GridCalib
 ///        the camera frame to the target frame
 /// \return true on success
 template <typename DISTORTION_T>
-bool PinholeProjection<DISTORTION_T>::estimateTransformation(const GridCalibrationTargetObservation &obs,
-                                                             sm::kinematics::Transformation &out_T_t_c) const {
+bool PinholeProjection<DISTORTION_T>::estimateTransformation(const GridCalibrationTargetObservation& obs,
+                                                             sm::kinematics::Transformation& out_T_t_c) const {
     std::vector<cv::Point2f> Ms;
     std::vector<cv::Point3f> Ps;
 

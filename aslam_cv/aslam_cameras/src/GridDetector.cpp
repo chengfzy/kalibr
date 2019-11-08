@@ -15,7 +15,7 @@ namespace cameras {
 GridDetector::GridDetector() {}
 
 GridDetector::GridDetector(boost::shared_ptr<CameraGeometryBase> geometry, GridCalibrationTargetBase::Ptr target,
-                           const GridDetector::GridDetectorOptions &options)
+                           const GridDetector::GridDetectorOptions& options)
     : _geometry(geometry), _target(target), _options(options) {
     SM_ASSERT_TRUE(Exception, _geometry.get() != NULL, "Unable to initialize with null camera geometry");
     SM_ASSERT_TRUE(Exception, _target.get() != NULL, "Unable to initialize with null calibration target");
@@ -37,7 +37,7 @@ void GridDetector::initCameraGeometry(boost::shared_ptr<CameraGeometryBase> geom
     _geometry = geometry;
 }
 
-bool GridDetector::initCameraGeometryFromObservation(const cv::Mat &image) {
+bool GridDetector::initCameraGeometryFromObservation(const cv::Mat& image) {
     boost::shared_ptr<std::vector<cv::Mat>> images_ptr = boost::make_shared<std::vector<cv::Mat>>();
     images_ptr->push_back(image);
 
@@ -45,7 +45,7 @@ bool GridDetector::initCameraGeometryFromObservation(const cv::Mat &image) {
 }
 
 bool GridDetector::initCameraGeometryFromObservations(boost::shared_ptr<std::vector<cv::Mat>> images_ptr) {
-    std::vector<cv::Mat> &images = *images_ptr;
+    std::vector<cv::Mat>& images = *images_ptr;
 
     SM_DEFINE_EXCEPTION(Exception, std::runtime_error);
     SM_ASSERT_TRUE(Exception, images.size() != 0, "Need min. one image");
@@ -71,12 +71,12 @@ bool GridDetector::initCameraGeometryFromObservations(boost::shared_ptr<std::vec
     return false;
 }
 
-bool GridDetector::findTarget(const cv::Mat &image, GridCalibrationTargetObservation &outObservation) const {
+bool GridDetector::findTarget(const cv::Mat& image, GridCalibrationTargetObservation& outObservation) const {
     return findTarget(image, aslam::Time(0, 0), outObservation);
 }
 
-bool GridDetector::findTargetNoTransformation(const cv::Mat &image, const aslam::Time &stamp,
-                                              GridCalibrationTargetObservation &outObservation) const {
+bool GridDetector::findTargetNoTransformation(const cv::Mat& image, const aslam::Time& stamp,
+                                              GridCalibrationTargetObservation& outObservation) const {
     bool success = false;
 
     // Extract the calibration target corner points
@@ -91,14 +91,16 @@ bool GridDetector::findTargetNoTransformation(const cv::Mat &image, const aslam:
 
     // Set the observed corners in the observation
     for (int i = 0; i < cornerPoints.rows(); i++) {
-        if (validCorners[i]) outObservation.updateImagePoint(i, cornerPoints.row(i).transpose());
+        if (validCorners[i]) {
+            outObservation.updateImagePoint(i, cornerPoints.row(i).transpose());
+        }
     }
 
     return success;
 }
 
-bool GridDetector::findTarget(const cv::Mat &image, const aslam::Time &stamp,
-                              GridCalibrationTargetObservation &outObservation) const {
+bool GridDetector::findTarget(const cv::Mat& image, const aslam::Time& stamp,
+                              GridCalibrationTargetObservation& outObservation) const {
     sm::kinematics::Transformation trafo;
 
     // find calibration target corners
@@ -195,8 +197,8 @@ bool GridDetector::findTarget(const cv::Mat &image, const aslam::Time &stamp,
 }
 
 /// \brief Find the target but don't estimate the transformation.
-bool GridDetector::findTargetNoTransformation(const cv::Mat &image,
-                                              GridCalibrationTargetObservation &outObservation) const {
+bool GridDetector::findTargetNoTransformation(const cv::Mat& image,
+                                              GridCalibrationTargetObservation& outObservation) const {
     return findTargetNoTransformation(image, aslam::Time(0, 0), outObservation);
 }
 

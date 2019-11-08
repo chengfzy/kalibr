@@ -38,7 +38,7 @@ struct EigenQuaternionCalculator {
 
     inline static vector_t getIdentity() { return isRealFirst(EMode) ? vector_t(1, 0, 0, 0) : vector_t(0, 0, 0, 1); }
 
-    inline static vector_t quatMultTraditional(const vector_t &a, const vector_t &b) {
+    inline static vector_t quatMultTraditional(const vector_t& a, const vector_t& b) {
         vector_t res;
 
         // aIIndex*bRIndex + aJIndex*bKIndex - aKIndex*bJIndex + aRIndex*bIIndex
@@ -52,7 +52,7 @@ struct EigenQuaternionCalculator {
         return res;
     }
 
-    inline static vector_t quatMultTraditional(const pure_imag_vector_t &a, const vector_t &b) {
+    inline static vector_t quatMultTraditional(const pure_imag_vector_t& a, const vector_t& b) {
         vector_t res;
         res[IIndex] = a[IPureIndex] * b[RIndex] + a[JPureIndex] * b[KIndex] - a[KPureIndex] * b[JIndex];
         res[JIndex] = a[KPureIndex] * b[IIndex] - a[IPureIndex] * b[KIndex] + a[JPureIndex] * b[RIndex];
@@ -61,7 +61,7 @@ struct EigenQuaternionCalculator {
         return res;
     }
 
-    inline static vector_t quatMultTraditional(const vector_t &a, const pure_imag_vector_t &b) {
+    inline static vector_t quatMultTraditional(const vector_t& a, const pure_imag_vector_t& b) {
         vector_t res;
         res[IIndex] = +a[JIndex] * b[KPureIndex] - a[KIndex] * b[JPureIndex] + a[RIndex] * b[IPureIndex];
         res[JIndex] = a[KIndex] * b[IPureIndex] - a[IIndex] * b[KPureIndex] + +a[RIndex] * b[JPureIndex];
@@ -71,33 +71,33 @@ struct EigenQuaternionCalculator {
     }
 
     template <int ISizeA, int ISizeB>
-    inline static vector_t quatMult(const Eigen::Matrix<TScalar, ISizeA, 1> &a,
-                                    const Eigen::Matrix<TScalar, ISizeB, 1> &b) {
+    inline static vector_t quatMult(const Eigen::Matrix<TScalar, ISizeA, 1>& a,
+                                    const Eigen::Matrix<TScalar, ISizeB, 1>& b) {
         return isTraditionalMultOrder(EMode) ? quatMultTraditional(a, b) : quatMultTraditional(b, a);
     }
 
-    inline static vector_t conjugate(const vector_t &v) {
+    inline static vector_t conjugate(const vector_t& v) {
         vector_t r(v);
         r.template block<3, 1>(IIndex, 0) *= -1;
         return r;
     }
-    inline static vector_t invert(const vector_t &v) {
+    inline static vector_t invert(const vector_t& v) {
         vector_t r(conjugate(v));
         r /= r.dot(r);
         return r;
     }
 
-    inline static auto getImagPart(const vector_t &v) -> decltype(v.template block<3, 1>(IIndex, 0)) {
+    inline static auto getImagPart(const vector_t& v) -> decltype(v.template block<3, 1>(IIndex, 0)) {
         return v.template block<3, 1>(IIndex, 0);
     }
 
-    inline static lie_algebra_vector_t log(const vector_t &v) {
+    inline static lie_algebra_vector_t log(const vector_t& v) {
         return sm::kinematics::quat2AxisAngle(
                    convertToOtherMode<QuaternionMode::LAST_IS_REAL_AND_TRADITIONAL_MULT_ORDER>(v)) *
                TScalar(0.5);
     }
 
-    inline static Eigen::Matrix<TScalar, 3, 4> dlog(const vector_t &v) {
+    inline static Eigen::Matrix<TScalar, 3, 4> dlog(const vector_t& v) {
         auto J = sm::kinematics::quatLogJacobian2(
                      convertToOtherMode<QuaternionMode::LAST_IS_REAL_AND_TRADITIONAL_MULT_ORDER>(v)) *
                  TScalar(0.5);
@@ -109,13 +109,13 @@ struct EigenQuaternionCalculator {
         }
     }
 
-    inline static vector_t exp(const lie_algebra_vector_t &v) {
+    inline static vector_t exp(const lie_algebra_vector_t& v) {
         return convertFromOtherMode<QuaternionMode::LAST_IS_REAL_AND_TRADITIONAL_MULT_ORDER>(
             sm::kinematics::axisAngle2quat(2.0 * v.template cast<double>()).template cast<TScalar>());
     }
 
     template <enum UnitQuaternionGeometry EGeometry>
-    inline static vector_t update(const vector_t p, const lie_algebra_vector_t &v) {
+    inline static vector_t update(const vector_t p, const lie_algebra_vector_t& v) {
         switch (EGeometry) {
             case UnitQuaternionGeometry::LEFT_TRANSLATED:
                 return quatMult(p, exp(v));
@@ -125,7 +125,7 @@ struct EigenQuaternionCalculator {
     }
 
     template <enum UnitQuaternionGeometry EGeometry = DefaultUnitQuaternionGeometry>
-    static Eigen::Matrix<TScalar, 4, 3> dUpdate(const vector_t &p) {
+    static Eigen::Matrix<TScalar, 4, 3> dUpdate(const vector_t& p) {
         return convertFromOtherMode<QuaternionMode::LAST_IS_REAL_AND_OPPOSITE_MULT_ORDER, 3>(
             ((isTraditionalMultOrder(EMode) != (EGeometry == UnitQuaternionGeometry::RIGHT_TRANSLATED))
                  ? sm::kinematics::quatOPlus(convertToOtherMode<QuaternionMode::LAST_IS_REAL_AND_OPPOSITE_MULT_ORDER>(p)
@@ -136,7 +136,7 @@ struct EigenQuaternionCalculator {
                 .template cast<TScalar>());
     }
 
-    inline static Eigen::Matrix<TScalar, 4, 3> dexp(const lie_algebra_vector_t &v) {
+    inline static Eigen::Matrix<TScalar, 4, 3> dexp(const lie_algebra_vector_t& v) {
         auto J = sm::kinematics::quatExpJacobian((v * TScalar(2)).eval()) * TScalar(2);
         if (isRealFirst(EMode)) {
             return convertFromOtherMode<QuaternionMode::LAST_IS_REAL_AND_TRADITIONAL_MULT_ORDER, 3>(J);
@@ -146,7 +146,7 @@ struct EigenQuaternionCalculator {
     }
 
     template <enum QuaternionMode EOtherMode, int ICols = 1, typename DERIVED_MATRIX>
-    inline static Eigen::Matrix<TScalar, 4, ICols> convertToOtherMode(const Eigen::MatrixBase<DERIVED_MATRIX> &v) {
+    inline static Eigen::Matrix<TScalar, 4, ICols> convertToOtherMode(const Eigen::MatrixBase<DERIVED_MATRIX>& v) {
         if (isRealFirst(EMode) == isRealFirst(EOtherMode)) {
             return v;
         } else {
@@ -159,7 +159,7 @@ struct EigenQuaternionCalculator {
     }
 
     template <enum QuaternionMode EOtherMode, int ICols = 1, typename DERIVED_MATRIX>
-    inline static Eigen::Matrix<TScalar, 4, ICols> convertFromOtherMode(const Eigen::MatrixBase<DERIVED_MATRIX> &v) {
+    inline static Eigen::Matrix<TScalar, 4, ICols> convertFromOtherMode(const Eigen::MatrixBase<DERIVED_MATRIX>& v) {
         return EigenQuaternionCalculator<TScalar, EOtherMode>::template convertToOtherMode<EMode, ICols>(v);
     }
 };
@@ -167,7 +167,7 @@ struct EigenQuaternionCalculator {
 
 _TEMPLATE template <typename TOtherNode>
 inline typename _CLASS::self_with_default_node_t _CLASS::operator*(
-    const QuaternionExpression<TScalar, EMode, TOtherNode> &other) const {
+    const QuaternionExpression<TScalar, EMode, TOtherNode>& other) const {
     typedef _CLASS::self_with_default_node_t result_t;
     typedef QuaternionExpression<TScalar, EMode, TOtherNode> other_t;
 
@@ -177,12 +177,12 @@ inline typename _CLASS::self_with_default_node_t _CLASS::operator*(
 
         virtual ~ResultNode() {}
         inline typename base_t::apply_diff_return_t applyLhsDiff(
-            const typename base_t::lhs_t::tangent_vector_t &tangent_vector) const {
+            const typename base_t::lhs_t::tangent_vector_t& tangent_vector) const {
             return internal::EigenQuaternionCalculator<TScalar, EMode>::quatMult(
                 tangent_vector, this->getRhsNode().evaluate());  // TODO add matrix version?
         }
         inline typename base_t::apply_diff_return_t applyRhsDiff(
-            const typename base_t::rhs_t::tangent_vector_t &tangent_vector) const {
+            const typename base_t::rhs_t::tangent_vector_t& tangent_vector) const {
             return internal::EigenQuaternionCalculator<TScalar, EMode>::quatMult(this->getLhsNode().evaluate(),
                                                                                  tangent_vector);
         }
@@ -208,7 +208,7 @@ inline typename _CLASS::self_with_default_node_t _CLASS::inverse() const {
 
         virtual ~ResultNode() {}
         inline typename base_t::apply_diff_return_t applyDiff(
-            const typename base_t::operand_t::tangent_vector_t &tangentVector) const {
+            const typename base_t::operand_t::tangent_vector_t& tangentVector) const {
             /*
              * d_q q^{-1} (v) = -(\bar q v \bar q) / (q\bar q)^2
              * while q\bar q = q.dot(q) = \bar q.dot(\bar q)
@@ -237,7 +237,7 @@ typename _CLASS::self_with_default_node_t _CLASS::conjugate() const {
 
         virtual ~ResultNode() {}
         inline typename base_t::apply_diff_return_t applyDiff(
-            const typename base_t::operand_t::tangent_vector_t &tangentVector) const {
+            const typename base_t::operand_t::tangent_vector_t& tangentVector) const {
             return internal::EigenQuaternionCalculator<TScalar, EMode>::conjugate(tangentVector);
         }
 
@@ -262,7 +262,7 @@ inline GenericMatrixExpression<3, 1, TScalar> _CLASS::imaginaryPart() const {
 
         virtual ~ResultNode() {}
         inline typename base_t::apply_diff_return_t applyDiff(
-            const typename base_t::operand_t::tangent_vector_t &tangentVector) const {
+            const typename base_t::operand_t::tangent_vector_t& tangentVector) const {
             return calc_t::getImagPart(tangentVector);
         }
 
@@ -281,7 +281,7 @@ inline GenericMatrixExpression<3, 1, TScalar> _CLASS::imaginaryPart() const {
 _TEMPLATE
 template <typename TOtherNode>
 GenericMatrixExpression<3, 1, TScalar> _CLASS::rotate3Vector(
-    const GenericMatrixExpression<3, 1, TScalar, TOtherNode> &vector) const {
+    const GenericMatrixExpression<3, 1, TScalar, TOtherNode>& vector) const {
     typedef GenericMatrixExpression<3, 1, TScalar> result_t;
     typedef GenericMatrixExpression<3, 1, TScalar, TOtherNode> other_t;
     typedef internal::EigenQuaternionCalculator<TScalar, EMode> calc_t;
@@ -293,7 +293,7 @@ GenericMatrixExpression<3, 1, TScalar> _CLASS::rotate3Vector(
         virtual ~ResultNode() {}
 
         inline typename base_t::apply_diff_return_t applyLhsDiff(
-            const typename base_t::lhs_t::tangent_vector_t &tangent_vector) const {
+            const typename base_t::lhs_t::tangent_vector_t& tangent_vector) const {
             auto lhsVal = this->getLhsNode().evaluate();
             auto rhsVal = this->getRhsNode().evaluate();
             return calc_t::getImagPart(
@@ -301,7 +301,7 @@ GenericMatrixExpression<3, 1, TScalar> _CLASS::rotate3Vector(
                 calc_t::quatMult(calc_t::quatMult(tangent_vector, rhsVal), calc_t::conjugate(lhsVal)));
         }
         inline typename base_t::apply_diff_return_t applyRhsDiff(
-            const typename base_t::rhs_t::tangent_vector_t &tangent_vector) const {
+            const typename base_t::rhs_t::tangent_vector_t& tangent_vector) const {
             auto lhsVal = this->getLhsNode().evaluate();
             return calc_t::getImagPart(
                 calc_t::quatMult(calc_t::quatMult(lhsVal, tangent_vector), calc_t::conjugate(lhsVal)));
@@ -321,7 +321,7 @@ GenericMatrixExpression<3, 1, TScalar> _CLASS::rotate3Vector(
 _TEMPLATE
 template <typename TOtherNode>
 typename _CLASS::tangent_vector_expression_t _CLASS::log(
-    const UnitQuaternionExpression<TScalar, EMode, TOtherNode> &other) {
+    const UnitQuaternionExpression<TScalar, EMode, TOtherNode>& other) {
     typedef _CLASS::tangent_vector_expression_t result_t;
     typedef UnitQuaternionExpression<TScalar, EMode, TOtherNode> other_t;
 
@@ -330,12 +330,12 @@ typename _CLASS::tangent_vector_expression_t _CLASS::log(
     class ResultNode : public result_t::template UnaryOperationResult<ResultNode, other_t> {
       public:
         virtual ~ResultNode() {}
-        virtual void evaluateJacobiansImplementation(JacobianContainer &outJacobians,
-                                                     const typename result_t::differential_t &diff) const {
+        virtual void evaluateJacobiansImplementation(JacobianContainer& outJacobians,
+                                                     const typename result_t::differential_t& diff) const {
             Eigen::Matrix<TScalar, 3, 4> M = calc_t::dlog(this->getOperandNode().evaluate());
             this->getOperandNode().evaluateJacobians(
                 outJacobians,
-                ComposedMatrixDifferential<typename result_t::differential_t::domain_t, TScalar, decltype(M) &, 4>(
+                ComposedMatrixDifferential<typename result_t::differential_t::domain_t, TScalar, decltype(M)&, 4>(
                     M, diff));
         }
 
@@ -351,7 +351,7 @@ typename _CLASS::tangent_vector_expression_t _CLASS::log(
 _TEMPLATE
 template <typename TOtherNode>
 typename _CLASS::self_with_default_node_t _CLASS::exp(
-    const GenericMatrixExpression<3, 1, TScalar, TOtherNode> &tangentVector) {
+    const GenericMatrixExpression<3, 1, TScalar, TOtherNode>& tangentVector) {
     typedef _CLASS::self_with_default_node_t result_t;
     typedef GenericMatrixExpression<3, 1, TScalar, TOtherNode> other_t;
     typedef internal::EigenQuaternionCalculator<TScalar, EMode> calc_t;
@@ -359,12 +359,12 @@ typename _CLASS::self_with_default_node_t _CLASS::exp(
     class ResultNode : public result_t::template UnaryOperationResult<ResultNode, other_t> {
       public:
         virtual ~ResultNode() {}
-        virtual void evaluateJacobiansImplementation(JacobianContainer &outJacobians,
-                                                     const typename result_t::differential_t &diff) const {
+        virtual void evaluateJacobiansImplementation(JacobianContainer& outJacobians,
+                                                     const typename result_t::differential_t& diff) const {
             Eigen::Matrix<TScalar, 4, 3> M = calc_t::dexp(this->getOperandNode().evaluate());
             this->getOperandNode().evaluateJacobians(
                 outJacobians,
-                ComposedMatrixDifferential<typename result_t::differential_t::domain_t, TScalar, decltype(M) &, 3>(
+                ComposedMatrixDifferential<typename result_t::differential_t::domain_t, TScalar, decltype(M)&, 3>(
                     M, diff));
         }
 
@@ -380,7 +380,7 @@ typename _CLASS::self_with_default_node_t _CLASS::exp(
 _TEMPLATE
 template <enum UnitQuaternionGeometry EGeometry, typename TOtherNode>
 typename _CLASS::tangent_vector_expression_t _CLASS::geoLog(
-    const UnitQuaternionExpression<TScalar, EMode, TOtherNode> &other) const {
+    const UnitQuaternionExpression<TScalar, EMode, TOtherNode>& other) const {
     switch (EGeometry) {
         case UnitQuaternionGeometry::LEFT_TRANSLATED:
             return log(this->inverse() * other);
@@ -392,7 +392,7 @@ typename _CLASS::tangent_vector_expression_t _CLASS::geoLog(
 _TEMPLATE
 template <enum UnitQuaternionGeometry EGeometry, typename TOtherNode>
 typename _CLASS::self_with_default_node_t _CLASS::geoExp(
-    const GenericMatrixExpression<3, 1, TScalar, TOtherNode> &tangentVector) const {
+    const GenericMatrixExpression<3, 1, TScalar, TOtherNode>& tangentVector) const {
     switch (EGeometry) {
         case UnitQuaternionGeometry::LEFT_TRANSLATED:
             return *this * exp(tangentVector);

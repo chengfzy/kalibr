@@ -34,12 +34,12 @@ class GridCalibrationTargetCirclegrid : public GridCalibrationTargetBase {
         enum { CLASS_SERIALIZATION_VERSION = 1 };
         BOOST_SERIALIZATION_SPLIT_MEMBER()
         template <class Archive>
-        void save(Archive &ar, const unsigned int /*version*/) const {
+        void save(Archive& ar, const unsigned int /*version*/) const {
             ar << BOOST_SERIALIZATION_NVP(useAsymmetricCirclegrid);
             ar << BOOST_SERIALIZATION_NVP(showExtractionVideo);
         }
         template <class Archive>
-        void load(Archive &ar, const unsigned int /*version*/) {
+        void load(Archive& ar, const unsigned int /*version*/) {
             ar >> BOOST_SERIALIZATION_NVP(useAsymmetricCirclegrid);
             ar >> BOOST_SERIALIZATION_NVP(showExtractionVideo);
         }
@@ -48,13 +48,13 @@ class GridCalibrationTargetCirclegrid : public GridCalibrationTargetBase {
     /// \brief initialize based on circlegrid geometry
     GridCalibrationTargetCirclegrid(
         size_t rows, size_t cols, double spacingMeters,
-        const GridCalibrationTargetCirclegrid::CirclegridOptions &options = CirclegridOptions());
+        const GridCalibrationTargetCirclegrid::CirclegridOptions& options = CirclegridOptions());
 
     virtual ~GridCalibrationTargetCirclegrid(){};
 
     /// \brief extract the calibration target points from an image and write to an observation
-    bool computeObservation(const cv::Mat &image, Eigen::MatrixXd &outImagePoints,
-                            std::vector<bool> &outCornerObserved) const;
+    bool computeObservation(const cv::Mat& image, Eigen::MatrixXd& outImagePoints,
+                            std::vector<bool>& outCornerObserved) const;
 
   private:
     /// \brief initialize the object
@@ -83,17 +83,17 @@ class GridCalibrationTargetCirclegrid : public GridCalibrationTargetBase {
     friend class boost::serialization::access;
 
     template <class Archive>
-    void save(Archive &ar, const unsigned int /* version */) const {
+    void save(Archive& ar, const unsigned int /* version */) const {
         boost::serialization::void_cast_register<GridCalibrationTargetCirclegrid, GridCalibrationTargetBase>(
-            static_cast<GridCalibrationTargetCirclegrid *>(NULL), static_cast<GridCalibrationTargetBase *>(NULL));
+            static_cast<GridCalibrationTargetCirclegrid*>(NULL), static_cast<GridCalibrationTargetBase*>(NULL));
         ar << BOOST_SERIALIZATION_BASE_OBJECT_NVP(GridCalibrationTargetBase);
         ar << BOOST_SERIALIZATION_NVP(_spacing);
         ar << BOOST_SERIALIZATION_NVP(_options);
     }
     template <class Archive>
-    void load(Archive &ar, const unsigned int /* version */) {
+    void load(Archive& ar, const unsigned int /* version */) {
         boost::serialization::void_cast_register<GridCalibrationTargetCirclegrid, GridCalibrationTargetBase>(
-            static_cast<GridCalibrationTargetCirclegrid *>(NULL), static_cast<GridCalibrationTargetBase *>(NULL));
+            static_cast<GridCalibrationTargetCirclegrid*>(NULL), static_cast<GridCalibrationTargetBase*>(NULL));
         ar >> BOOST_SERIALIZATION_BASE_OBJECT_NVP(GridCalibrationTargetBase);
         ar >> BOOST_SERIALIZATION_NVP(_spacing);
         ar >> BOOST_SERIALIZATION_NVP(_options);

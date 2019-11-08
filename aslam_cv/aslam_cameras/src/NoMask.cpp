@@ -4,7 +4,7 @@ namespace aslam {
 namespace cameras {
 
 NoMask::NoMask() {}
-NoMask::NoMask(const sm::PropertyTree &) {}
+NoMask::NoMask(const sm::PropertyTree&) {}
 NoMask::~NoMask() {}
 
 }  // namespace cameras

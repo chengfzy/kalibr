@@ -26,7 +26,7 @@ class Calibrator {
 
     void printErrorStatistics();
 
-    void printResult(bool withCov=false);
+    void printResult(bool withCov = false);
 
   private:
     Camera camera;  // camera

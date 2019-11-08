@@ -10,8 +10,8 @@ void exportHomogeneousPoint() {
     typedef Eigen::Matrix<double, 4, 3> homogeneous_jacobian_t;
 
     class_<HomogeneousPoint, boost::shared_ptr<HomogeneousPoint> >("HomogeneousPoint", init<>())
-        .def(init<const Eigen::Vector3d &>())
-        .def(init<const Eigen::Vector4d &>())
+        .def(init<const Eigen::Vector3d&>())
+        .def(init<const Eigen::Vector4d&>())
         .def("toEuclidean", &HomogeneousPoint::toEuclidean)
         // Eigen::Vector3d toEuclideanAndJacobian(euclidean_jacobian_t & J) const;
         .def("toHomogeneous", &HomogeneousPoint::toHomogeneous, return_value_policy<copy_const_reference>())
@@ -26,14 +26,14 @@ void exportHomogeneousPoint() {
 
     class_<UncertainHomogeneousPoint, boost::shared_ptr<UncertainHomogeneousPoint>, bases<HomogeneousPoint> >(
         "UncertainHomogeneousPoint", init<>())
-        .def(init<const Eigen::Vector3d &>())
-        .def(init<const Eigen::Vector4d &>())
-        .def(init<const HomogeneousPoint &>())
-        .def(init<const Eigen::Vector3d &, const Eigen::Matrix3d &>())
-        .def(init<const Eigen::Vector4d &, const Eigen::Matrix4d &>())
-        .def(init<const HomogeneousPoint &, const Eigen::Matrix4d &>())
-        .def(init<const Eigen::Vector4d &, const Eigen::Matrix3d &>())
-        .def(init<const HomogeneousPoint &, const Eigen::Matrix3d &>())
+        .def(init<const Eigen::Vector3d&>())
+        .def(init<const Eigen::Vector4d&>())
+        .def(init<const HomogeneousPoint&>())
+        .def(init<const Eigen::Vector3d&, const Eigen::Matrix3d&>())
+        .def(init<const Eigen::Vector4d&, const Eigen::Matrix4d&>())
+        .def(init<const HomogeneousPoint&, const Eigen::Matrix4d&>())
+        .def(init<const Eigen::Vector4d&, const Eigen::Matrix3d&>())
+        .def(init<const HomogeneousPoint&, const Eigen::Matrix3d&>())
         .def("setRandom", &UncertainHomogeneousPoint::setRandom)
         .def(self + HomogeneousPoint())
         .def(self + UncertainHomogeneousPoint())

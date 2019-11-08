@@ -76,8 +76,8 @@ struct NumpyEigenConverter {
     }
 
     // The "Convert from C to Python" API
-    static PyObject *convert(const matrix_t &M) {
-        PyObject *P = NULL;
+    static PyObject* convert(const matrix_t& M) {
+        PyObject* P = NULL;
         if (RowsAtCompileTime == 1 || ColsAtCompileTime == 1) {
             // Create a 1D array
             npy_intp dimensions[1];
@@ -114,7 +114,7 @@ struct NumpyEigenConverter {
         return valid;
     }
 
-    static void checkMatrixSizes(PyObject *obj_ptr) {
+    static void checkMatrixSizes(PyObject* obj_ptr) {
         int rows = PyArray_DIM(obj_ptr, 0);
         int cols = PyArray_DIM(obj_ptr, 1);
 
@@ -126,14 +126,14 @@ struct NumpyEigenConverter {
         }
     }
 
-    static void checkRowVectorSizes(PyObject *obj_ptr, int cols) {
+    static void checkRowVectorSizes(PyObject* obj_ptr, int cols) {
         if (!isDimensionValid(cols, ColsAtCompileTime, MaxColsAtCompileTime)) {
             THROW_TYPE_ERROR("Can not convert " << npyArrayTypeString(obj_ptr) << " to " << toString()
                                                 << ". Mismatched sizes.");
         }
     }
 
-    static void checkColumnVectorSizes(PyObject *obj_ptr, int rows) {
+    static void checkColumnVectorSizes(PyObject* obj_ptr, int rows) {
         // Check if the type can accomidate one column.
         if (ColsAtCompileTime == Eigen::Dynamic || ColsAtCompileTime == 1) {
             if (!isDimensionValid(rows, RowsAtCompileTime, MaxRowsAtCompileTime)) {
@@ -146,7 +146,7 @@ struct NumpyEigenConverter {
         }
     }
 
-    static void checkVectorSizes(PyObject *obj_ptr) {
+    static void checkVectorSizes(PyObject* obj_ptr) {
         int size = PyArray_DIM(obj_ptr, 0);
 
         // If the number of rows is fixed at 1, assume that is the sense of the vector.
@@ -158,7 +158,7 @@ struct NumpyEigenConverter {
         }
     }
 
-    static void *convertible(PyObject *obj_ptr) {
+    static void* convertible(PyObject* obj_ptr) {
         // Check for a null pointer.
         if (!obj_ptr) {
             // THROW_TYPE_ERROR("PyObject pointer was null");
@@ -198,15 +198,15 @@ struct NumpyEigenConverter {
         return obj_ptr;
     }
 
-    static void construct(PyObject *obj_ptr, boost::python::converter::rvalue_from_python_stage1_data *data) {
-        boost::python::converter::rvalue_from_python_storage<matrix_t> *matData =
-            reinterpret_cast<boost::python::converter::rvalue_from_python_storage<matrix_t> *>(data);
-        void *storage = matData->storage.bytes;
+    static void construct(PyObject* obj_ptr, boost::python::converter::rvalue_from_python_stage1_data* data) {
+        boost::python::converter::rvalue_from_python_storage<matrix_t>* matData =
+            reinterpret_cast<boost::python::converter::rvalue_from_python_storage<matrix_t>*>(data);
+        void* storage = matData->storage.bytes;
 
         // Make sure storage is 16byte aligned. With help from code from Memory.h
-        void *aligned = reinterpret_cast<void *>((reinterpret_cast<size_t>(storage) & ~(size_t(15))) + 16);
+        void* aligned = reinterpret_cast<void*>((reinterpret_cast<size_t>(storage) & ~(size_t(15))) + 16);
 
-        matrix_t *Mp = new (aligned) matrix_t();
+        matrix_t* Mp = new (aligned) matrix_t();
         // Stash the memory chunk pointer for later use by boost.python
         // This signals boost::python that the new value must be deleted eventually
         data->convertible = storage;
@@ -217,7 +217,7 @@ struct NumpyEigenConverter {
         // std::cout << "sizeof(storage): " << sizeof(matData->storage) << std::endl;
         // std::cout << "sizeof(bytes): " << sizeof(matData->storage.bytes) << std::endl;
 
-        matrix_t &M = *Mp;
+        matrix_t& M = *Mp;
 
         int nd = PyArray_NDIM(obj_ptr);
         if (nd == 1) {

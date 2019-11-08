@@ -17,7 +17,7 @@ SphericalCameraGeometry::~SphericalCameraGeometry() {}
 
 // This updates the intrinsic parameters with a small step: i <-- i + di
 // The Jacobians above are with respect to this update function.
-void SphericalCameraGeometry::updateIntrinsicsOplus(double *di) {
+void SphericalCameraGeometry::updateIntrinsicsOplus(double* di) {
     _xi += di[0];
     // MN: This offset (4 empty entries) is not nice, but provides a
     // common interface with OmniCameras
@@ -30,7 +30,7 @@ void SphericalCameraGeometry::updateIntrinsicsOplus(double *di) {
 
 // The amount of time elapsed between the start of the image and the
 // keypoint. For a global shutter camera, this can return Duration(0).
-Duration SphericalCameraGeometry::temporalOffset(const keypoint_t &keypoint) const { return Duration(0); }
+Duration SphericalCameraGeometry::temporalOffset(const keypoint_t& keypoint) const { return Duration(0); }
 
 SphericalCameraGeometry::keypoint_t SphericalCameraGeometry::maxKeypoint() const { return keypoint_t(_width, _height); }
 
@@ -52,7 +52,7 @@ SphericalCameraGeometry SphericalCameraGeometry::createTestGeometry() {
  * \param Y Y coordinate of the point on the sphere
  * \param Z Z coordinate of the point on the sphere
  */
-void SphericalCameraGeometry::lift_sphere(double u, double v, double *X, double *Y, double *Z) const {
+void SphericalCameraGeometry::lift_sphere(double u, double v, double* X, double* Y, double* Z) const {
     double mx_u, my_u;
     double lambda;
 
@@ -94,7 +94,7 @@ void SphericalCameraGeometry::lift_sphere(double u, double v, double *X, double 
  * \param Y Y coordinate of the projective ray
  * \param Z Z coordinate of the projective ray
  */
-void SphericalCameraGeometry::lift_projective(double u, double v, double *X, double *Y, double *Z) const {
+void SphericalCameraGeometry::lift_projective(double u, double v, double* X, double* Y, double* Z) const {
     double mx_u, my_u;
     double rho2_d;
 
@@ -141,7 +141,7 @@ void SphericalCameraGeometry::lift_projective(double u, double v, double *X, dou
  * \param u return value, contains the image point u coordinate
  * \param v return value, contains the image point v coordinate
  */
-void SphericalCameraGeometry::space2plane(double x, double y, double z, double *u, double *v) const {
+void SphericalCameraGeometry::space2plane(double x, double y, double z, double* u, double* v) const {
     double mx_u, my_u;
 
     // Project points to the normalised plane
@@ -173,8 +173,8 @@ void SphericalCameraGeometry::space2plane(double x, double y, double z, double *
  * \param u return value, contains the image point u coordinate
  * \param v return value, contains the image point v coordinate
  */
-void SphericalCameraGeometry::space2plane(double x, double y, double z, double *u, double *v, double *dudx,
-                                          double *dvdx, double *dudy, double *dvdy, double *dudz, double *dvdz) const {
+void SphericalCameraGeometry::space2plane(double x, double y, double z, double* u, double* v, double* dudx,
+                                          double* dvdx, double* dudy, double* dvdy, double* dudz, double* dvdz) const {
     SM_THROW(std::runtime_error, "Not implemented");
     double mx_u, my_u;
     double norm, inv_denom;
@@ -232,7 +232,7 @@ void SphericalCameraGeometry::space2plane(double x, double y, double z, double *
  * \param u return value, contains the image point u coordinate
  * \param v return value, contains the image point v coordinate
  */
-void SphericalCameraGeometry::undist2plane(double mx_u, double my_u, double *u, double *v) const {
+void SphericalCameraGeometry::undist2plane(double mx_u, double my_u, double* u, double* v) const {
     // double mx_d, my_d;
 
     /*
@@ -258,7 +258,7 @@ void SphericalCameraGeometry::updateTemporaries() {
     _one_over_xixi_m_1 = 1.0 / (_xi * _xi - 1.0);
 }
 
-void SphericalCameraGeometry::setIntrinsicsVectorImplementation(const Eigen::VectorXd &V) {
+void SphericalCameraGeometry::setIntrinsicsVectorImplementation(const Eigen::VectorXd& V) {
     _xi = V[0];
     // MN: This offset (4 empty entries) is not nice, but provides a
     // common interface with OmniCameras

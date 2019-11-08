@@ -46,7 +46,7 @@ class GridCalibrationTargetCheckerboard : public GridCalibrationTargetBase {
         enum { CLASS_SERIALIZATION_VERSION = 1 };
         BOOST_SERIALIZATION_SPLIT_MEMBER()
         template <class Archive>
-        void save(Archive &ar, const unsigned int /*version*/) const {
+        void save(Archive& ar, const unsigned int /*version*/) const {
             ar << BOOST_SERIALIZATION_NVP(useAdaptiveThreshold);
             ar << BOOST_SERIALIZATION_NVP(normalizeImage);
             ar << BOOST_SERIALIZATION_NVP(performFastCheck);
@@ -56,7 +56,7 @@ class GridCalibrationTargetCheckerboard : public GridCalibrationTargetBase {
             ar << BOOST_SERIALIZATION_NVP(windowWidth);
         }
         template <class Archive>
-        void load(Archive &ar, const unsigned int /*version*/) {
+        void load(Archive& ar, const unsigned int /*version*/) {
             ar >> BOOST_SERIALIZATION_NVP(useAdaptiveThreshold);
             ar >> BOOST_SERIALIZATION_NVP(normalizeImage);
             ar >> BOOST_SERIALIZATION_NVP(performFastCheck);
@@ -70,13 +70,13 @@ class GridCalibrationTargetCheckerboard : public GridCalibrationTargetBase {
     /// \brief initialize based on checkerboard geometry
     GridCalibrationTargetCheckerboard(
         size_t rows, size_t cols, double rowSpacingMeters, double colSpacingMeters,
-        const GridCalibrationTargetCheckerboard::CheckerboardOptions &options = CheckerboardOptions());
+        const GridCalibrationTargetCheckerboard::CheckerboardOptions& options = CheckerboardOptions());
 
     virtual ~GridCalibrationTargetCheckerboard(){};
 
     /// \brief extract the calibration target points from an image and write to an observation
-    bool computeObservation(const cv::Mat &image, Eigen::MatrixXd &outImagePoints,
-                            std::vector<bool> &outCornerObserved) const;
+    bool computeObservation(const cv::Mat& image, Eigen::MatrixXd& outImagePoints,
+                            std::vector<bool>& outCornerObserved) const;
 
   private:
     /// \brief initialize the object
@@ -108,18 +108,18 @@ class GridCalibrationTargetCheckerboard : public GridCalibrationTargetBase {
     friend class boost::serialization::access;
 
     template <class Archive>
-    void save(Archive &ar, const unsigned int /* version */) const {
+    void save(Archive& ar, const unsigned int /* version */) const {
         boost::serialization::void_cast_register<GridCalibrationTargetCheckerboard, GridCalibrationTargetBase>(
-            static_cast<GridCalibrationTargetCheckerboard *>(NULL), static_cast<GridCalibrationTargetBase *>(NULL));
+            static_cast<GridCalibrationTargetCheckerboard*>(NULL), static_cast<GridCalibrationTargetBase*>(NULL));
         ar << BOOST_SERIALIZATION_BASE_OBJECT_NVP(GridCalibrationTargetBase);
         ar << BOOST_SERIALIZATION_NVP(_rowSpacingMeters);
         ar << BOOST_SERIALIZATION_NVP(_colSpacingMeters);
         ar << BOOST_SERIALIZATION_NVP(_options);
     }
     template <class Archive>
-    void load(Archive &ar, const unsigned int /* version */) {
+    void load(Archive& ar, const unsigned int /* version */) {
         boost::serialization::void_cast_register<GridCalibrationTargetCheckerboard, GridCalibrationTargetBase>(
-            static_cast<GridCalibrationTargetCheckerboard *>(NULL), static_cast<GridCalibrationTargetBase *>(NULL));
+            static_cast<GridCalibrationTargetCheckerboard*>(NULL), static_cast<GridCalibrationTargetBase*>(NULL));
         ar >> BOOST_SERIALIZATION_BASE_OBJECT_NVP(GridCalibrationTargetBase);
         ar >> BOOST_SERIALIZATION_NVP(_rowSpacingMeters);
         ar >> BOOST_SERIALIZATION_NVP(_colSpacingMeters);

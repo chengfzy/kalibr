@@ -29,15 +29,15 @@ struct BSplineTransformationJacobianFunctor {
     typedef Eigen::VectorXd value_t;
     typedef double scalar_t;
 
-    BSplineTransformationJacobianFunctor(BSplinePose bs, const Eigen::Vector4d &v, double t) : bs_(bs), t_(t), v_(v) {}
+    BSplineTransformationJacobianFunctor(BSplinePose bs, const Eigen::Vector4d& v, double t) : bs_(bs), t_(t), v_(v) {}
 
-    input_t update(const input_t &x, int c, double delta) {
+    input_t update(const input_t& x, int c, double delta) {
         input_t xnew = x;
         xnew[c] += delta;
         return xnew;
     }
 
-    Eigen::VectorXd operator()(const Eigen::VectorXd &c) {
+    Eigen::VectorXd operator()(const Eigen::VectorXd& c) {
         bs_.setLocalCoefficientVector(t_, c);
         Eigen::Matrix4d T = bs_.transformation(t_);
         return T * v_;
@@ -56,16 +56,16 @@ struct BSplineInverseTransformationJacobianFunctor {
     typedef Eigen::VectorXd value_t;
     typedef double scalar_t;
 
-    BSplineInverseTransformationJacobianFunctor(BSplinePose bs, const Eigen::Vector4d &v, double t)
+    BSplineInverseTransformationJacobianFunctor(BSplinePose bs, const Eigen::Vector4d& v, double t)
         : bs_(bs), t_(t), v_(v) {}
 
-    input_t update(const input_t &x, int c, double delta) {
+    input_t update(const input_t& x, int c, double delta) {
         input_t xnew = x;
         xnew[c] += delta;
         return xnew;
     }
 
-    Eigen::VectorXd operator()(const Eigen::VectorXd &c) {
+    Eigen::VectorXd operator()(const Eigen::VectorXd& c) {
         bs_.setLocalCoefficientVector(t_, c);
         Eigen::Matrix4d T = bs_.inverseTransformation(t_);
         return T * v_;
@@ -174,13 +174,13 @@ struct BSplineAccelerationJacobianFunctor {
 
     BSplineAccelerationJacobianFunctor(BSplinePose bs, double t) : bs_(bs), t_(t) {}
 
-    input_t update(const input_t &x, int c, double delta) {
+    input_t update(const input_t& x, int c, double delta) {
         input_t xnew = x;
         xnew[c] += delta;
         return xnew;
     }
 
-    Eigen::Vector3d operator()(const Eigen::VectorXd &c) {
+    Eigen::Vector3d operator()(const Eigen::VectorXd& c) {
         bs_.setLocalCoefficientVector(t_, c);
         Eigen::Vector3d a = bs_.linearAccelerationAndJacobian(t_, NULL, NULL);
         // std::cout << "a.size(): " << a.size() << std::endl;
@@ -254,7 +254,7 @@ TEST(SplineTestSuite, testBSplineCurveQuadraticIntegralSparse) {
 
             sm::eigen::assertNear(Q_dense, Q_sparse.toDense(), 1e-10, SM_SOURCE_FILE_POS);
         }
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         FAIL() << e.what();
     }
 }
@@ -296,7 +296,7 @@ TEST(SplineTestSuite, testBSplineCurveQuadraticIntegralDiagSparse) {
 
             sm::eigen::assertNear(Q_dense, Q_sparse.toDense(), 1e-10, SM_SOURCE_FILE_POS);
         }
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         FAIL() << e.what();
     }
 }
@@ -361,7 +361,7 @@ TEST(SplineTestSuite, testInitSpline3Sparse) {
    */
             sm::eigen::assertNear(m1, m2, 1e-8, SM_SOURCE_FILE_POS);
         }
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         FAIL() << e.what();
     }
 }
