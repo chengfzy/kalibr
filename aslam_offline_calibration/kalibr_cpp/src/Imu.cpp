@@ -75,12 +75,12 @@ void Imu::addDesignVariable(calibration::OptimizationProblem& problem) {
         problem.addDesignVariable(v, kHelperGroupId);
     }
 
-    // q_IB
+    // q_IB, the rotation for multiple IMUs
     qIBDesignVar = boost::make_shared<backend::RotationQuaternion>(qIBPrior);
     qIBDesignVar->setActive(false);
     problem.addDesignVariable(qIBDesignVar, kHelperGroupId);
 
-    // rB
+    // rB, the translation for multiple IMUs
     rBDesignVariable = boost::make_shared<backend::EuclideanPoint>(Vector3d(0, 0, 0));
     rBDesignVariable->setActive(false);
     problem.addDesignVariable(rBDesignVariable, kHelperGroupId);
@@ -113,6 +113,7 @@ void Imu::addAccelerometerErrorTerms(calibration::OptimizationProblem& problem,
             EuclideanExpression wDotB = poseDesignVariable->angularAccelerationBodyFrame(t);
             RotationExpression Rib = qIBDesignVar->toExpression();
             EuclideanExpression rB = rBDesignVariable->toExpression();
+            // Rib, rB is the rotation and position for multiple IMUs
             EuclideanExpression a = Rib * (Rbw * (aw - gravity) + wDotB.cross(rB) + wb.cross(wb.cross(rB)));
             auto error = boost::make_shared<EuclideanError>(v.acc, v.accInvR * weight, a + bi);
             error->setMEstimatorPolicy(estimator);

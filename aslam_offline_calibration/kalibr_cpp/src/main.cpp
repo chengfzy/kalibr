@@ -1,17 +1,20 @@
+#include <gflags/gflags.h>
+#include <glog/logging.h>
 #include <iostream>
 #include "cc/Calibrator.h"
 #include "cc/Heading.hpp"
-
-#include <gflags/gflags.h>
 
 using namespace std;
 using namespace Eigen;
 using namespace fmt;
 using namespace cc;
 
-DEFINE_string(bagFile, "/home/jeffery/Documents/ROS/MyKalibrWorkSpace/data/test/data01.bag", "bag file");
+DEFINE_string(bagFile, "../data/data.bag", "bag file");
 
 int main(int argc, char* argv[]) {
+    google::ParseCommandLineFlags(&argc, &argv, true);
+    google::InitGoogleLogging(argv[0]);
+
     // load and set parameters
     cout << Section("Load and Set Parameters");
     // ROS
@@ -66,5 +69,8 @@ int main(int argc, char* argv[]) {
     calibrator.printResult();
 
     cout << Section("Finish IMU-Camera Calibration");
+
+    google::ShutdownGoogleLogging();
+    google::ShutDownCommandLineFlags();
     return 0;
 }

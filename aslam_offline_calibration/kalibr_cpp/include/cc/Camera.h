@@ -26,7 +26,7 @@ class Camera {
            const ros::Time& startTime = ros::TIME_MIN, const ros::Time& endTime = ros::TIME_MAX);
 
   public:
-    // initialize a pose spine using camera poses(pose  spine = T_wb)
+    // initialize a pose spine using camera poses(pose spine = T_TB)
     bsplines::BSplinePose initPoseSplineFromCamera(int splineOrder = 6, int poseKnotsPerSecond = 100,
                                                    const double& timeOffsetPadding = 0.02);
 
@@ -54,9 +54,11 @@ class Camera {
     using ReprojectionError = aslam::backend::SimpleReprojectionError<Frame>;
     using Undistorter = aslam::PinholeUndistorter<aslam::cameras::RadialTangentialDistortion, aslam::cameras::NoMask>;
 
-    CameraParameters cameraParams;                                                // camera parameters
-    double cornerUncertainty = 1.0;                                               // corner uncertainty
-    sm::kinematics::Transformation extrinsic = sm::kinematics::Transformation();  // extrinsic, T_CB set to default
+    CameraParameters cameraParams;   // camera parameters
+    double cornerUncertainty = 1.0;  // corner uncertainty
+    // NOTE by CC: I'm not sure the extrinsic is T_BC or T_CB, please note that kalibr using JPL conversion, just regard
+    // it as what you think it is.
+    sm::kinematics::Transformation extrinsic = sm::kinematics::Transformation();  // extrinsic, T_BC set to default
     double timeshiftCameraToImuPrior = 0;                                         // timeshift between camera and IMU
     Eigen::Vector3d gravity = Eigen::Vector3d(9.80655, 0., 0.);                   // gravity
 

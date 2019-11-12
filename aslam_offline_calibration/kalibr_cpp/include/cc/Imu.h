@@ -66,8 +66,8 @@ class Imu {
     boost::shared_ptr<aslam::splines::EuclideanBSplineDesignVariable> accBiasDesignVar;   // acc bias design variable
 
     Eigen::Vector3d gyroBiasPrior = Eigen::Vector3d::Zero();
-    std::size_t gyroBiasPriorCount = 0;
 
+    // qIB and rB is the relative rotation and position w.r.t anchor IMU, used for multiple IMU system
     Eigen::Vector4d qIBPrior = Eigen::Vector4d(0, 0, 0, 1);
     boost::shared_ptr<aslam::backend::RotationQuaternion> qIBDesignVar;
     boost::shared_ptr<aslam::backend::EuclideanPoint> rBDesignVariable;

@@ -95,8 +95,10 @@ Camera::Camera(const string& bagFile, const CameraParameters& cameraParams, cons
     cout << format("Extracted corners for {}/{} images", observations.size(), view.size()) << endl;
 }
 
+// initialize a pose spine using camera poses(pose spine = T_TB)
 bsplines::BSplinePose Camera::initPoseSplineFromCamera(int splineOrder, int poseKnotsPerSecond,
                                                        const double& timeOffsetPadding) {
+    // FIXME, the extrinsic is T_BC, not T_CB, even though they are the same during initialization
     Matrix4d Tcb = extrinsic.T();
     bsplines::BSplinePose pose(splineOrder, boost::make_shared<sm::kinematics::RotationVector>());
 
@@ -140,6 +142,7 @@ bsplines::BSplinePose Camera::initPoseSplineFromCamera(int splineOrder, int pose
     }
 #endif
     // make sure the rotation vector doesn't flip
+    // NOTE by CC: adjust the angle, and select the min distance to previous rotation vector
     for (size_t i = 1; i < kN + 2; ++i) {
         Vector3d preRotationVector = curve.block<3, 1>(3, i - 1);
         Vector3d r = curve.block<3, 1>(3, i);
@@ -166,6 +169,8 @@ bsplines::BSplinePose Camera::initPoseSplineFromCamera(int splineOrder, int pose
                    poseKnotsPerSecond, seconds)
          << endl;
 
+    // note by CC: seems like the curve fitting. The first parameters is the timestamp, the second is the pose(position
+    // + rotation, size = 6), third parameters is the knots number, and the last one don't understand yet
     pose.initPoseSplineSparse(times, curve, knots, 1e-4);
     return pose;
 }
@@ -199,10 +204,10 @@ void Camera::findTimeShiftCameraImuPrior(const Imu& imu) {
     vector<double> corr = correlate(predictGyroNorm, measureGyroNorm);
     auto itMax = max_element(corr.begin(), corr.end());
     int discreteShift = distance(corr.begin(), itMax) - measureGyroNorm.size() + 1;
+    // calculate the average time difference between IMU measurement
     vector<double> times;
     transform(imu.data.begin(), imu.data.end(), back_inserter(times),
               [](const ImuMeasurement& m) { return m.stamp.toSec(); });
-    // calculate the average time difference between IMU measurement
     double sum{0};
     for (size_t i = 1; i < times.size(); ++i) {
         sum += times[i] - times[i - 1];
@@ -212,18 +217,19 @@ void Camera::findTimeShiftCameraImuPrior(const Imu& imu) {
     cout << format("Time shift camera to IMU (t_imu = t_cam + shift) = {:.10f}", timeshiftCameraToImuPrior) << endl;
 }
 
+// estimate IMU-Camera rotation prior
 void Camera::findOrientationPriorCameraToImu(Imu& imu) {
     cout << SubSection("Estimate IMU-Camera Rotation Prior");
 
     // build the problem
     boost::shared_ptr<backend::OptimizationProblem> problem = boost::make_shared<backend::OptimizationProblem>();
 
-    // add rotation as design variable
+    // add rotation R_BC as design variable
     boost::shared_ptr<backend::RotationQuaternion> qIC = boost::make_shared<backend::RotationQuaternion>(extrinsic.q());
     qIC->setActive(true);
     problem->addDesignVariable(qIC);
 
-    // add th gyro bias as design variable
+    // add the gyro bias b_g as design variable
     boost::shared_ptr<backend::EuclideanPoint> gyroBias = boost::make_shared<backend::EuclideanPoint>(Vector3d::Zero());
     gyroBias->setActive(true);
     problem->addDesignVariable(gyroBias);
@@ -280,6 +286,7 @@ void Camera::findOrientationPriorCameraToImu(Imu& imu) {
     for (auto& m : imu.data) {
         double tk = m.stamp.toSec();
         if (poseSpline.tMin() < tk && tk < poseSpline.tMax()) {
+            //- R_WB * a(t) = R_WC * R_CB * a(t) = -R_WB * R_CB * a(t), note R_WB = R_WC * R_CB before initialization
             aw.emplace_back(-poseSpline.orientation(tk) * Ric * m.acc);
         }
     }
@@ -290,11 +297,8 @@ void Camera::findOrientationPriorCameraToImu(Imu& imu) {
     cout << format("gravity was initialized to {} m/s^2", gravity.transpose()) << endl;
 
     // set the gyro bias prior
-    Vector3d bg = gyroBias->toExpression().toEuclidean();
-    ++imu.gyroBiasPriorCount;
-    imu.gyroBiasPrior =
-        (imu.gyroBiasPriorCount - 1.0) / imu.gyroBiasPriorCount * imu.gyroBiasPrior + 1.0 / imu.gyroBiasPriorCount * bg;
-    cout << format("gyro bias prior found as: {}", bg.transpose()) << endl;
+    imu.gyroBiasPrior = gyroBias->toExpression().toEuclidean();
+    cout << format("gyro bias prior found as: {}", imu.gyroBiasPrior.transpose()) << endl;
 }
 
 void Camera::addDesignVariable(aslam::calibration::OptimizationProblem& problem, bool noTimeCalibration) {
