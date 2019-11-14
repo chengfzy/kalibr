@@ -17,8 +17,8 @@ class ReprojectionError : public ErrorTermFs<CAMERA_GEOMETRY_T::KeypointDimensio
     typedef CAMERA_GEOMETRY_T camera_geometry_t;
 
     enum {
-        KeypointDimension = camera_geometry_t::KeypointDimension /*!< The dimension of the keypoint associated with this
-                                                                    geometry policy */
+        // The dimension of the keypoint associated with this geometry policy
+        KeypointDimension = camera_geometry_t::KeypointDimension
     };
 
     typedef Eigen::Matrix<double, KeypointDimension, 1> measurement_t;

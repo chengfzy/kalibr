@@ -165,7 +165,7 @@ class RsCalibrator(object):
                 [knots, requiresUpdate] = knotUpdateStrategy.generateKnotList(self.__reprojection_errors,
                                                                               self.__poseSpline_dv.spline())
                 # if no new knotlist was generated, we are done.
-                if (not requiresUpdate):
+                if not requiresUpdate:
                     break
 
                 # otherwise update the spline dv and rebuild the problem
@@ -264,13 +264,14 @@ class RsCalibrator(object):
         #####
         # add all the landmarks once
         landmarks = []
-        landmarks_expr = []
-        for landmark in self.__observations[0].getCornersTargetFrame():
+        landmarks_expr = {}
+        keypoint_ids0 = self.__observations[0].getCornersIdx()
+        for idx, landmark in enumerate(self.__observations[0].getCornersTargetFrame()):
             # design variable for landmark
             landmark_w_dv = aopt.HomogeneousPointDv(sm.toHomogeneous(landmark))
             landmark_w_dv.setActive(self.__config.estimateParameters['landmarks'])
             landmarks.append(landmark_w_dv)
-            landmarks_expr.append(landmark_w_dv.toExpression())
+            landmarks_expr[keypoint_ids0[idx]] = landmark_w_dv.toExpression()
             problem.addDesignVariable(landmark_w_dv, CALIBRATION_GROUP_ID)
 
         #####
@@ -294,7 +295,7 @@ class RsCalibrator(object):
 
         #####
         # add a reprojection error for every corner of each observation
-        for observation in self.__observations:
+        for frameid, observation in enumerate(self.__observations):
             # only process successful observations of a pattern
             if observation.hasSuccessfulObservation():
                 # add a frame
@@ -315,17 +316,25 @@ class RsCalibrator(object):
                                                                       self.__config.timeOffsetConstantSparsityPattern)
                     T_t_w = T_w_t.inverse()
 
+                    # we only have the the first image's design variables
+                    # so any landmark that is not in that frame won't be in the problem
+                    # thus we must skip those measurements that are of a keypoint that isn't visible
+                    keypoint_ids = observation.getCornersIdx()
+                    if not np.any(keypoint_ids[index] == keypoint_ids0):
+                        # sm.logWarn("landmark {0} in frame {1} not in first frame".format(keypoint_ids[index], frameid))
+                        continue
+
                     # transform target point to camera frame
-                    p_t = T_t_w * landmarks_expr[index]
+                    p_t = T_t_w * landmarks_expr[keypoint_ids[index]]
 
                     #  create the keypoint
+                    keypoint_index = frame.numKeypoints()
                     keypoint = acv.Keypoint2()
                     keypoint.setMeasurement(point)
                     inverseFeatureCovariance = self.__config.inverseFeatureCovariance
                     keypoint.setInverseMeasurementCovariance(np.eye(len(point)) * inverseFeatureCovariance)
-                    keypoint.setLandmarkId(index)
+                    keypoint.setLandmarkId(keypoint_index)
                     frame.addKeypoint(keypoint)
-                    keypoint_index = frame.numKeypoints() - 1
 
                     #  create reprojection error
                     reprojection_error = self.__buildErrorTerm(frame, keypoint_index, p_t, self.__camera_dv,
@@ -341,7 +350,7 @@ class RsCalibrator(object):
         a Rolling Shutter gets the adaptive covariance error term that considers the camera motion.
         """
         # it is a global shutter camera -> no covariance error
-        if (self.__isRollingShutter()):
+        if self.__isRollingShutter():
             return self.__cameraModelFactory.reprojectionErrorAdaptiveCovariance(frame, keypoint_index, p_t, camera_dv,
                                                                                  poseSpline_dv)
         else:

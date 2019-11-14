@@ -23,6 +23,7 @@ import signal
 
 np.set_printoptions(suppress=True)
 
+
 def __initBagDataset(bagfile, topic, from_to):
     print "\tDataset:          {0}".format(bagfile)
     print "\tTopic:            {0}".format(topic)
@@ -30,21 +31,24 @@ def __initBagDataset(bagfile, topic, from_to):
     print "\tNumber of images: {0}".format(reader.numImages())
     return reader
 
-#available models
+
+# available models
 cameraModels = {
     # rolling shutter
     'pinhole-radtan-rs': acvb.DistortedPinholeRs,
-    'pinhole-equi-rs':   acvb.EquidistantPinholeRs,
-    'omni-radtan-rs':    acvb.DistortedOmniRs,
+    'pinhole-equi-rs': acvb.EquidistantPinholeRs,
+    'omni-radtan-rs': acvb.DistortedOmniRs,
     # global shutter
-    'pinhole-radtan':    acvb.DistortedPinhole,
-    'pinhole-equi':      acvb.EquidistantPinhole,
-    'omni-radtan':       acvb.DistortedOmni
+    'pinhole-radtan': acvb.DistortedPinhole,
+    'pinhole-equi': acvb.EquidistantPinhole,
+    'omni-radtan': acvb.DistortedOmni
 }
+
 
 def __signal_exit(signal, frame):
     sm.logWarn("Shutdown requested! (CTRL+C)")
     sys.exit(2)
+
 
 def __parseArgs():
     class KalibrArgParser(argparse.ArgumentParser):
@@ -52,6 +56,7 @@ def __parseArgs():
             self.print_help()
             sm.logError('%s' % message)
             sys.exit(2)
+
         def format_help(self):
             formatter = self._get_formatter()
             formatter.add_text(self.description)
@@ -83,27 +88,35 @@ def __parseArgs():
 
     parser = KalibrArgParser(description='Calibrate the intrinsics of a single rolling shutter camera.', usage=usage)
     parser.add_argument('--model', dest='model', help='The camera model to estimate. '
-                        'Currently supported models are {0}, where the suffix \'-rs\' identifies rolling shutter models.'.format(', '.join(cameraModels.keys())), required=True)
-    parser.add_argument('--frame-rate', dest='framerate', type=int, help='Approximate framerate of the camera.', required=True)
+                                                      'Currently supported models are {0}, where the suffix \'-rs\' identifies rolling shutter models.'.format(
+        ', '.join(cameraModels.keys())), required=True)
+    parser.add_argument('--frame-rate', dest='framerate', type=int, help='Approximate framerate of the camera.',
+                        required=True)
 
     groupSource = parser.add_argument_group('Data source')
     groupSource.add_argument('--bag', dest='bagfile', help='The bag file with the data.')
     groupSource.add_argument('--topic', dest='topic', help='The image topic.', required=True)
-    groupSource.add_argument('--bag-from-to', metavar='bag_from_to', type=float, nargs=2, help='Use the bag data starting from up to this time [s].')
+    groupSource.add_argument('--bag-from-to', metavar='bag_from_to', type=float, nargs=2,
+                             help='Use the bag data starting from up to this time [s].')
 
     groupTarget = parser.add_argument_group('Calibration target configuration')
-    groupTarget.add_argument('--target', dest='targetYaml', help='Calibration target configuration as yaml file.', required=True)
-    groupTarget.add_argument('--inverse-feature-variance', dest='inverseFeatureVariance', type=float, help='Estimated inverse variance of the feature detector.', required=True)
+    groupTarget.add_argument('--target', dest='targetYaml', help='Calibration target configuration as yaml file.',
+                             required=True)
+    groupTarget.add_argument('--inverse-feature-variance', dest='inverseFeatureVariance', type=float,
+                             help='Estimated inverse variance of the feature detector.', required=True)
 
     groupOpt = parser.add_argument_group('Optimization options')
-    groupOpt.add_argument('--max-iter', type=int, default=30, dest='max_iter', help='Max. iterations (default: %(default)s).', required=False)
+    groupOpt.add_argument('--max-iter', type=int, default=30, dest='max_iter',
+                          help='Max. iterations (default: %(default)s).', required=False)
 
     outputSettings = parser.add_argument_group('Output options')
-    outputSettings.add_argument('--verbose', action='store_true', dest='verbose', help='Enable (really) verbose output (disables plots).')
-    outputSettings.add_argument('--show-extraction', action='store_true', dest='showextraction', help='Show the calibration target extraction. (disables plots).')
+    outputSettings.add_argument('--verbose', action='store_true', dest='verbose',
+                                help='Enable (really) verbose output (disables plots).')
+    outputSettings.add_argument('--show-extraction', action='store_true', dest='showextraction',
+                                help='Show the calibration target extraction. (disables plots).')
 
     # print help if no argument is specified
-    if len(sys.argv)==1:
+    if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(2)
 
@@ -120,12 +133,12 @@ def __parseArgs():
 
     return parsed
 
+
 # perform corner extraction from bagfile
 # returns the observations
 def __extractObservations(cameraGeometry, verbose=False):
-
     # extract the targets
-    multithreading = False #not verbose
+    multithreading = False  # not verbose
     observations = kc.extractCornersFromDataset(
         cameraGeometry.dataset,
         cameraGeometry.ctarget.detector,
@@ -135,6 +148,7 @@ def __extractObservations(cameraGeometry, verbose=False):
     )
 
     return observations
+
 
 def main():
     parsed = __parseArgs()
@@ -149,34 +163,35 @@ def main():
     signal.signal(signal.SIGINT, __signal_exit)
 
     ######
-    ## load bagfile and extract targets:
+    # load bagfile and extract targets:
     targetConfig = kc.CalibrationTargetParameters(parsed.targetYaml)
     dataset = __initBagDataset(parsed.bagfile, parsed.topic, parsed.bag_from_to)
 
-    #create camera
+    # create camera
     cameraModel = cameraModels[parsed.model]
-    cameraGeometry = kcc.CameraGeometry(cameraModel, targetConfig, dataset, verbose=(parsed.verbose or parsed.showextraction))
+    cameraGeometry = kcc.CameraGeometry(cameraModel, targetConfig, dataset,
+                                        verbose=(parsed.verbose or parsed.showextraction))
 
     # extract observations
-    observations = __extractObservations(cameraGeometry,(parsed.verbose or parsed.showextraction))
+    observations = __extractObservations(cameraGeometry, (parsed.verbose or parsed.showextraction))
 
     # Calibration Configuration
     config = rscc.RsCalibratorConfiguration()
-    config.inverseFeatureCovariance = 1.0/parsed.inverseFeatureVariance
+    config.inverseFeatureCovariance = 1.0 / parsed.inverseFeatureVariance
     config.maxNumberOfIterations = parsed.max_iter
     config.framerate = parsed.framerate
     config.timeOffsetConstantSparsityPattern = 0.08
     config.timeOffsetPadding = 0.5
 
     ######
-    ## Calibrate
+    # Calibrate
     calibrator = rscc.RsCalibrator()
     calibrator.calibrate(cameraGeometry, observations, config)
+
 
 if __name__ == "__main__":
     try:
         main()
-    except Exception,e:
+    except Exception, e:
         sm.logError("Exception: {0}".format(e))
         sys.exit(-1)
-

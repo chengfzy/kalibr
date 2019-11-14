@@ -11,6 +11,9 @@
  *
  */
 
+// reference:
+// [1]P. Furgale, “Transformations, Points, and Uncertainty,” p. 14, 2019.
+
 #include <sm/assert_macros.hpp>
 #include "rotations.hpp"
 
