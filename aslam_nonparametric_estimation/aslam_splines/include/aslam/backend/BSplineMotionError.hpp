@@ -10,8 +10,7 @@ namespace aslam {
 namespace backend {
 
 // An error term implementing our observation model.
-// This class derives from ErrorTermFs<1> because the
-// errors are of dimension 1.
+// This class derives from ErrorTermFs<1> because the errors are of dimension 1.
 template <class SPLINE_T>
 class BSplineMotionError : public ErrorTermFs<1> {
   public:

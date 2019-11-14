@@ -1,5 +1,6 @@
 #include <aslam/cameras/CameraGeometryBase.hpp>
 #include <aslam/cameras/GridCalibrationTargetObservation.hpp>
+#include <boost/python/object_core.hpp>
 #include <boost/python/stl_iterator.hpp>
 #include <numpy_eigen/boost_python_headers.hpp>
 #include <sm/python/Id.hpp>

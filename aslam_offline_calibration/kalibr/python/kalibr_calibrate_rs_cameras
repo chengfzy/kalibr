@@ -12,7 +12,6 @@ import kalibr_common as kc
 import kalibr_camera_calibration as kcc
 import kalibr_rs_camera_calibration as rscc
 
-import cv
 import cv2
 import os
 import numpy as np
@@ -73,7 +72,7 @@ def __parseArgs():
 
     %(prog)s --model pinhole-radtan-rs --target aprilgrid.yaml \\
               --bag MYROSBAG.bag --topic /cam0/image_raw \\
-              --feature-variance 1 --frame-rate 20
+              --inverse-feature-variance 1 --frame-rate 20
 
     example aprilgrid.yaml:
         target_type: 'aprilgrid'

@@ -149,7 +149,7 @@ class IccCamera():
                 omega_predicted = R_i_c * aopt.EuclideanExpression(
                     np.matrix(poseSpline.angularVelocityBodyFrame(tk)).transpose())
                 omega_measured = im.omega
-                print('t = {}, measured = {}, predict = {}'.format(tk, omega_measured, omega_predicted.toEuclidean()))
+                # print('t = {}, measured = {}, predict = {}'.format(tk, omega_measured, omega_predicted.toEuclidean()))
 
                 # error term
                 gerr = ket.GyroscopeError(omega_measured, im.omegaInvR, omega_predicted, bias)

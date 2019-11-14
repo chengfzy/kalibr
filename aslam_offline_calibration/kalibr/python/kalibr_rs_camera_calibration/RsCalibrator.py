@@ -1,4 +1,4 @@
-#encoding:UTF-8
+# encoding:UTF-8
 import sm
 import aslam_backend as aopt
 import aslam_cv_backend as acvb
@@ -21,6 +21,7 @@ import pdb
 np.set_printoptions(suppress=True)
 
 CALIBRATION_GROUP_ID = 0
+
 
 class RsCalibratorConfiguration(object):
     deltaX = 1e-8
@@ -47,7 +48,7 @@ class RsCalibratorConfiguration(object):
     spline segment.
     """
 
-    inverseFeatureCovariance = 1/0.26
+    inverseFeatureCovariance = 1 / 0.26
     """The inverse covariance of the feature detector. Used to standardize the error terms."""
 
     estimateParameters = {'shutter': True, 'intrinsics': True, 'distortion': True, 'pose': True, 'landmarks': False}
@@ -79,8 +80,8 @@ class RsCalibratorConfiguration(object):
             self.estimateParameters['shutter'] = False
             self.adaptiveKnotPlacement = False
 
-class RsCalibrator(object):
 
+class RsCalibrator(object):
     __observations = None
     """Store the list of observations"""
 
@@ -111,11 +112,7 @@ class RsCalibrator(object):
     __reprojection_errors = []
     """Reprojection errors of the latest optimizer iteration"""
 
-    def calibrate(self,
-        cameraGeometry,
-        observations,
-        config
-    ):
+    def calibrate(self, cameraGeometry, observations, config):
         """
         A Motion regularization term is added with low a priori knowledge to avoid
         diverging parts in the spline of too many knots are selected/provided or if
@@ -129,7 +126,7 @@ class RsCalibrator(object):
             config (RsCalibratorConfiguration): calibration configuration
         """
 
-        ## set internal objects
+        # set internal objects
         self.__observations = observations
         self.__cameraGeometry = cameraGeometry
         self.__cameraModelFactory = cameraGeometry.model
@@ -140,7 +137,7 @@ class RsCalibrator(object):
         self.__config.validate(self.__isRollingShutter())
 
         # obtain initial guesses for extrinsics and intrinsics
-        if (not self.__generateIntrinsicsInitialGuess()):
+        if not self.__generateIntrinsicsInitialGuess():
             sm.logError("Could not generate initial guess.")
 
         # obtain the extrinsic initial guess for every observation
@@ -149,22 +146,14 @@ class RsCalibrator(object):
         # set the value for the motion prior term or uses the defaults
         W = self.__getMotionModelPriorOrDefault()
 
-        self.__poseSpline = self.__generateInitialSpline(
-            self.__config.splineOrder,
-            self.__config.timeOffsetPadding,
-            self.__config.numberOfKnots,
-            self.__config.framerate
-        )
+        self.__poseSpline = self.__generateInitialSpline(self.__config.splineOrder, self.__config.timeOffsetPadding,
+                                                         self.__config.numberOfKnots, self.__config.framerate)
 
         # build estimator problem
         optimisation_problem = self.__buildOptimizationProblem(W)
 
-        self.__runOptimization(
-            optimisation_problem,
-            self.__config.deltaJ,
-            self.__config.deltaX,
-            self.__config.maxNumberOfIterations
-        )
+        self.__runOptimization(optimisation_problem, self.__config.deltaJ, self.__config.deltaX,
+                               self.__config.maxNumberOfIterations)
 
         # continue with knot replacement
         if self.__config.adaptiveKnotPlacement:
@@ -173,24 +162,19 @@ class RsCalibrator(object):
             for iteration in range(self.__config.maxKnotPlacementIterations):
 
                 # generate the new knots list
-                [knots, requiresUpdate] = knotUpdateStrategy.generateKnotList(
-                    self.__reprojection_errors,
-                    self.__poseSpline_dv.spline()
-                )
+                [knots, requiresUpdate] = knotUpdateStrategy.generateKnotList(self.__reprojection_errors,
+                                                                              self.__poseSpline_dv.spline())
                 # if no new knotlist was generated, we are done.
                 if (not requiresUpdate):
-                    break;
+                    break
 
                 # otherwise update the spline dv and rebuild the problem
-                self.__poseSpline = knotUpdateStrategy.getUpdatedSpline(self.__poseSpline_dv.spline(), knots, self.__config.splineOrder)
+                self.__poseSpline = knotUpdateStrategy.getUpdatedSpline(self.__poseSpline_dv.spline(), knots,
+                                                                        self.__config.splineOrder)
 
                 optimisation_problem = self.__buildOptimizationProblem(W)
-                self.__runOptimization(
-                    optimisation_problem,
-                    self.__config.deltaJ,
-                    self.__config.deltaX,
-                    self.__config.maxNumberOfIterations
-                )
+                self.__runOptimization(optimisation_problem, self.__config.deltaJ, self.__config.deltaX,
+                                       self.__config.maxNumberOfIterations)
 
         self.__printResults()
 
@@ -202,7 +186,7 @@ class RsCalibrator(object):
             if (success):
                 observation.set_T_t_c(T_t_c)
             else:
-                sm.logWarn("Could not estimate T_t_c for observation at index" . idx)
+                sm.logWarn("Could not estimate T_t_c for observation at index {}".format(idx))
 
         return
 
@@ -222,25 +206,26 @@ class RsCalibrator(object):
         W = self.__config.W
         if W is None:
             W = np.eye(6)
-            W[:3,:3] *= 1e-3
-            W[3:,3:] *= 1
+            W[:3, :3] *= 1e-3
+            W[3:, 3:] *= 1
             W *= 1e-2
         return W
 
-    def __generateInitialSpline(self, splineOrder, timeOffsetPadding, numberOfKnots = None, framerate = None):
+    def __generateInitialSpline(self, splineOrder, timeOffsetPadding, numberOfKnots=None, framerate=None):
         poseSpline = bsplines.BSplinePose(splineOrder, sm.RotationVector())
 
         # Get the observation times.
-        times = np.array([observation.time().toSec() for observation in self.__observations ])
+        times = np.array([observation.time().toSec() for observation in self.__observations])
         # get the pose values of the initial transformations at observation time
-        curve = np.matrix([ poseSpline.transformationToCurveValue( observation.T_t_c().T() ) for observation in self.__observations]).T
+        curve = np.matrix(
+            [poseSpline.transformationToCurveValue(observation.T_t_c().T()) for observation in self.__observations]).T
         # make sure all values are well defined
         if np.isnan(curve).any():
             raise RuntimeError("Nans in curve values")
             sys.exit(0)
         # Add 2 seconds on either end to allow the spline to slide during optimization
         times = np.hstack((times[0] - (timeOffsetPadding * 2.0), times, times[-1] + (timeOffsetPadding * 2.0)))
-        curve = np.hstack((curve[:,0], curve, curve[:,-1]))
+        curve = np.hstack((curve[:, 0], curve, curve[:, -1]))
 
         self.__ensureContinuousRotationVectors(curve)
 
@@ -251,10 +236,10 @@ class RsCalibrator(object):
             knots = numberOfKnots
         # otherwise with framerate estimate
         else:
-            knots = int(round(seconds * framerate/3))
+            knots = int(round(seconds * framerate / 3))
 
         print
-        print "Initializing a pose spline with %d knots (%f knots per second over %f seconds)" % ( knots, 100, seconds)
+        print "Initializing a pose spline with %d knots (%f knots per second over %f seconds)" % (knots, 100, seconds)
         poseSpline.initPoseSplineSparse(times, curve, knots, 1e-4)
 
         return poseSpline
@@ -267,7 +252,7 @@ class RsCalibrator(object):
         self.__initPoseDesignVariables(problem)
 
         #####
-        ## build error terms and add to problem
+        # build error terms and add to problem
 
         # store all frames
         self.__frames = []
@@ -283,18 +268,16 @@ class RsCalibrator(object):
         for landmark in self.__observations[0].getCornersTargetFrame():
             # design variable for landmark
             landmark_w_dv = aopt.HomogeneousPointDv(sm.toHomogeneous(landmark))
-            landmark_w_dv.setActive(self.__config.estimateParameters['landmarks']);
+            landmark_w_dv.setActive(self.__config.estimateParameters['landmarks'])
             landmarks.append(landmark_w_dv)
             landmarks_expr.append(landmark_w_dv.toExpression())
             problem.addDesignVariable(landmark_w_dv, CALIBRATION_GROUP_ID)
 
         #####
         # activate design variables
-        self.__camera_dv.setActive(
-            self.__config.estimateParameters['intrinsics'],
-            self.__config.estimateParameters['distortion'],
-            self.__config.estimateParameters['shutter']
-        )
+        self.__camera_dv.setActive(self.__config.estimateParameters['intrinsics'],
+                                   self.__config.estimateParameters['distortion'],
+                                   self.__config.estimateParameters['shutter'])
 
         #####
         # Add design variables
@@ -313,7 +296,7 @@ class RsCalibrator(object):
         # add a reprojection error for every corner of each observation
         for observation in self.__observations:
             # only process successful observations of a pattern
-            if (observation.hasSuccessfulObservation()):
+            if observation.hasSuccessfulObservation():
                 # add a frame
                 frame = self.__cameraModelFactory.frameType()
                 frame.setGeometry(self.__camera)
@@ -327,33 +310,26 @@ class RsCalibrator(object):
                     keypoint_time = self.__camera_dv.keypointTime(frame.time(), point)
 
                     # from target to world transformation.
-                    T_w_t = self.__poseSpline_dv.transformationAtTime(
-                        keypoint_time,
-                        self.__config.timeOffsetConstantSparsityPattern,
-                        self.__config.timeOffsetConstantSparsityPattern
-                    )
+                    T_w_t = self.__poseSpline_dv.transformationAtTime(keypoint_time,
+                                                                      self.__config.timeOffsetConstantSparsityPattern,
+                                                                      self.__config.timeOffsetConstantSparsityPattern)
                     T_t_w = T_w_t.inverse()
 
                     # transform target point to camera frame
                     p_t = T_t_w * landmarks_expr[index]
 
-                    # create the keypoint
+                    #  create the keypoint
                     keypoint = acv.Keypoint2()
                     keypoint.setMeasurement(point)
-                    inverseFeatureCovariance = self.__config.inverseFeatureCovariance;
+                    inverseFeatureCovariance = self.__config.inverseFeatureCovariance
                     keypoint.setInverseMeasurementCovariance(np.eye(len(point)) * inverseFeatureCovariance)
                     keypoint.setLandmarkId(index)
                     frame.addKeypoint(keypoint)
                     keypoint_index = frame.numKeypoints() - 1
 
-                    # create reprojection error
-                    reprojection_error = self.__buildErrorTerm(
-                        frame,
-                        keypoint_index,
-                        p_t,
-                        self.__camera_dv,
-                        self.__poseSpline_dv
-                    )
+                    #  create reprojection error
+                    reprojection_error = self.__buildErrorTerm(frame, keypoint_index, p_t, self.__camera_dv,
+                                                               self.__poseSpline_dv)
                     self.__reprojection_errors.append(reprojection_error)
                     problem.addErrorTerm(reprojection_error)
 
@@ -366,20 +342,10 @@ class RsCalibrator(object):
         """
         # it is a global shutter camera -> no covariance error
         if (self.__isRollingShutter()):
-            return self.__cameraModelFactory.reprojectionErrorAdaptiveCovariance(
-                frame,
-                keypoint_index,
-                p_t,
-                camera_dv,
-                poseSpline_dv
-            )
+            return self.__cameraModelFactory.reprojectionErrorAdaptiveCovariance(frame, keypoint_index, p_t, camera_dv,
+                                                                                 poseSpline_dv)
         else:
-            return self.__cameraModelFactory.reprojectionError(
-                frame,
-                keypoint_index,
-                p_t,
-                camera_dv
-            )
+            return self.__cameraModelFactory.reprojectionError(frame, keypoint_index, p_t, camera_dv)
 
     def __ensureContinuousRotationVectors(self, curve):
         """
@@ -387,20 +353,20 @@ class RsCalibrator(object):
         Updates curves in place.
         """
         for i in range(1, curve.shape[1]):
-            previousRotationVector = curve[3:6,i-1]
-            r = curve[3:6,i]
+            previousRotationVector = curve[3:6, i - 1]
+            r = curve[3:6, i]
             angle = np.linalg.norm(r)
-            axis = r/angle
+            axis = r / angle
             best_r = r
-            best_dist = np.linalg.norm( best_r - previousRotationVector)
+            best_dist = np.linalg.norm(best_r - previousRotationVector)
 
-            for s in range(-3,4):
+            for s in range(-3, 4):
                 aa = axis * (angle + math.pi * 2.0 * s)
-                dist = np.linalg.norm( aa - previousRotationVector )
+                dist = np.linalg.norm(aa - previousRotationVector)
                 if dist < best_dist:
                     best_r = aa
                     best_dist = dist
-            curve[3:6,i] = best_r;
+            curve[3:6, i] = best_r
 
     def __initPoseDesignVariables(self, problem):
         """Get the design variable representation of the pose spline and add them to the problem"""
@@ -412,7 +378,7 @@ class RsCalibrator(object):
             dv.setActive(self.__config.estimateParameters['pose'])
             problem.addDesignVariable(dv, CALIBRATION_GROUP_ID)
 
-    def __runOptimization(self, problem ,deltaJ, deltaX, maxIt):
+    def __runOptimization(self, problem, deltaJ, deltaX, maxIt):
         """Run the given optimization problem problem"""
 
         print "run new optimisation with initial values:"
@@ -452,7 +418,7 @@ class RsCalibrator(object):
             print shutter.lineDelay()
         print "Intrinsics:"
         print proj.getParameters().flatten()
-        #print "(",proj.fu(),", ",proj.fv(),") (",proj.cu(),", ",proj.cv(),")" #in the future, not all projection models might support these parameters
+        # print "(",proj.fu(),", ",proj.fv(),") (",proj.cu(),", ",proj.cv(),")" #in the future, not all projection models might support these parameters
         print "Distortion:"
         print dist.getParameters().flatten()
-        #print "(",dist.p1(),", ",dist.p2(),") (",dist.k1(),", ",dist.k2(),")" #not all distortion models implement these parameters
+        # print "(",dist.p1(),", ",dist.p2(),") (",dist.k1(),", ",dist.k2(),")" #not all distortion models implement these parameters

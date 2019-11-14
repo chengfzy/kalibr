@@ -66,6 +66,8 @@ void BSplineMotionError<SPLINE_T>::initialize(spline_t* /* splineDV */, Eigen::M
 // Eigen::MatrixBase<DERIVED>& e) in parent class. But in the BSplineMotionError class, the (2) task is hard to set, and
 // then the incremental optimization method based on Gaussian-Newton cannot finished. That's is why the
 // evaluateJacobiansImplementation() function isn't implemented.
+// NOTE by CC 20191114, the physical mean: in the absence of measurements, it's assumed that the sensor moves with
+// minimum acceleration
 
 /// \brief evaluate the error term and return the weighted squared error e^T invR e
 template <class SPLINE_T>
