@@ -1,7 +1,7 @@
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <iostream>
-#include "cc/Calibrator.h"
+#include "cc/ImuCameraCalibrator.h"
 #include "cc/Heading.hpp"
 
 using namespace std;
@@ -14,6 +14,8 @@ DEFINE_string(bagFile, "../data/data.bag", "bag file");
 int main(int argc, char* argv[]) {
     google::ParseCommandLineFlags(&argc, &argv, true);
     google::InitGoogleLogging(argv[0]);
+
+    cout << Section("", false) << Section("IMU Camera Calibration", false) << Section("", false);
 
     // load and set parameters
     cout << Section("Load and Set Parameters");
@@ -55,7 +57,7 @@ int main(int argc, char* argv[]) {
     cout << Section("Initialization");
     Imu imu(FLAGS_bagFile, imuParameters, ros::Time(startTime), ros::Time(endTime));
     Camera camera(FLAGS_bagFile, cameraParameters, targetParameters, ros::Time(startTime), ros::Time(endTime));
-    Calibrator calibrator(camera, imu);
+    ImuCameraCalibrator calibrator(camera, imu);
     calibrator.buildProblem();
 
     cout << Section("Before Optimization");

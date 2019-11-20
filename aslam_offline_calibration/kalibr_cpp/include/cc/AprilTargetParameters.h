@@ -9,6 +9,10 @@ class AprilTargetParameters {
     friend std::ostream& operator<<(std::ostream& os, const AprilTargetParameters& targetParameters);
 
   public:
+    // get the number of keypoint
+    int keyPointNumber() { return static_cast<int>(4 * cols * rows); }
+
+  public:
     std::string type;  // target type
     std::size_t cols;  // target cols
     std::size_t rows;  // target rows

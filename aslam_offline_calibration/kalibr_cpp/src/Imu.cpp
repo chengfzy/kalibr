@@ -5,7 +5,7 @@
 #include <rosbag/view.h>
 #include <sensor_msgs/Imu.h>
 #include <iostream>
-#include "/home/jeffery/Documents/ROS/MyKalibrWorkSpace/src/kalibr/aslam_nonparametric_estimation/aslam_splines/include/aslam/backend/BSplineMotionError.hpp"
+#include "aslam/backend/BSplineMotionError.hpp"
 #include "aslam/backend/MEstimatorPolicies.hpp"
 #include "aslam/splines/EuclideanBSplineDesignVariable.hpp"
 #include "cc/Heading.hpp"

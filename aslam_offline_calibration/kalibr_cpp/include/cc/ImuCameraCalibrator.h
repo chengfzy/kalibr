@@ -9,9 +9,9 @@
 
 namespace cc {
 
-class Calibrator {
+class ImuCameraCalibrator {
   public:
-    Calibrator(const Camera& camera, const Imu& imu);
+    ImuCameraCalibrator(const Camera& camera, const Imu& imu);
 
   public:
     void buildProblem(int splineOrder = 6, int poseKnotsPerSecond = 100, int biasKnotsPerSecond = 50,

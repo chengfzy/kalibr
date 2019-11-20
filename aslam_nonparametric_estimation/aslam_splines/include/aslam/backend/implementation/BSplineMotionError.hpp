@@ -72,6 +72,7 @@ void BSplineMotionError<SPLINE_T>::initialize(spline_t* /* splineDV */, Eigen::M
 /// \brief evaluate the error term and return the weighted squared error e^T invR e
 template <class SPLINE_T>
 double BSplineMotionError<SPLINE_T>::evaluateErrorImplementation() {
+    printInfo("BSplineMotionError<SPLINE_T>::evaluateErrorImplementation()", DebugInfoType::Paragraph, true);
     // the error is a scalar: c' Q c, with c the vector valued spline coefficients stacked
 
     const double* cMat = &((_splineDV->spline()).coefficients()(0, 0));

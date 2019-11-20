@@ -36,7 +36,7 @@ class RsCalibratorConfiguration(object):
     maxKnotPlacementIterations = 10
     """Maximum number of iterations to take in the adaptive knot-placement step"""
 
-    adaptiveKnotPlacement = True
+    adaptiveKnotPlacement = False
     """Whether to enable adaptive knot placement"""
 
     knotUpdateStrategy = ReprojectionErrorKnotSequenceUpdateStrategy
@@ -73,10 +73,15 @@ class RsCalibratorConfiguration(object):
     knot placement and for initializing a knot sequence if no number of knots is given.
     """
 
+    targetSize = None
+    """
+    the size(corner count) of target(checkerboard)
+    """
+
     def validate(self, isRollingShutter):
         """Validate the configuration."""
         # only rolling shutters can be estimated
-        if (not isRollingShutter):
+        if not isRollingShutter:
             self.estimateParameters['shutter'] = False
             self.adaptiveKnotPlacement = False
 
@@ -137,8 +142,10 @@ class RsCalibrator(object):
         self.__config.validate(self.__isRollingShutter())
 
         # obtain initial guesses for extrinsics and intrinsics
-        if not self.__generateIntrinsicsInitialGuess():
-            sm.logError("Could not generate initial guess.")
+        # if not self.__generateIntrinsicsInitialGuess():
+        #     sm.logError("Could not generate initial guess.")
+        # set camera intrinsics
+        self.__set_intrinsics()
 
         # obtain the extrinsic initial guess for every observation
         self.__generateExtrinsicsInitialGuess()
@@ -183,23 +190,41 @@ class RsCalibrator(object):
         # estimate and set T_c in the observations
         for idx, observation in enumerate(self.__observations):
             (success, T_t_c) = self.__camera.estimateTransformation(observation)
-            if (success):
+            if success:
                 observation.set_T_t_c(T_t_c)
             else:
                 sm.logWarn("Could not estimate T_t_c for observation at index {}".format(idx))
-
-        return
 
     def __generateIntrinsicsInitialGuess(self):
         """
         Get an initial guess for the camera geometry (intrinsics, distortion). Distortion is typically left as 0,0,0,0.
         The parameters of the geometryModel are updated in place.
         """
-        if (self.__isRollingShutter()):
+        if self.__isRollingShutter():
             sensorRows = self.__observations[0].imRows()
             self.__camera.shutter().setParameters(np.array([1.0 / self.__config.framerate / float(sensorRows)]))
 
         return self.__camera.initializeIntrinsics(self.__observations)
+
+    def __set_intrinsics(self):
+        """
+        Set intrinsics to camera
+        """
+        if self.__isRollingShutter():
+            sensorRows = self.__observations[0].imRows()
+            self.__camera.shutter().setParameters(np.array([1.0 / self.__config.framerate / float(sensorRows)]))
+
+        self.__camera.initializeIntrinsics(self.__observations)
+
+        # set intrinsics and distortion
+        params = np.array([823.906785813718, 824.704794976756, 648.608565867332, 314.810494971340, -0.312098601430490,
+                           0.0928470270344407, -1.93958495467811e-05, -0.000132104569851275])
+        self.__camera.setParameters(params, True, True, False)
+        print('camera parameters: {}'.format(self.__camera.getParameters(True, True, True)))
+
+        # don't optimize the projection and distortion parameters
+        self.__config.estimateParameters['intrinsics'] = False
+        self.__config.estimateParameters['distortion'] = False
 
     def __getMotionModelPriorOrDefault(self):
         """Get the motion model prior or the default value"""
@@ -232,14 +257,15 @@ class RsCalibrator(object):
         seconds = times[-1] - times[0]
 
         # fixed number of knots
-        if (numberOfKnots is not None):
+        if numberOfKnots is not None:
             knots = numberOfKnots
         # otherwise with framerate estimate
         else:
             knots = int(round(seconds * framerate / 3))
 
         print
-        print "Initializing a pose spline with %d knots (%f knots per second over %f seconds)" % (knots, 100, seconds)
+        print "Initializing a pose spline with %d knots (%f knots per second over %f seconds)" % \
+              (knots, knots / seconds, seconds)
         poseSpline.initPoseSplineSparse(times, curve, knots, 1e-4)
 
         return poseSpline
@@ -265,14 +291,22 @@ class RsCalibrator(object):
         # add all the landmarks once
         landmarks = []
         landmarks_expr = {}
-        keypoint_ids0 = self.__observations[0].getCornersIdx()
-        for idx, landmark in enumerate(self.__observations[0].getCornersTargetFrame()):
-            # design variable for landmark
-            landmark_w_dv = aopt.HomogeneousPointDv(sm.toHomogeneous(landmark))
-            landmark_w_dv.setActive(self.__config.estimateParameters['landmarks'])
-            landmarks.append(landmark_w_dv)
-            landmarks_expr[keypoint_ids0[idx]] = landmark_w_dv.toExpression()
-            problem.addDesignVariable(landmark_w_dv, CALIBRATION_GROUP_ID)
+        keypoint_all_ids = None
+
+        for v in self.__observations:
+            if len(v.getCornersIdx()) == self.__config.targetSize:
+                keypoint_all_ids = v.getCornersIdx()
+                for idx, landmark in enumerate(v.getCornersTargetFrame()):
+                    # design variable for landmark
+                    landmark_w_dv = aopt.HomogeneousPointDv(sm.toHomogeneous(landmark))
+                    landmark_w_dv.setActive(self.__config.estimateParameters['landmarks'])
+                    landmarks.append(landmark_w_dv)
+                    landmarks_expr[keypoint_all_ids[idx]] = landmark_w_dv.toExpression()
+                    problem.addDesignVariable(landmark_w_dv, CALIBRATION_GROUP_ID)
+        # check the target size
+        if keypoint_all_ids is None or len(keypoint_all_ids) != self.__config.targetSize:
+            sm.logError('the maximum keypoint size {} is not match to the target size {}'.
+                        format(len(keypoint_all_ids), self.__config.targetSize))
 
         #####
         # activate design variables
@@ -320,7 +354,7 @@ class RsCalibrator(object):
                     # so any landmark that is not in that frame won't be in the problem
                     # thus we must skip those measurements that are of a keypoint that isn't visible
                     keypoint_ids = observation.getCornersIdx()
-                    if not np.any(keypoint_ids[index] == keypoint_ids0):
+                    if not np.any(keypoint_ids[index] == keypoint_all_ids):
                         # sm.logWarn("landmark {0} in frame {1} not in first frame".format(keypoint_ids[index], frameid))
                         continue
 
@@ -404,7 +438,7 @@ class RsCalibrator(object):
         options.convergenceDeltaJ = deltaJ
         options.convergenceDeltaX = deltaX
 
-        # use the dogleg trustregion policy
+        # use the dogleg trust region policy
         options.trustRegionPolicy = aopt.DogLegTrustRegionPolicy()
 
         # create the optimizer
@@ -422,7 +456,7 @@ class RsCalibrator(object):
         proj = self.__camera_dv.projectionDesignVariable().value()
         dist = self.__camera_dv.distortionDesignVariable().value()
         print
-        if (self.__isRollingShutter()):
+        if self.__isRollingShutter():
             print "LineDelay:"
             print shutter.lineDelay()
         print "Intrinsics:"

@@ -1,6 +1,7 @@
-#encoding:UTF-8
+# encoding:UTF-8
 import numpy as np
 import bsplines
+
 
 # Knot Sequence Update Strategies need two method:
 # 1) generateKnotList: which generates a new knotlist given the current spline and reprojection errors
@@ -8,7 +9,6 @@ import bsplines
 # 2) getUpdatedSpline: given a knot list, spline order and spline generates a new spline initialized with the
 #    values of the given spline and the given knot sequence.
 class ReprojectionErrorKnotSequenceUpdateStrategy(object):
-
     __previousKnotSequence = None
 
     __previousErrorTerms = None
@@ -21,29 +21,32 @@ class ReprojectionErrorKnotSequenceUpdateStrategy(object):
 
     def __init__(self, framerate):
         self.__framerate = framerate
-        self.__maxKnotsPerSecond = 1/(2*self.__framerate)
+        self.__maxKnotsPerSecond = 1 / (2 * self.__framerate)
 
     def generateKnotList(self, reprojection_errors, poseSpline):
         [times, errors] = self.__getErrorAndTimestamp(reprojection_errors)
 
-        # take a copy of the old knots:
+        #  take a copy of the old knots:
         knots = poseSpline.knots()
 
         [errorTermsPerSegment, errorPerSegment] = self.__getErrorPerSegment(times, errors, knots)
 
         disabledTimeSegments = self.__removeSegmentsWithoutImprovement(times, errors, self.__disabledTimeSegments)
 
-        [filteredKnots, disabledTimeSegments] = self.__removeSegmentsWithoutObservations(knots, errorPerSegment, disabledTimeSegments)
+        [filteredKnots, disabledTimeSegments] = self.__removeSegmentsWithoutObservations(knots, errorPerSegment,
+                                                                                         disabledTimeSegments)
 
-        [errorTermsPerSegmentFiltered, errorPerSegmentFiltered] = self.__getErrorPerSegment(times, errors, filteredKnots)
+        [errorTermsPerSegmentFiltered, errorPerSegmentFiltered] = self.__getErrorPerSegment(times, errors,
+                                                                                            filteredKnots)
 
-        updatedKnots = self.__generateKnotSequence(errorPerSegmentFiltered, errorTermsPerSegmentFiltered, knots, disabledTimeSegments)
+        updatedKnots = self.__generateKnotSequence(errorPerSegmentFiltered, errorTermsPerSegmentFiltered, knots,
+                                                   disabledTimeSegments)
 
-        if (self.__previousKnotSequence is None):
+        if self.__previousKnotSequence is None:
             requiresUpdate = True
         else:
             # require at least a 1% increase in knots for a next iteration being worth the effort
-            requiresUpdate = (len(updatedKnots) > 1.01*len(self.__previousKnotSequence))
+            requiresUpdate = (len(updatedKnots) > 1.01 * len(self.__previousKnotSequence))
 
         # keep a copy of the knot sequence
         self.__previousKnotSequence = np.copy(updatedKnots)
@@ -60,7 +63,7 @@ class ReprojectionErrorKnotSequenceUpdateStrategy(object):
 
         splinePoses = np.zeros((6, len(knots)))
         for i, time in enumerate(times):
-            splinePoses[:,i] = poseSpline.eval(time)
+            splinePoses[:, i] = poseSpline.eval(time)
 
         # guarantee that beginning and end times of the spline remain unchanged
         oldKnots = poseSpline.knots()
@@ -80,8 +83,7 @@ class ReprojectionErrorKnotSequenceUpdateStrategy(object):
 
         return newPoseSpline
 
-
-    def __getErrorAndTimestamp(self,reprojection_errors):
+    def __getErrorAndTimestamp(self, reprojection_errors):
         """Extract the timestamps and reprojection error values"""
         errors = []
         times = []
@@ -90,17 +92,17 @@ class ReprojectionErrorKnotSequenceUpdateStrategy(object):
             errors.append(reprojection_error.evaluateError())
 
         # it is not guaranteed that the errors are sorted in tiem
-        newIdx = sorted(range(len(times)),key=times.__getitem__)
-        times = [ times[i] for i in newIdx]
-        errors = [ errors[i] for i in newIdx]
+        newIdx = sorted(range(len(times)), key=times.__getitem__)
+        times = [times[i] for i in newIdx]
+        errors = [errors[i] for i in newIdx]
 
         return [times, errors]
 
-    def __getErrorPerSegment(self,times, errors, knots):
+    def __getErrorPerSegment(self, times, errors, knots):
         """Get the total error per segment and number of error terms per segment"""
         errorPerSegment = np.zeros(len(knots))
         errorTermsPerSegment = np.zeros(len(knots))
-        segment = (-1,-1)
+        segment = (-1, -1)
         # analyse each section of the knot sequence:
         for i, t in enumerate(times):
             segment = self.__time2KnotSection(t, knots, segment)
@@ -109,28 +111,30 @@ class ReprojectionErrorKnotSequenceUpdateStrategy(object):
 
         return [errorTermsPerSegment, errorPerSegment]
 
-    def __removeSegmentsWithoutObservations(self, knots, errorPerSegment, disabledTimeSegments = []):
+    def __removeSegmentsWithoutObservations(self, knots, errorPerSegment, disabledTimeSegments=[]):
         filteredKnots = []
 
         # remove segments with consecutive 0-valued errors
         p_error = 0
         for i, error in enumerate(errorPerSegment):
-            if p_error == 0 and error == 0 and i > 6 and i < len(errorPerSegment) - 6:  # this should depend on the splineOrder!
+            if p_error == 0 and error == 0 and i > 6 and i < len(
+                    errorPerSegment) - 6:  # this should depend on the splineOrder!
                 # add the segment between the previous and the next knot the the "blacklist"
-                disabledTimeSegments.append((knots[i-1],knots[i+1]))
+                disabledTimeSegments.append((knots[i - 1], knots[i + 1]))
             else:
                 filteredKnots.append(knots[i])
             p_error = error
 
         return [filteredKnots, disabledTimeSegments]
 
-    def __generateKnotSequence(self, errorPerSegmentFiltered, errorTermsPerSegmentFiltered, knots, disabledTimeSegments):
+    def __generateKnotSequence(self, errorPerSegmentFiltered, errorTermsPerSegmentFiltered, knots,
+                               disabledTimeSegments):
         newKnots = []
         numberOfKnots = len(knots)
         for i, error in enumerate(errorPerSegmentFiltered):
             expectedNormalError = errorTermsPerSegmentFiltered[i]
-            if error > expectedNormalError and i < numberOfKnots-1:
-                newKnot = (knots[i] + knots[i+1])/2.0
+            if error > expectedNormalError and i < numberOfKnots - 1:
+                newKnot = (knots[i] + knots[i + 1]) / 2.0
                 deltaT = newKnot - knots[i]
                 # max number of knots per second hit: do not split
                 if deltaT <= self.__maxKnotsPerSecond:
@@ -139,7 +143,7 @@ class ReprojectionErrorKnotSequenceUpdateStrategy(object):
                 elif (disabledTimeSegments is not None and self.__isSegmentDisabled(disabledTimeSegments, newKnot)):
                     newKnots.append(knots[i])
                 else:
-                    # split:
+                    #  split:
                     newKnots.append(knots[i])
                     newKnots.append(newKnot)
             else:
@@ -148,14 +152,14 @@ class ReprojectionErrorKnotSequenceUpdateStrategy(object):
         return newKnots
 
     def __time2KnotSection(self, t, knots, segment):
-        i = segment[0] # we assume that the times are ordered thus we do not need to check before the previous segment
+        i = segment[0]  # we assume that the times are ordered thus we do not need to check before the previous segment
         if i == -1:
             i = 0
-        while(i < len(knots)-1):
-            if knots[i] < t and knots[i+1] > t:
-                return (i, i+1)
-            i+=1
-        return (-1,-1)
+        while (i < len(knots) - 1):
+            if knots[i] < t and knots[i + 1] > t:
+                return (i, i + 1)
+            i += 1
+        return (-1, -1)
 
     # true: disabled
     # false: not disabled
@@ -172,7 +176,7 @@ class ReprojectionErrorKnotSequenceUpdateStrategy(object):
         if self.__previousKnotSequence is not None and self.__previousErrorTerms is not None:
             timeSegments = []
             errorPerOldSegment = np.zeros(len(self.__previousKnotSequence))
-            segment = (-1,-1)
+            segment = (-1, -1)
             # analyse each section of the knot sequence:
             # this kind of inefficient as it adds the same time segment multiple times...
             for i, t in enumerate(times):

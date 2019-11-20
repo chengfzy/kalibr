@@ -4,6 +4,9 @@
 
 namespace cc {
 
+/**
+ * @brief Camera parameter for pin-hole projection, 2-order radical distortion and 2-order tangential distortion
+ */
 class CameraParameters {
   public:
     friend std::ostream& operator<<(std::ostream& os, const CameraParameters& cameraParams);
