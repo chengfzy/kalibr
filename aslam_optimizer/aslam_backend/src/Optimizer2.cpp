@@ -15,6 +15,7 @@
 #include <aslam/backend/DenseQrLinearSystemSolver.hpp>
 #include <aslam/backend/SparseCholeskyLinearSystemSolver.hpp>
 #include <aslam/backend/sparse_matrix_functions.hpp>
+#include <iomanip>
 #include <sm/PropertyTree.hpp>
 #include "sm/DebugInfo.h"
 
@@ -258,6 +259,16 @@ SolutionReturnValue Optimizer2::optimize() {
 
         ++index;
     }
+
+    // print out stop condition
+    cout << "====================== Optimization Stop ======================" << endl;
+    cout << "srv.iterations = " << srv.iterations << " < _options.maxIterations = " << _options.maxIterations
+         << ", srv.failedIterations = " << srv.failedIterations
+         << " < _options.maxIterations = " << _options.maxIterations << endl;
+    cout << std::setprecision(6) << "deltaX = " << deltaX
+         << " >  _options.convergenceDeltaX = " << _options.convergenceDeltaX << ", fabs(deltaJ) = " << fabs(deltaJ)
+         << " > _options.convergenceDeltaJ = " << _options.convergenceDeltaJ << endl;
+    cout << "linearSolverFailure = " << linearSolverFailure << endl;
 
     srv.JFinal = _p_J;
     srv.dXFinal = deltaX;

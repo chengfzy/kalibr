@@ -183,6 +183,13 @@ def main():
     config.timeOffsetConstantSparsityPattern = 0.08
     config.timeOffsetPadding = 0.5
     config.targetSize = cameraGeometry.ctarget.grid.size()
+    # camera parameters, here I fix the camera intrinsics, only optimize linedelay
+    config.intrinsics = np.array([823.906785813718, 824.704794976756, 648.608565867332, 314.810494971340,
+                                  -0.312098601430490, 0.0928470270344407, -1.93958495467811e-05, -0.000132104569851275])
+    # don't optimize the projection and distortion parameters
+    config.estimateParameters['intrinsics'] = False
+    config.estimateParameters['distortion'] = False
+    config.adaptiveKnotPlacement = True
 
     ######
     # Calibrate

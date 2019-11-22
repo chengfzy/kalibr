@@ -23,7 +23,7 @@ class RollingShutterCameraCalibrator {
     struct Options {
         double deltaX = 1e-8;
         double deltaJ = 1e-4;
-        int maxIterationNumber = 20;
+        int maxIterationNumber = 30;
         int maxKnotPlacementIterations = 10;
         bool adaptiveKnotPlacement = true;
         double timeOffsetConstantSparsityPattern = 0.08;

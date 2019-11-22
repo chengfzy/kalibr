@@ -14,6 +14,7 @@
 #include "aslam/backend/Optimizer2.hpp"
 #include "aslam/backend/Optimizer2Options.hpp"
 #include "cc/Heading.hpp"
+#include "cc/KnotSequenceUpdateStrategy.h"
 #include "cc/Util.h"
 #include "sm/kinematics/RotationVector.hpp"
 
@@ -58,6 +59,25 @@ void RollingShutterCameraCalibrator::calibrate() {
 
     // continue with knot replacement
     if (options.adaptiveKnotPlacement) {
+        KnotSequenceUpdateStrategy knotSequenceUpdateStrategy(options.frameRate);
+
+        for (int i = 0; i < options.maxKnotPlacementIterations; ++i) {
+            cout << Section(format("[{}] Adaptive Knot Placement", i));
+            // generate the ne knots list
+            vector<double> knots;
+            bool requireUpdate =
+                knotSequenceUpdateStrategy.generateKnots(reprojectionErrors, poseDesignVariable->spline(), knots);
+            // if no new knots was generated, break
+            if (!requireUpdate) {
+                break;
+            }
+
+            // otherwise update the spline dv and rebuild the problem
+            poseSpline =
+                knotSequenceUpdateStrategy.getUpdatedSpline(poseDesignVariable->spline(), knots, options.splineOrder);
+            buildProblem(poseSpline, W);
+            solve();
+        }
     }
 
     printResult();
@@ -260,6 +280,8 @@ void RollingShutterCameraCalibrator::buildProblem(const bsplines::BSplinePose& p
     problem->addErrorTerm(motionError);
 
     // add observation to problem
+    frames.clear();
+    reprojectionErrors.clear();
     for (auto& v : observations) {
         if (v.hasSuccessfulObservation()) {
             // add a frame
@@ -317,8 +339,8 @@ void RollingShutterCameraCalibrator::solve() {
     optimizerOptions.linearSystemSolver = boost::make_shared<backend::BlockCholeskyLinearSystemSolver>();
     optimizerOptions.doSchurComplement = true;
     optimizerOptions.maxIterations = options.maxIterationNumber;
-    optimizerOptions.convergenceDeltaX = optimizerOptions.convergenceDeltaX;
-    optimizerOptions.convergenceDeltaJ = optimizerOptions.convergenceDeltaJ;
+    optimizerOptions.convergenceDeltaX = options.deltaX;
+    optimizerOptions.convergenceDeltaJ = options.deltaJ;
     optimizerOptions.trustRegionPolicy = boost::make_shared<backend::DogLegTrustRegionPolicy>();
 
     // create optimizer and solve

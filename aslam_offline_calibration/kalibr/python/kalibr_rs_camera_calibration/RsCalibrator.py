@@ -36,7 +36,7 @@ class RsCalibratorConfiguration(object):
     maxKnotPlacementIterations = 10
     """Maximum number of iterations to take in the adaptive knot-placement step"""
 
-    adaptiveKnotPlacement = False
+    adaptiveKnotPlacement = True
     """Whether to enable adaptive knot placement"""
 
     knotUpdateStrategy = ReprojectionErrorKnotSequenceUpdateStrategy
@@ -76,6 +76,11 @@ class RsCalibratorConfiguration(object):
     targetSize = None
     """
     the size(corner count) of target(checkerboard)
+    """
+
+    intrinsics = None
+    """
+    Camera intrinsics
     """
 
     def validate(self, isRollingShutter):
@@ -167,6 +172,7 @@ class RsCalibrator(object):
             knotUpdateStrategy = self.__config.knotUpdateStrategy(self.__config.framerate)
 
             for iteration in range(self.__config.maxKnotPlacementIterations):
+                print('=============== [{}] Adaptive Knot Placement'.format(iteration))
 
                 # generate the new knots list
                 [knots, requiresUpdate] = knotUpdateStrategy.generateKnotList(self.__reprojection_errors,
@@ -217,14 +223,8 @@ class RsCalibrator(object):
         self.__camera.initializeIntrinsics(self.__observations)
 
         # set intrinsics and distortion
-        params = np.array([823.906785813718, 824.704794976756, 648.608565867332, 314.810494971340, -0.312098601430490,
-                           0.0928470270344407, -1.93958495467811e-05, -0.000132104569851275])
-        self.__camera.setParameters(params, True, True, False)
+        self.__camera.setParameters(self.__config.intrinsics, True, True, False)
         print('camera parameters: {}'.format(self.__camera.getParameters(True, True, True)))
-
-        # don't optimize the projection and distortion parameters
-        self.__config.estimateParameters['intrinsics'] = False
-        self.__config.estimateParameters['distortion'] = False
 
     def __getMotionModelPriorOrDefault(self):
         """Get the motion model prior or the default value"""
@@ -305,8 +305,8 @@ class RsCalibrator(object):
                     problem.addDesignVariable(landmark_w_dv, CALIBRATION_GROUP_ID)
         # check the target size
         if keypoint_all_ids is None or len(keypoint_all_ids) != self.__config.targetSize:
-            sm.logError('the maximum keypoint size {} is not match to the target size {}'.
-                        format(len(keypoint_all_ids), self.__config.targetSize))
+            sm.logError('the maximum keypoint size {} is not match to the target size {}'.format(
+                len(keypoint_all_ids), self.__config.targetSize))
 
         #####
         # activate design variables
@@ -432,12 +432,10 @@ class RsCalibrator(object):
         options.verbose = True
         options.linearSolver = aopt.BlockCholeskyLinearSystemSolver()
         options.doSchurComplement = True
-
         # stopping criteria
         options.maxIterations = maxIt
         options.convergenceDeltaJ = deltaJ
         options.convergenceDeltaX = deltaX
-
         # use the dogleg trust region policy
         options.trustRegionPolicy = aopt.DogLegTrustRegionPolicy()
 
