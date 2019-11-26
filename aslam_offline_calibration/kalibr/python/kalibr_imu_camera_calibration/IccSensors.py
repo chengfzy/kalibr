@@ -37,9 +37,9 @@ def initImuBagDataset(bagfile, topic, from_to=None, perform_synchronization=Fals
 
 
 # mono camera
-class IccCamera():
+class IccCamera:
     def __init__(self, camConfig, targetConfig, dataset, reprojectionSigma=1.0, showCorners=True, showReproj=True,
-                 showOneStep=False):
+                 showOneStep=False, init_t_cb=None):
 
         # store the configuration
         self.dataset = dataset
@@ -50,7 +50,11 @@ class IccCamera():
         self.cornerUncertainty = reprojectionSigma
 
         # set the extrinsic prior to default
-        self.T_extrinsic = sm.Transformation()
+        if init_t_cb is None:
+            init_t_cb = np.array([0, 0, 0])
+        else:
+            init_t_cb = np.array([init_t_cb[0], init_t_cb[1], init_t_cb[2]])
+        self.T_extrinsic = sm.Transformation(np.array([0, 0, 0, 1]), init_t_cb)
 
         # initialize timeshift prior to zero
         self.timeshiftCamToImuPrior = 0.0
@@ -441,7 +445,8 @@ class IccCameraChain():
                                           reprojectionSigma=parsed.reprojection_sigma,
                                           showCorners=parsed.showextraction,
                                           showReproj=parsed.showextraction,
-                                          showOneStep=parsed.extractionstepping))
+                                          showOneStep=parsed.extractionstepping,
+                                          init_t_cb=parsed.init_t_cb))
 
         self.chainConfig = chainConfig
 

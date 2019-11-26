@@ -28,7 +28,6 @@ class Once(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
-
 def parseArgs():
     class KalibrArgParser(argparse.ArgumentParser):
         def error(self, message):
@@ -88,6 +87,8 @@ def parseArgs():
     groupCam.add_argument('--reprojection-sigma', type=float, default=1.0, dest='reprojection_sigma',
                           help='Standard deviation of the distribution of reprojected corner points [px]. (default: %(default)s)',
                           required=False)
+    groupData.add_argument('--init_t_cb', metavar='init_t_cb', type=float, default=[0, 0, 0], nargs=3,
+                           help='The initial value of the transformation from IMU to camera T_CB(or T_CI)')
 
     groupImu = parser.add_argument_group('IMU configuration')
     groupImu.add_argument('--imu', dest='imu_yamls', nargs='+',

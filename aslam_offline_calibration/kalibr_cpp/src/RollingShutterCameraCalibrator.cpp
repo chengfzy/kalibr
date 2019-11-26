@@ -141,6 +141,7 @@ void RollingShutterCameraCalibrator::extractObservations() {
 // init intrinsics
 void RollingShutterCameraCalibrator::initIntrinsics() {
     cout << SubSection("Initialize Intrinsics");
+    // TODO: below code seems no any effect, but remove will be some error, haven't find the detail yet.
     int sensorRows = observations.begin()->imRows();
     cameraGeometry.shutter().setParameters(Matrix<double, 1, 1>(1.0 / options.frameRate / sensorRows));
     cameraGeometry.initializeIntrinsics(observations);
