@@ -1,8 +1,8 @@
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <iostream>
-#include "cc/ImuCameraCalibrator.h"
 #include "cc/Heading.hpp"
+#include "cc/ImuCameraCalibrator.h"
 
 using namespace std;
 using namespace Eigen;
@@ -41,16 +41,17 @@ int main(int argc, char* argv[]) {
     targetParameters.size = 0.09;
     targetParameters.spacing = 0.3;
     cout << targetParameters << endl;
-    // camera parameters
+    // camera parameters: SensingJAX52202
     cout << Paragraph("Camera Parameters");
     CameraParameters cameraParameters;
-    cameraParameters.topic = "/camIds/image_raw";
+    cameraParameters.topic = "/camNormal/image_raw";
     cameraParameters.model = "pinhole";
-    cameraParameters.f = Vector2d(1395.55335893991, 1396.18082713661);
-    cameraParameters.c = Vector2d(996.891838559857, 575.901405887637);
+    cameraParameters.f = Vector2d(823.906785813718, 824.704794976756);
+    cameraParameters.c = Vector2d(648.608565867332, 314.810494971340);
     cameraParameters.distortModel = "radtan";
-    cameraParameters.d = Vector4d(-0.160213305777107, 0.0873377403779236, 0.000591627579404801, -1.01770731705533e-05);
-    cameraParameters.resolution = Vector2i(1936, 1216);
+    cameraParameters.d = Vector4d(-0.312098601430490, 0.0928470270344407, -1.93958495467811e-05, -0.000132104569851275);
+    cameraParameters.resolution = Vector2i(1280, 720);
+    cameraParameters.lineDelay = 3.65e-5;
     cout << cameraParameters << endl;
 
     // init

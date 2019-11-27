@@ -41,15 +41,15 @@ int main(int argc, char* argv[]) {
     targetParameters.size = 0.09;
     targetParameters.spacing = 0.3;
     cout << targetParameters << endl;
-    // camera parameters
+    // camera parameters: SensingJAX52202
     cout << Paragraph("Camera Parameters");
     CameraParameters cameraParameters;
     cameraParameters.topic = "/camNormal/image_raw";
     cameraParameters.model = "pinhole";
-    cameraParameters.f = Vector2d(876.338148402960, 876.461971047948);
-    cameraParameters.c = Vector2d(633.483570573810, 332.245456171106);
+    cameraParameters.f = Vector2d(823.906785813718, 824.704794976756);
+    cameraParameters.c = Vector2d(648.608565867332, 314.810494971340);
     cameraParameters.distortModel = "radtan";
-    cameraParameters.d = Vector4d(-0.324894923827232, 0.0946332635762246, -0.000641748136769180, -0.00204087263576566);
+    cameraParameters.d = Vector4d(-0.312098601430490, 0.0928470270344407, -1.93958495467811e-05, -0.000132104569851275);
     cameraParameters.resolution = Vector2i(1280, 720);
     cameraParameters.lineDelay = 3.65e-5;
     cout << cameraParameters << endl;
