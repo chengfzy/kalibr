@@ -61,12 +61,16 @@ void HomogeneousExpressionNodeMultiply::getDesignVariablesImplementation(DesignV
 }
 
 HomogeneousExpressionNodeConstant::HomogeneousExpressionNodeConstant(const Eigen::Vector4d& p) : _p(p) {}
+
 HomogeneousExpressionNodeConstant::~HomogeneousExpressionNodeConstant() {}
 
 Eigen::Vector4d HomogeneousExpressionNodeConstant::toHomogeneousImplementation() const { return _p; }
+
 void HomogeneousExpressionNodeConstant::evaluateJacobiansImplementation(JacobianContainer& /* outJacobians */) const {}
+
 void HomogeneousExpressionNodeConstant::evaluateJacobiansImplementation(
     JacobianContainer& /* outJacobians */, const Eigen::MatrixXd& /* applyChainRule */) const {}
+
 void HomogeneousExpressionNodeConstant::getDesignVariablesImplementation(
     DesignVariable::set_t& /* designVariables */) const {}
 

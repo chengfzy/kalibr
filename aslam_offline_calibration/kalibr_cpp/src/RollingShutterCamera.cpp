@@ -1,4 +1,4 @@
-#include "cc/Camera.h"
+#include "cc/RollingShutterCamera.h"
 #include <cv_bridge/cv_bridge.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -31,8 +31,9 @@ using namespace Eigen;
 using namespace aslam;
 using namespace aslam::backend;
 
-Camera::Camera(const string& bagFile, const CameraParameters& cameraParams, const AprilTargetParameters& targetParams,
-               const ros::Time& startTime, const ros::Time& endTime)
+RollingShutterCamera::RollingShutterCamera(const string& bagFile, const CameraParameters& cameraParams,
+                                           const AprilTargetParameters& targetParams, const ros::Time& startTime,
+                                           const ros::Time& endTime)
     : cameraParams(cameraParams) {
     cout << Paragraph("Initialize Camera");
     cout << format("\tDataset: {}", bagFile) << endl;
@@ -50,7 +51,7 @@ Camera::Camera(const string& bagFile, const CameraParameters& cameraParams, cons
     cameras::PinholeProjection<cameras::RadialTangentialDistortion> proj(
         cameraParams.f[0], cameraParams.f[1], cameraParams.c[0], cameraParams.c[1], cameraParams.resolution[0],
         cameraParams.resolution[1], dist);
-    geometry = cameras::DistortedPinholeCameraGeometry(proj);
+    geometry = CameraGeometry(proj);
 
     // setup target detector
     cameras::GridCalibrationTargetAprilgrid::AprilgridOptions gridOptions;
@@ -96,8 +97,8 @@ Camera::Camera(const string& bagFile, const CameraParameters& cameraParams, cons
 }
 
 // initialize a pose spine using camera poses(pose spine = T_TB)
-bsplines::BSplinePose Camera::initPoseSplineFromCamera(int splineOrder, int poseKnotsPerSecond,
-                                                       const double& timeOffsetPadding) {
+bsplines::BSplinePose RollingShutterCamera::initPoseSplineFromCamera(int splineOrder, int poseKnotsPerSecond,
+                                                                     const double& timeOffsetPadding) {
     // FIXME, the extrinsic is T_BC, not T_CB, even though they are the same during initialization
     Matrix4d Tcb = extrinsic.T();
     bsplines::BSplinePose pose(splineOrder, boost::make_shared<sm::kinematics::RotationVector>());
@@ -175,7 +176,7 @@ bsplines::BSplinePose Camera::initPoseSplineFromCamera(int splineOrder, int pose
     return pose;
 }
 
-void Camera::findTimeShiftCameraImuPrior(const Imu& imu) {
+void RollingShutterCamera::findTimeShiftCameraImuPrior(const Imu& imu) {
     cout << SubSection("Estimating time shift camera to IMU");
     bsplines::BSplinePose poseSpline = initPoseSplineFromCamera(6, 100, 0);
 
@@ -218,7 +219,7 @@ void Camera::findTimeShiftCameraImuPrior(const Imu& imu) {
 }
 
 // estimate IMU-Camera rotation prior
-void Camera::findOrientationPriorCameraToImu(Imu& imu) {
+void RollingShutterCamera::findOrientationPriorCameraToImu(Imu& imu) {
     cout << SubSection("Estimate IMU-Camera Rotation Prior");
 
     // build the problem
@@ -301,7 +302,7 @@ void Camera::findOrientationPriorCameraToImu(Imu& imu) {
     cout << format("gyro bias prior found as: {}", imu.gyroBiasPrior.transpose()) << endl;
 }
 
-void Camera::addDesignVariable(aslam::calibration::OptimizationProblem& problem, bool noTimeCalibration) {
+void RollingShutterCamera::addDesignVariable(aslam::calibration::OptimizationProblem& problem, bool noTimeCalibration) {
     // add IMU-Camera extrinsics design variable
     TcbDesignVar = boost::make_shared<TransformationDesignVariable>(extrinsic, true, true);
     for (int i = 0; i < TcbDesignVar->numDesignVariables(); ++i) {
@@ -314,10 +315,10 @@ void Camera::addDesignVariable(aslam::calibration::OptimizationProblem& problem,
     problem.addDesignVariable(cameraTimeToImuDesignVar, kCalibrationGroupId);
 }
 
-void Camera::addErrorTerms(aslam::calibration::OptimizationProblem& problem,
-                           const boost::shared_ptr<aslam::splines::BSplinePoseDesignVariable>& poseDesignVariable,
-                           aslam::backend::TransformationExpression& Tcb, int blakeZisserCam,
-                           const double& timeOffsetPadding) {
+void RollingShutterCamera::addErrorTerms(
+    aslam::calibration::OptimizationProblem& problem,
+    const boost::shared_ptr<aslam::splines::BSplinePoseDesignVariable>& poseDesignVariable,
+    aslam::backend::TransformationExpression& Tcb, int blakeZisserCam, const double& timeOffsetPadding) {
     cout << Section("Adding Camera Error Terms");
 
     for (auto& v : observations) {
@@ -333,13 +334,6 @@ void Camera::addErrorTerms(aslam::calibration::OptimizationProblem& problem,
             continue;
         }
 
-        TransformationExpression Twb =
-            poseDesignVariable->transformationAtTime(frameTime, timeOffsetPadding, timeOffsetPadding);
-        TransformationExpression Tbw = Twb.inverse();
-
-        // calibration target coordinates to camera coordinates
-        TransformationExpression Tcw = Tcb * Tbw;
-
         // get the image and target points corresponding to the frame
         vector<cv::Point2f> imageCorners;
         vector<cv::Point3f> targetCorners;
@@ -348,8 +342,7 @@ void Camera::addErrorTerms(aslam::calibration::OptimizationProblem& problem,
 
         // setup a frame to handle the distortion
         Frame frame;
-        frame.setGeometry(
-            boost::shared_ptr<aslam::cameras::DistortedPinholeCameraGeometry>(&geometry, sm::null_deleter()));
+        frame.setGeometry(boost::shared_ptr<CameraGeometry>(&geometry, sm::null_deleter()));
 
         // corner uncertainty
         Matrix2d R = Matrix2d::Identity() * cornerUncertainty * cornerUncertainty;
@@ -364,6 +357,17 @@ void Camera::addErrorTerms(aslam::calibration::OptimizationProblem& problem,
         }
 
         for (size_t n = 0; n < imageCorners.size(); ++n) {
+            // keypoint time offset by line delay
+            Vector2d keypoint(imageCorners[n].x, imageCorners[n].y);
+            double keypointTime = frameTimeScalar + geometry.temporalOffset(keypoint).toSec();
+
+            // transformation from IMU to world T_WB
+            TransformationExpression Twb = poseDesignVariable->transformationAtTime(
+                backend::ScalarExpression(keypointTime), timeOffsetPadding, timeOffsetPadding);
+            TransformationExpression Tbw = Twb.inverse();
+            // calibration target from world frame to camera frame
+            TransformationExpression Tcw = Tcb * Tbw;
+
             // add target points
             Vector4d targetPoint(targetCorners[n].x, targetCorners[n].y, targetCorners[n].z, 1);
             // HomogeneousExpression TransformationExpression::operator*(const HomogeneousExpression& rhs) const
@@ -384,8 +388,10 @@ void Camera::addErrorTerms(aslam::calibration::OptimizationProblem& problem,
     cout << format("\tAdd {} camera errors terms", observations.size());
 }
 
-sm::kinematics::Transformation Camera::getResultTransformationImuToCam() {
+sm::kinematics::Transformation RollingShutterCamera::getResultTransformationImuToCam() {
     return sm::kinematics::Transformation(TcbDesignVar->T());
 }
 
-double Camera::getResultTimeShift() { return cameraTimeToImuDesignVar->toScalar() + timeshiftCameraToImuPrior; }
+double RollingShutterCamera::getResultTimeShift() {
+    return cameraTimeToImuDesignVar->toScalar() + timeshiftCameraToImuPrior;
+}

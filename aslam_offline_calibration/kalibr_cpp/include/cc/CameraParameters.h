@@ -5,7 +5,8 @@
 namespace cc {
 
 /**
- * @brief Camera parameter for pin-hole projection, 2-order radical distortion and 2-order tangential distortion
+ * @brief Camera parameter for pin-hole projection, 2-order radical distortion and 2-order tangential distortion, and a
+ * line delay parameter only for rolling shutter camera
  */
 class CameraParameters {
   public:
@@ -19,6 +20,7 @@ class CameraParameters {
     Eigen::Vector2d c;           // principal point
     Eigen::Vector4d d;           // distortion coefficients
     Eigen::Vector2i resolution;  // camera resolution
+    double lineDelay;            // line delay parameters for rolling shutter camera
 };
 
 }  // namespace cc

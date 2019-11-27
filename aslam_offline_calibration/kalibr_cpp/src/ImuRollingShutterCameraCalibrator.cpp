@@ -1,4 +1,4 @@
-#include "cc/ImuCameraCalibrator.h"
+#include "cc/ImuRollingShutterCameraCalibrator.h"
 #include <fmt/format.h>
 #include "aslam/backend/BlockCholeskyLinearSystemSolver.hpp"
 #include "aslam/backend/LevenbergMarquardtTrustRegionPolicy.hpp"
@@ -14,14 +14,15 @@ using namespace aslam;
 using namespace aslam::backend;
 using namespace aslam::calibration;
 
-ImuCameraCalibrator::ImuCameraCalibrator(const cc::Camera& camera, const cc::Imu& imu) : camera(camera), imu(imu) {}
+ImuRollingShutterCameraCalibrator::ImuRollingShutterCameraCalibrator(const cc::RollingShutterCamera& camera,
+                                                                     const cc::Imu& imu)
+    : camera(camera), imu(imu) {}
 
-void ImuCameraCalibrator::buildProblem(int splineOrder, int poseKnotsPerSecond, int biasKnotsPerSecond,
-                                       bool doPoseMotionError, const double& mrTranslationVariance,
-                                       const double& mrRotationVariance, bool doBiasMotionError, int blakeZisserCam,
-                                       const double& huberAccel, const double& huberGyro, bool noTimeCalibration, bool,
-                                       int maxIterations, const double& gyroNoiseScale, const double& accelNoiseScale,
-                                       const double& timeOffsetPadding, bool) {
+void ImuRollingShutterCameraCalibrator::buildProblem(
+    int splineOrder, int poseKnotsPerSecond, int biasKnotsPerSecond, bool doPoseMotionError,
+    const double& mrTranslationVariance, const double& mrRotationVariance, bool doBiasMotionError, int blakeZisserCam,
+    const double& huberAccel, const double& huberGyro, bool noTimeCalibration, bool, int maxIterations,
+    const double& gyroNoiseScale, const double& accelNoiseScale, const double& timeOffsetPadding, bool) {
     cout << Section("Build Problem");
     cout << format("\tSpline order: {}", splineOrder) << endl;
     cout << format("\tPose knots per second: {}", poseKnotsPerSecond) << endl;
@@ -84,7 +85,7 @@ void ImuCameraCalibrator::buildProblem(int splineOrder, int poseKnotsPerSecond, 
     }
 }
 
-void ImuCameraCalibrator::optimize(int maxIterations, bool recoverCov) {
+void ImuRollingShutterCameraCalibrator::optimize(int maxIterations, bool recoverCov) {
     // options
     optimizerOptions.convergenceDeltaX = 1e-5;
     optimizerOptions.convergenceDeltaJ = 1e-2;
@@ -110,7 +111,7 @@ void ImuCameraCalibrator::optimize(int maxIterations, bool recoverCov) {
     }
 }
 
-void ImuCameraCalibrator::printErrorStatistics() {
+void ImuRollingShutterCameraCalibrator::printErrorStatistics() {
     // print out normalized residuals
     cout << Paragraph("Normalized Residuals");
     // evaluate reprojection error
@@ -142,7 +143,7 @@ void ImuCameraCalibrator::printErrorStatistics() {
     // evaluate acceleration error
     VectorXd accNormalErrors(imu.accErrors.size());
     VectorXd accErrors(imu.accErrors.size());
-    for (int i = 0; i < accNormalErrors.size(); ++i) {
+    for (size_t i = 0; i < accNormalErrors.size(); ++i) {
         accNormalErrors[i] = sqrt(imu.accErrors[i]->evaluateError());
         accErrors[i] = imu.accErrors[i]->error().norm();
     }
@@ -163,7 +164,7 @@ void ImuCameraCalibrator::printErrorStatistics() {
          << endl;
 }
 
-void ImuCameraCalibrator::printResult(bool) {
+void ImuRollingShutterCameraCalibrator::printResult(bool) {
     cout << Section("Calibration Result");
     cout << "Transforation T_cam0_imu0 (imu0 to cam0, Tci):" << endl;
     cout << camera.getResultTransformationImuToCam().T() << endl;

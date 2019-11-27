@@ -6,7 +6,9 @@
 namespace aslam {
 namespace backend {
 HomogeneousExpression::HomogeneousExpression() {}
+
 HomogeneousExpression::~HomogeneousExpression() {}
+
 HomogeneousExpression::HomogeneousExpression(HomogeneousExpressionNode* designVariable)
     : _root(designVariable, sm::null_deleter()) {}
 

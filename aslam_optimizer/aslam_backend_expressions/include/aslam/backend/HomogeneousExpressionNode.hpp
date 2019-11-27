@@ -9,11 +9,11 @@
 
 namespace aslam {
 namespace backend {
+
 class TransformationExpressionNode;
 
 /**
- * \class HomogeneousExpressionNode
- * \brief The superclass of all classes representing homogeneous points.
+ * @brief The superclass of all classes representing homogeneous points
  */
 class HomogeneousExpressionNode {
   public:
@@ -42,10 +42,7 @@ class HomogeneousExpressionNode {
 };
 
 /**
- * \class HomogeneousExpressionNodeMultiply
- *
- * \brief A class representing the transformation of a homogeneous point
- *
+ * @brief A class representing the transformation of a homogeneous point
  */
 class HomogeneousExpressionNodeMultiply : public HomogeneousExpressionNode {
   public:

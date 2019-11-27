@@ -303,13 +303,13 @@ void RollingShutterCameraCalibrator::buildProblem(const bsplines::BSplinePose& p
                 // keypoint time offset by line delay as expression type
                 backend::ScalarExpression keypointTime = cameraDeignVariable->keypointTime(frame->time(), point);
 
-                // from target to world transformation
-                backend::TransformationExpression T_WT = poseDesignVariable->transformationAtTime(
+                // from target to world transformation, or from camera to world T_WC
+                backend::TransformationExpression Twc = poseDesignVariable->transformationAtTime(
                     keypointTime, options.timeOffsetConstantSparsityPattern, options.timeOffsetConstantSparsityPattern);
-                backend::TransformationExpression T_TW = T_WT.inverse();
+                backend::TransformationExpression Tcw = Twc.inverse();
 
                 // transform target point to camera frame
-                backend::HomogeneousExpression point_T = T_TW * targetExpression[keypointIds[i]];
+                backend::HomogeneousExpression point_T = Tcw * targetExpression[keypointIds[i]];
 
                 // create the keypoint
                 size_t keypointId = frame->numKeypoints();

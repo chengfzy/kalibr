@@ -9,6 +9,7 @@
 
 namespace aslam {
 namespace backend {
+
 TransformationExpression::TransformationExpression() {}
 
 TransformationExpression::TransformationExpression(TransformationExpressionNode* root)
@@ -53,7 +54,6 @@ void TransformationExpression::evaluateJacobians(JacobianContainer& outJacobians
 }
 
 // EuclideanExpression operator*(const EuclideanExpression & rhs) const;
-
 HomogeneousExpression TransformationExpression::operator*(const HomogeneousExpression& rhs) const {
     boost::shared_ptr<HomogeneousExpressionNode> newRoot(new HomogeneousExpressionNodeMultiply(_root, rhs._root));
     return HomogeneousExpression(newRoot);

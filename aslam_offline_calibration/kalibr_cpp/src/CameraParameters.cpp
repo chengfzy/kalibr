@@ -14,6 +14,7 @@ std::ostream& operator<<(std::ostream& os, const cc::CameraParameters& cameraPar
     os << format("\tDistortion coefficients: [{}, {}, {}, {}]", cameraParams.d[0], cameraParams.d[1], cameraParams.d[2],
                  cameraParams.d[3])
        << endl;
+    os << format("\tLineDelay: {:.5g}", cameraParams.lineDelay) << endl;
     os << format("\tROS topic: {}", cameraParams.topic) << endl;
     os << format("\tResolution: [{}, {}]", cameraParams.resolution[0], cameraParams.resolution[1]) << endl;
     return os;

@@ -47,6 +47,12 @@ class PinholeProjection {
     bool euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p,
                              const Eigen::MatrixBase<DERIVED_K>& outKeypoint) const;
 
+    /**
+     * @brief This is this reprojection procedure, reproject point from world frame(p, 3x1 vector) to image
+     * frame(outKeypoint, 2x1 vector), include distortion and projection. And then calculate the Jacobian of outKeypoint
+     * w.r.t to p. The Jacobian calculation using the chain rule, first calculate the Jacobian(J1) of distorted point
+     * w.r.t p, then calculate the Jacobians(J2) of outKeypoint w.r.t distorted point, so the final Jacobian J = J2 * J1
+     */
     template <typename DERIVED_P, typename DERIVED_K, typename DERIVED_JP>
     bool euclideanToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
                              const Eigen::MatrixBase<DERIVED_JP>& outJp) const;

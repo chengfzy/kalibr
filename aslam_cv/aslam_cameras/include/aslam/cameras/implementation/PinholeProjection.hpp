@@ -138,16 +138,6 @@ bool PinholeProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixB
     // hope this works... (required to have valid static asserts)
     return euclideanToKeypoint(ph.derived().template head<3>(), outKeypoint,
                                J.derived().template topLeftCorner<2, 3>());
-
-    if (ph[3] < 0) {
-        bool success = euclideanToKeypoint(-ph.derived().template head<3>(), outKeypoint,
-                                           J.derived().template topLeftCorner<2, 3>());
-        J = -J;
-        return success;
-    } else {
-        return euclideanToKeypoint(ph.derived().template head<3>(), outKeypoint,
-                                   J.derived().template topLeftCorner<2, 3>());
-    }
 }
 
 template <typename DISTORTION_T>

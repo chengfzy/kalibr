@@ -1,4 +1,3 @@
-
 namespace aslam {
 namespace backend {
 
@@ -11,7 +10,7 @@ CovarianceReprojectionError<F>::CovarianceReprojectionError(const frame_t* frame
                                                             CameraDesignVariable<camera_geometry_t> camera,
                                                             spline_t* spline)
     : _frame(frame), _keypointIndex(keypointIndex), _point(point), _camera(camera), _spline(spline) {
-    SM_ASSERT_TRUE(Exception, frame != NULL, "The frame must not be null");
+    SM_ASSERT_TRUE(Exception, frame, "The frame must not be null");
     SM_ASSERT_TRUE(Exception, _frame->numKeypoints() > _keypointIndex, "Keypoint index must be in bounds of frame.");
 
     // if a spline is given, estimate the covariance in each iteration
@@ -115,6 +114,7 @@ void CovarianceReprojectionError<F>::evaluateJacobiansImplementation(
 
     _point.evaluateJacobians(_jacobians, -J);
 
+    // add Jacobian w.r.t camera projection and distortion parameters if the parameters is active
     _camera.evaluateJacobians(_jacobians, p);
 }
 

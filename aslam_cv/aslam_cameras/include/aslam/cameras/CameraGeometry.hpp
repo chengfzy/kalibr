@@ -20,13 +20,13 @@ class Frame;
 namespace cameras {
 
 /**
- * \class CameraGeometry
- *
- * A camera geometry class based on three configurable policies:
- * 1. a lens type that determines the geometry of the camera
- * 2. a shutter type that determines the timing of each pixel.
- * 3. a mask type.
- *
+ * @brief Camera geometry. A camera geometry class based on three configurable policies:
+ *  1. A lens type that determines the geometry of the camera
+ *  2. A shutter type that determines the timing of each pixel.
+ *  3. A mask type.
+ * @tparam PROJECTION_T Projection type, project point from world frame to image frame
+ * @tparam SHUTTER_T    Shutter type, global shutter or rolling shutter
+ * @tparam MASK_T       Mask type
  */
 template <typename PROJECTION_T, typename SHUTTER_T, typename MASK_T>
 class CameraGeometry : public CameraGeometryBase {
@@ -357,9 +357,9 @@ class CameraGeometry : public CameraGeometryBase {
 
   private:
     CameraId _id;
-    projection_t _projection;
-    shutter_t _shutter;
-    mask_t _mask;
+    projection_t _projection;  // projection
+    shutter_t _shutter;        // shutter
+    mask_t _mask;              // mask
 };
 
 }  // namespace cameras

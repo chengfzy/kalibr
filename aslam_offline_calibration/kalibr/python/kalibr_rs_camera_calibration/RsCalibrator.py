@@ -172,7 +172,7 @@ class RsCalibrator(object):
             knotUpdateStrategy = self.__config.knotUpdateStrategy(self.__config.framerate)
 
             for iteration in range(self.__config.maxKnotPlacementIterations):
-                print('=============== [{}] Adaptive Knot Placement'.format(iteration))
+                print('=================== [{}] Adaptive Knot Placement ==================='.format(iteration))
 
                 # generate the new knots list
                 [knots, requiresUpdate] = knotUpdateStrategy.generateKnotList(self.__reprojection_errors,

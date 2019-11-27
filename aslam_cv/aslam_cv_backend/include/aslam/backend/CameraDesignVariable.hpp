@@ -59,7 +59,6 @@ class CameraDesignVariable : public boost::enable_shared_from_this<CameraDesignV
 
   private:
     boost::shared_ptr<camera_t> _camera;
-
     boost::shared_ptr<DesignVariableAdapter<projection_t> > _projectionDv;
     boost::shared_ptr<DesignVariableAdapter<distortion_t> > _distortionDv;
     boost::shared_ptr<DesignVariableAdapter<shutter_t> > _shutterDv;

@@ -20,16 +20,24 @@ include_directories(./include)
 
 # IMU-Camera Calibration
 file(GLOB_RECURSE FILE_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/include/*.*)
-file(GLOB_RECURSE FILE_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.*)
-list(REMOVE_ITEM FILE_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/RollingShutterCameraCalibration.cpp)
-add_executable(ImuCameraCalibration ${FILE_INCLUDES} ${FILE_SRCS})
+file(GLOB FILE_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.*)
+add_executable(ImuCameraCalibration ${FILE_INCLUDES} ${FILE_SRCS} 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/app/ImuCameraCalibration.cpp)
 target_link_libraries(ImuCameraCalibration ${catkin_LIBRARIES} fmt::fmt-header-only glog gflags)
+
+
+# IMU-Rolling Shutter Camera Calibration
+file(GLOB_RECURSE FILE_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/include/*.*)
+file(GLOB FILE_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.*)
+add_executable(ImuRollingShutterCameraCalibration ${FILE_INCLUDES} ${FILE_SRCS} 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/app/ImuRollingShutterCameraCalibration.cpp)
+target_link_libraries(ImuRollingShutterCameraCalibration ${catkin_LIBRARIES} fmt::fmt-header-only glog gflags)
 
 # Rolling Camera Calibration
 file(GLOB_RECURSE FILE_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/include/*.*)
-file(GLOB_RECURSE FILE_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.*)
-list(REMOVE_ITEM FILE_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/ImuCameraCalibration.cpp)
-add_executable(RollingShutterCameraCalibration ${FILE_INCLUDES} ${FILE_SRCS})
+file(GLOB FILE_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.*)
+add_executable(RollingShutterCameraCalibration ${FILE_INCLUDES} ${FILE_SRCS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/app/RollingShutterCameraCalibration.cpp)
 target_link_libraries(RollingShutterCameraCalibration ${catkin_LIBRARIES} fmt::fmt-header-only glog gflags)
 
 ##################################

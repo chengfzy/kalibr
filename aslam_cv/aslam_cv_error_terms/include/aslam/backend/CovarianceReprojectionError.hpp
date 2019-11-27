@@ -49,19 +49,14 @@ class CovarianceReprojectionError : public ErrorTermFs<FRAME_T::KeypointDimensio
     /// \brief evaluate the jacobian
     virtual void evaluateJacobiansImplementation(JacobianContainer& J) const;
 
-    /// \brief the frame that this measurement comes from.
-    const frame_t* _frame;
-
-    /// \brief the keypoint index within the frame.
-    int _keypointIndex;
-
-    /// \brief the homogeneous point expressed in the camera frame
-    HomogeneousExpression _point;
-
-    CameraDesignVariable<camera_geometry_t> _camera;
-
-    spline_t* _spline;
+  protected:
+    const frame_t* _frame;                            // the frame that this measurement comes from
+    int _keypointIndex;                               // the keypoint index within the frame
+    HomogeneousExpression _point;                     // the homogeneous target point expressed in the camera frame
+    CameraDesignVariable<camera_geometry_t> _camera;  // camera design variable
+    spline_t* _spline;                                // camera pose spline
 };
+
 }  // namespace backend
 }  // namespace aslam
 
