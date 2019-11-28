@@ -31,8 +31,7 @@ class RollingShutterCamera {
 
   public:
     // initialize a pose spine using camera poses(pose spine = T_TB)
-    bsplines::BSplinePose initPoseSplineFromCamera(int splineOrder = 6, int poseKnotsPerSecond = 100,
-                                                   const double& timeOffsetPadding = 0.02);
+    bsplines::BSplinePose initPoseSplineFromCamera(int splineOrder = 6, const double& timeOffsetPadding = 0.02);
 
     // estimates the timeshift between camera and imu using cross correlation approach
     void findTimeShiftCameraImuPrior(const Imu& imu);

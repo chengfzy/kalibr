@@ -50,14 +50,19 @@ int main(int argc, char* argv[]) {
     cameraParameters.c = Vector2d(648.608565867332, 314.810494971340);
     cameraParameters.distortModel = "radtan";
     cameraParameters.d = Vector4d(-0.312098601430490, 0.0928470270344407, -1.93958495467811e-05, -0.000132104569851275);
-    cameraParameters.resolution = Vector2i(1280, 720);
     cameraParameters.lineDelay = 3.6667e-5;
+    cameraParameters.resolution = Vector2i(1280, 720);
+    cameraParameters.frameRate = 30;
     cout << cameraParameters << endl;
 
     // init
     cout << Section("Initialization");
     Imu imu(FLAGS_bagFile, imuParameters);
     RollingShutterCamera camera(FLAGS_bagFile, cameraParameters, targetParameters);
+    // calibrator
+    ImuRollingShutterCameraCalibrator::Options options;
+    options.timeOffsetConstantSparsityPattern = 0.08;
+    options.timeOffsetPadding = 0.5;
     ImuRollingShutterCameraCalibrator calibrator(camera, imu);
     calibrator.buildProblem();
 

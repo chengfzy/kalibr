@@ -17,6 +17,7 @@ std::ostream& operator<<(std::ostream& os, const cc::CameraParameters& cameraPar
     os << format("\tLineDelay: {:.5g}", cameraParams.lineDelay) << endl;
     os << format("\tROS topic: {}", cameraParams.topic) << endl;
     os << format("\tResolution: [{}, {}]", cameraParams.resolution[0], cameraParams.resolution[1]) << endl;
+    os << format("\tFrame rate: {} Hz", cameraParams.frameRate) << endl;
     return os;
 }
 

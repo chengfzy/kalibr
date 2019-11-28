@@ -18,25 +18,22 @@ ImuRollingShutterCameraCalibrator::ImuRollingShutterCameraCalibrator(const cc::R
                                                                      const cc::Imu& imu)
     : camera(camera), imu(imu) {}
 
-void ImuRollingShutterCameraCalibrator::buildProblem(
-    int splineOrder, int poseKnotsPerSecond, int biasKnotsPerSecond, bool doPoseMotionError,
-    const double& mrTranslationVariance, const double& mrRotationVariance, bool doBiasMotionError, int blakeZisserCam,
-    const double& huberAccel, const double& huberGyro, bool noTimeCalibration, bool, int maxIterations,
-    const double& gyroNoiseScale, const double& accelNoiseScale, const double& timeOffsetPadding, bool) {
+void ImuRollingShutterCameraCalibrator::buildProblem() {
     cout << Section("Build Problem");
-    cout << format("\tSpline order: {}", splineOrder) << endl;
-    cout << format("\tPose knots per second: {}", poseKnotsPerSecond) << endl;
-    cout << format("\tDo pose motion regularization: {}", doPoseMotionError) << endl;
-    cout << format("\t\txddot translation variance: {}", mrTranslationVariance) << endl;
-    cout << format("\t\txddot rotation variance: {}", mrRotationVariance) << endl;
-    cout << format("\tBias knots per second: {}", biasKnotsPerSecond) << endl;
-    cout << format("\tDo bias motion regularization: {}", doBiasMotionError) << endl;
-    cout << format("\tBlake-Zisserman on reprojection errors: {}", blakeZisserCam) << endl;
-    cout << format("\tAcceleration Huber width(sigma): {}", huberAccel) << endl;
-    cout << format("\tGyroscope Huber width(sigma): {}", huberGyro) << endl;
-    cout << format("\tDo time calibration: {}", !noTimeCalibration) << endl;
-    cout << format("\tMax iteration: {}", maxIterations) << endl;
-    cout << format("\tTime offset padding: {}", timeOffsetPadding) << endl;
+    cout << format("\tSpline order: {}", options.splineOrder) << endl;
+    cout << format("\tPose knots per second: {}", options.poseKnotsPerSecond) << endl;
+    cout << format("\tDo pose motion regularization: {}", options.doPoseMotionError) << endl;
+    cout << format("\t\txddot translation variance: {}", options.mrTranslationVariance) << endl;
+    cout << format("\t\txddot rotation variance: {}", options.mrRotationVariance) << endl;
+    cout << format("\tBias knots per second: {}", options.biasKnotsPerSecond) << endl;
+    cout << format("\tDo bias motion regularization: {}", options.doBiasMotionError) << endl;
+    cout << format("\tBlake-Zisserman on reprojection errors: {}", options.blakeZisserCam) << endl;
+    cout << format("\tAcceleration Huber width(sigma): {}", options.huberAccel) << endl;
+    cout << format("\tGyroscope Huber width(sigma): {}", options.huberGyro) << endl;
+    cout << format("\tDo time calibration: {}", !options.noTimeCalibration) << endl;
+    cout << format("\tMax iteration: {}", options.maxIterations) << endl;
+    cout << format("\tTime offset padding: {}", options.timeOffsetPadding) << endl;
+    cout << format("\tTime offset constant sparsity pattern: {}", options.timeOffsetConstantSparsityPattern) << endl;
 
     camera.findTimeShiftCameraImuPrior(imu);
     camera.findOrientationPriorCameraToImu(imu);
@@ -44,11 +41,10 @@ void ImuRollingShutterCameraCalibrator::buildProblem(
 
     // init optimization problem
     // initialize a pose spline using the camera poses in the cam chain
-    bsplines::BSplinePose poseSpline =
-        camera.initPoseSplineFromCamera(splineOrder, poseKnotsPerSecond, timeOffsetPadding);
+    bsplines::BSplinePose poseSpline = camera.initPoseSplineFromCamera(options.splineOrder, options.timeOffsetPadding);
 
     // initialize bias spines for IMU
-    imu.initBiasSpline(poseSpline, splineOrder, biasKnotsPerSecond);
+    imu.initBiasSpline(poseSpline, options.splineOrder, options.biasKnotsPerSecond);
 
     // init design variables
     poseDesignVar = boost::make_shared<splines::BSplinePoseDesignVariable>(poseSpline);
@@ -65,21 +61,22 @@ void ImuRollingShutterCameraCalibrator::buildProblem(
     problem.addDesignVariable(gravityDesignVar, kCalibrationGroupId);
     // add design variable for IMU
     imu.addDesignVariable(problem);
-    camera.addDesignVariable(problem, noTimeCalibration);
+    camera.addDesignVariable(problem, options.noTimeCalibration);
 
     // add calibration target reprojection error terms
-    camera.addErrorTerms(problem, poseDesignVar, camera.TcbDesignVar->toExpression(), blakeZisserCam,
-                         timeOffsetPadding);
+    camera.addErrorTerms(problem, poseDesignVar, camera.TcbDesignVar->toExpression(), options.blakeZisserCam,
+                         options.timeOffsetConstantSparsityPattern);
 
     // add IMU errors
-    imu.addAccelerometerErrorTerms(problem, poseDesignVar, gravityExpression, huberAccel, accelNoiseScale);
-    imu.addGyroscopeErrorTerms(problem, poseDesignVar, huberGyro, gyroNoiseScale);
-    if (doBiasMotionError) {
+    imu.addAccelerometerErrorTerms(problem, poseDesignVar, gravityExpression, options.huberAccel,
+                                   options.accelNoiseScale);
+    imu.addGyroscopeErrorTerms(problem, poseDesignVar, options.huberGyro, options.gyroNoiseScale);
+    if (options.doBiasMotionError) {
         imu.addBiasMotionTerms(problem);
     }
 
     // add pose motion terms
-    if (doPoseMotionError) {
+    if (options.doPoseMotionError) {
         cout << Section("Add Pose Motion Error");
         // pass
     }

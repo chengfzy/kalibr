@@ -19,8 +19,9 @@ class CameraParameters {
     Eigen::Vector2d f;           // focal length
     Eigen::Vector2d c;           // principal point
     Eigen::Vector4d d;           // distortion coefficients
+    double lineDelay = 0;        // line delay parameters for rolling shutter camera
     Eigen::Vector2i resolution;  // camera resolution
-    double lineDelay;            // line delay parameters for rolling shutter camera
+    double frameRate = 0;        // frame rate, Hz
 };
 
 }  // namespace cc

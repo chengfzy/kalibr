@@ -11,16 +11,32 @@ namespace cc {
 
 class ImuRollingShutterCameraCalibrator {
   public:
+    struct Options {
+        int splineOrder = 6;  // NOTE: spline order in rolling shutter camera calibration is 4
+        int poseKnotsPerSecond = 100;
+        int biasKnotsPerSecond = 50;
+        bool doPoseMotionError = false;
+        double mrTranslationVariance = 1e6;
+        double mrRotationVariance = 1e5;
+        bool doBiasMotionError = true;
+        int blakeZisserCam = -1;
+        double huberAccel = -1;
+        double huberGyro = -1;
+        bool noTimeCalibration = false;
+        bool noChainExtrinsics = true;
+        int maxIterations = 30;
+        double gyroNoiseScale = 1.0;
+        double accelNoiseScale = 1.0;
+        double timeOffsetPadding = 0.05;
+        double timeOffsetConstantSparsityPattern = 0.08;
+        bool verbose = false;
+    };
+
+  public:
     ImuRollingShutterCameraCalibrator(const RollingShutterCamera& camera, const Imu& imu);
 
   public:
-    void buildProblem(int splineOrder = 6, int poseKnotsPerSecond = 100, int biasKnotsPerSecond = 50,
-                      bool doPoseMotionError = false, const double& mrTranslationVariance = 1e6,
-                      const double& mrRotationVariance = 1e5, bool doBiasMotionError = true, int blakeZisserCam = -1,
-                      const double& huberAccel = -1, const double& huberGyro = -1, bool noTimeCalibration = false,
-                      bool noChainExtrinsics = true, int maxIterations = 30, const double& gyroNoiseScale = 1.0,
-                      const double& accelNoiseScale = 1.0, const double& timeOffsetPadding = 0.03,
-                      bool verbose = false);
+    void buildProblem();
 
     void optimize(int maxIterations = 30, bool recoverCov = false);
 
@@ -31,6 +47,7 @@ class ImuRollingShutterCameraCalibrator {
   private:
     RollingShutterCamera camera;  // camera
     Imu imu;                      // IMU
+    Options options;              // options
 
     aslam::calibration::OptimizationProblem problem;                             // problem
     boost::shared_ptr<aslam::splines::BSplinePoseDesignVariable> poseDesignVar;  // pose design variable
