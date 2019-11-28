@@ -56,13 +56,13 @@ void ImuRollingShutterCameraCalibrator::buildProblem(
         auto v =
             calibration::OptimizationProblem::DesignVariableSP(poseDesignVar->designVariable(i), sm::null_deleter());
         v->setActive(true);
-        problem.addDesignVariable(v, kHelperGroupId);
+        problem.addDesignVariable(v, kCalibrationGroupId);  // has no any affect of change to kCalibrationGroupId
     }
     // add the calibration target orientation design variable
     gravityDesignVar = boost::make_shared<backend::EuclideanDirection>(gravity);
     gravityExpression = gravityDesignVar->toExpression();
     gravityDesignVar->setActive(true);
-    problem.addDesignVariable(gravityDesignVar, kHelperGroupId);
+    problem.addDesignVariable(gravityDesignVar, kCalibrationGroupId);
     // add design variable for IMU
     imu.addDesignVariable(problem);
     camera.addDesignVariable(problem, noTimeCalibration);
@@ -88,7 +88,7 @@ void ImuRollingShutterCameraCalibrator::buildProblem(
 void ImuRollingShutterCameraCalibrator::optimize(int maxIterations, bool recoverCov) {
     // options
     optimizerOptions.convergenceDeltaX = 1e-5;
-    optimizerOptions.convergenceDeltaJ = 1e-2;
+    optimizerOptions.convergenceDeltaJ = 1e-3;
     optimizerOptions.maxIterations = maxIterations;
     optimizerOptions.trustRegionPolicy = boost::make_shared<LevenbergMarquardtTrustRegionPolicy>(10);
     optimizerOptions.linearSystemSolver = boost::make_shared<BlockCholeskyLinearSystemSolver>();
@@ -166,8 +166,11 @@ void ImuRollingShutterCameraCalibrator::printErrorStatistics() {
 
 void ImuRollingShutterCameraCalibrator::printResult(bool) {
     cout << Section("Calibration Result");
-    cout << "Transforation T_cam0_imu0 (imu0 to cam0, Tci):" << endl;
+    cout << "Tci, Transformation T_cam0_imu0 (imu0 to cam0):" << endl;
     cout << camera.getResultTransformationImuToCam().T() << endl;
+    cout << endl;
+    cout << "Tic, Transformation T_imu0_cam0 (cam0 to imu0):" << endl;
+    cout << camera.getResultTransformationImuToCam().inverse().T() << endl;
     cout << endl;
     cout << format("cam0 to imu0 time(t_imu = t_cam + shift): {}[s]", camera.getResultTimeShift()) << endl;
 }

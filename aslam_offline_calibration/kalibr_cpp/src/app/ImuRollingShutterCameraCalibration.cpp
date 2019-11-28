@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     cameraParameters.distortModel = "radtan";
     cameraParameters.d = Vector4d(-0.312098601430490, 0.0928470270344407, -1.93958495467811e-05, -0.000132104569851275);
     cameraParameters.resolution = Vector2i(1280, 720);
-    cameraParameters.lineDelay = 3.65e-5;
+    cameraParameters.lineDelay = 3.66e-5;
     cout << cameraParameters << endl;
 
     // init
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
     cout << Section("Before Optimization");
     calibrator.printErrorStatistics();
 
-    cout << Section("Optimizing...");
+    cout << Section("Optimizing");
     calibrator.optimize(30, false);
 
     cout << Section("After Optimization");

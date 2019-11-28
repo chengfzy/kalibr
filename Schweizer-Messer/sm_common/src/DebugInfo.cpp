@@ -14,23 +14,23 @@ void printInfo(const std::string& title, DebugInfoType type, bool breakLine) {
     char fillChar = '=';
     switch (type) {
         case DebugInfoType::Section:
-            infoLen = 120;
+            infoLen = 100;
             fillChar = '=';
             break;
         case DebugInfoType::SubSection:
-            infoLen = 120;
-            fillChar = '-';
+            infoLen = 100;
+            fillChar = '*';
             break;
         case DebugInfoType::Paragraph:
-            infoLen = 80;
-            fillChar = '=';
+            infoLen = 100;
+            fillChar = '-';
             break;
     }
 
     if (title.empty()) {
         std::cout << std::string(infoLen, fillChar);
     } else {
-        std::string fillStr(std::max(5, static_cast<int>((infoLen - title.size()) / 2)), '=');
+        std::string fillStr(std::max(5, static_cast<int>((infoLen - title.size() - 1) / 2)), '=');
         std::cout << fillStr << " " << title << " " << fillStr;
     }
     std::cout << std::endl;

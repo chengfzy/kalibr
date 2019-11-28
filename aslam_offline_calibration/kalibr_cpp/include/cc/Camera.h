@@ -1,8 +1,10 @@
 #pragma once
 #include <ros/ros.h>
+#include <rosbag/view.h>
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <aslam/cameras/GridDetector.hpp>
+#include <boost/filesystem.hpp>
 #include <vector>
 #include "aslam/PinholeUndistorter.hpp"
 #include "aslam/Time.hpp"
@@ -46,6 +48,11 @@ class Camera {
     sm::kinematics::Transformation getResultTransformationImuToCam();
 
     double getResultTimeShift();
+
+  private:
+    // detect observation(corners) from ros bag
+    void detectObservations(rosbag::View& view, const AprilTargetParameters& targetParams,
+                            const boost::filesystem::path& obsPath);
 
   public:
     // type define

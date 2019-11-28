@@ -261,7 +261,7 @@ SolutionReturnValue Optimizer2::optimize() {
     }
 
     // print out stop condition
-    cout << "====================== Optimization Stop ======================" << endl;
+    printInfo("Optimization Stop", DebugInfoType::Paragraph, false);
     cout << "srv.iterations = " << srv.iterations << " < _options.maxIterations = " << _options.maxIterations
          << ", srv.failedIterations = " << srv.failedIterations
          << " < _options.maxIterations = " << _options.maxIterations << endl;

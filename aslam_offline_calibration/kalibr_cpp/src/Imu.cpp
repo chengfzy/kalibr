@@ -90,7 +90,7 @@ void Imu::addAccelerometerErrorTerms(calibration::OptimizationProblem& problem,
                                      const boost::shared_ptr<splines::BSplinePoseDesignVariable>& poseDesignVariable,
                                      const backend::EuclideanExpression& gravity, const double& sigma,
                                      const double& accNoiseScale) {
-    cout << Section("Add Accelerometer Error Terms");
+    cout << Paragraph("Add Accelerometer Error Terms");
     double weight = 1.0 / accNoiseScale;
 
     // M estimator
@@ -131,7 +131,7 @@ void Imu::addAccelerometerErrorTerms(calibration::OptimizationProblem& problem,
 void Imu::addGyroscopeErrorTerms(calibration::OptimizationProblem& problem,
                                  const boost::shared_ptr<splines::BSplinePoseDesignVariable>& poseDesignVariable,
                                  const double& sigma, const double& gyroNoiseScale) {
-    cout << Section("Add Gyroscope Error Terms");
+    cout << Paragraph("Add Gyroscope Error Terms");
     double weight = 1.0 / gyroNoiseScale;
 
     // M estimator
@@ -165,7 +165,7 @@ void Imu::addGyroscopeErrorTerms(calibration::OptimizationProblem& problem,
 }
 
 void Imu::addBiasMotionTerms(aslam::calibration::OptimizationProblem& problem) {
-    cout << Section("Add IMU Bias Motion Terms");
+    cout << Paragraph("Add IMU Bias Motion Terms");
     Matrix3d gyroW = Matrix3d::Identity() / (params_.gyroRandomWalk * params_.gyroRandomWalk);
     auto gyroBiasMotionError = boost::make_shared<BSplineMotionError<splines::EuclideanBSplineDesignVariable>>(
         gyroBiasDesignVar.get(), gyroW, 1);

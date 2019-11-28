@@ -23,10 +23,10 @@ inline bool defaultBreakLine(HeadingType type) { return type != HeadingType::Par
 
 /**
  * @brief Heading to print or show some formatted text
- * @tparam Type     Heading type
- * @tparam ParLen   Print length for paragraph type, and the length of section and subsection will be 1.5 * ParLen
+ * @tparam Type Heading type
+ * @tparam Len  Print length for heading type
  */
-template <HeadingType Type = HeadingType::Section, unsigned short ParLen = 80>
+template <HeadingType Type = HeadingType::Section, unsigned short Len = 100>
 class Heading {
   public:
     /**

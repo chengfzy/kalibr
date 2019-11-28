@@ -1,11 +1,14 @@
 #pragma once
 #include <ros/ros.h>
+#include <rosbag/view.h>
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <aslam/cameras/GridDetector.hpp>
+#include <boost/filesystem.hpp>
 #include <vector>
 #include "aslam/PinholeUndistorter.hpp"
 #include "aslam/Time.hpp"
+#include "aslam/backend/CameraDesignVariable.hpp"
 #include "aslam/backend/Scalar.hpp"
 #include "aslam/backend/SimpleReprojectionError.hpp"
 #include "aslam/cameras.hpp"
@@ -48,9 +51,15 @@ class RollingShutterCamera {
 
     double getResultTimeShift();
 
+  private:
+    // detect observation(corners) from ros bag
+    void detectObservations(rosbag::View& view, const AprilTargetParameters& targetParams,
+                            const boost::filesystem::path& obsPath);
+
   public:
     // type define
     using CameraGeometry = aslam::cameras::DistortedPinholeRsCameraGeometry;
+    using CameraDesignVariable = aslam::backend::CameraDesignVariable<CameraGeometry>;
     using Frame = aslam::Frame<CameraGeometry>;
     using KeyPoint = aslam::Keypoint<2>;
     using ReprojectionError = aslam::backend::SimpleReprojectionError<Frame>;
@@ -64,7 +73,6 @@ class RollingShutterCamera {
     Eigen::Vector3d gravity = Eigen::Vector3d(9.80655, 0., 0.);                   // gravity
 
     CameraGeometry geometry;                                                     // camera geometry
-    aslam::cameras::GridDetector detector;                                       // grid detector
     std::vector<aslam::cameras::GridCalibrationTargetObservation> observations;  // observations
 
     boost::shared_ptr<cc::TransformationDesignVariable> TcbDesignVar;      // extrinsic TCB design variable

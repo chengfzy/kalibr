@@ -95,47 +95,64 @@ void RollingShutterCameraCalibrator::extractObservations() {
     View view(bag, TopicQuery(cameraParams.topic), ros::Time(startTime), ros::Time(endTime));
     cout << format("bag message size = {}, t = [{}, {}]", view.size(), view.getBeginTime(), view.getEndTime()) << endl;
 
-    // setup target detector
-    cameras::GridCalibrationTargetAprilgrid::AprilgridOptions gridOptions;
-    gridOptions.showExtractionVideo = false;
-    gridOptions.minTagsForValidObs = max(targetParams.rows, targetParams.cols) + 1;
-    auto grid = boost::make_shared<aslam::cameras::GridCalibrationTargetAprilgrid>(
-        targetParams.rows, targetParams.cols, targetParams.size, targetParams.spacing, gridOptions);
-    cameras::GridDetector::GridDetectorOptions detectorOptions;
-    detectorOptions.imageStepping = false;
-    detectorOptions.plotCornerReprojection = false;
-    detectorOptions.filterCornerOutliers = true;
-    detector = cameras::GridDetector(cameras::CameraGeometryBase::Ptr(&cameraGeometry, sm::null_deleter()), grid,
-                                     detectorOptions);
+    // check observations data is in folder, if is, then load observations from folder, otherwise detect
+    // observations(corners) from rosbag image
+    boost::filesystem::path dataPath(bagFile);
+    boost::filesystem::path obsPath = dataPath.parent_path() / "observations.xml";
+    if (boost::filesystem::exists(obsPath)) {
+        // load observations(corners) from folder
+        cout << format("load observations from file \"{}\"", obsPath.string()) << endl;
+        observations.clear();
+        sm::boost_serialization::load_xml(observations, obsPath);
+    } else {
+        // detect observations(corners) from rosbag image
 
-    // extract corners from data set
-    size_t index{0};
-    cout << format("\tExtract corners for image {}/{}", index, view.size()) << flush;
-    for (auto it = view.begin(); it != view.end(); ++it) {
-        sensor_msgs::Image::ConstPtr v = it->instantiate<sensor_msgs::Image>();
-        if (v) {
-            cout << format("\r\tExtract corners for image {}/{}", index, view.size()) << flush;
-            ++index;
-            Time time(v->header.stamp.sec, v->header.stamp.nsec);
-            cv_bridge::CvImageConstPtr cvPtr = cv_bridge::toCvShare(v, v->encoding);
-            cameras::GridCalibrationTargetObservation obs;
-            if (detector.findTargetNoTransformation(cvPtr->image, time, obs)) {
+        // setup target detector
+        cameras::GridCalibrationTargetAprilgrid::AprilgridOptions gridOptions;
+        gridOptions.showExtractionVideo = false;
+        gridOptions.minTagsForValidObs = max(targetParams.rows, targetParams.cols) + 1;
+        auto grid = boost::make_shared<aslam::cameras::GridCalibrationTargetAprilgrid>(
+            targetParams.rows, targetParams.cols, targetParams.size, targetParams.spacing, gridOptions);
+        cameras::GridDetector::GridDetectorOptions detectorOptions;
+        detectorOptions.imageStepping = false;
+        detectorOptions.plotCornerReprojection = false;
+        detectorOptions.filterCornerOutliers = true;
+        detector = cameras::GridDetector(cameras::CameraGeometryBase::Ptr(&cameraGeometry, sm::null_deleter()), grid,
+                                         detectorOptions);
+
+        // extract corners from data set
+        size_t index{0};
+        cout << format("\tExtract corners for image {}/{}", index, view.size()) << flush;
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            sensor_msgs::Image::ConstPtr v = it->instantiate<sensor_msgs::Image>();
+            if (v) {
+                cout << format("\r\tExtract corners for image {}/{}", index, view.size()) << flush;
+                ++index;
+                Time time(v->header.stamp.sec, v->header.stamp.nsec);
+                cv_bridge::CvImageConstPtr cvPtr = cv_bridge::toCvShare(v, v->encoding);
+                cameras::GridCalibrationTargetObservation obs;
+                if (detector.findTargetNoTransformation(cvPtr->image, time, obs)) {
 #if defined(DebugTest) && false
-                cout << endl;
-                cout << format("time = {}, {}", obs.time().sec, obs.time().nsec) << endl;
-                // cout << format("obs.points = \n{}", obs.points()) << endl;
-                cout << format("obs.T_t_c().T() = \n{}", obs.T_t_c().T()) << endl;
+                    cout << endl;
+                    cout << format("time = {}, {}", obs.time().sec, obs.time().nsec) << endl;
+                    // cout << format("obs.points = \n{}", obs.points()) << endl;
+                    cout << format("obs.T_t_c().T() = \n{}", obs.T_t_c().T()) << endl;
 #endif
 
-                // clear images
-                obs.clearImage();
+                    // clear images
+                    obs.clearImage();
 
-                observations.emplace_back(obs);
+                    observations.emplace_back(obs);
+                }
             }
         }
+        cout << endl;
+        cout << format("Extracted corners for {}/{} images", observations.size(), view.size()) << endl;
+
+        // save observations to file
+        cout << format("serialize observations to file \"{}\"", obsPath.string()) << endl;
+        sm::boost_serialization::save_xml(observations, obsPath);
     }
-    cout << endl;
-    cout << format("Extracted corners for {}/{} images", observations.size(), view.size()) << endl;
 }
 
 // init intrinsics

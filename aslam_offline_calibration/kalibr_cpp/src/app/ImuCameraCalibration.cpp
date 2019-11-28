@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
     cout << Section("Load and Set Parameters");
     // ROS
     // double startTime{1568798143.76}, endTime{1568798153.76};
-    double startTime{1568797000.69}, endTime{1568798317.18};
+    // double startTime{1568797000.69}, endTime{1568798317.18};
     // IMU parameters
     cout << Paragraph("IMU Parameters");
     ImuParameters imuParameters;
@@ -51,13 +51,13 @@ int main(int argc, char* argv[]) {
     cameraParameters.distortModel = "radtan";
     cameraParameters.d = Vector4d(-0.312098601430490, 0.0928470270344407, -1.93958495467811e-05, -0.000132104569851275);
     cameraParameters.resolution = Vector2i(1280, 720);
-    cameraParameters.lineDelay = 3.65e-5;
+    cameraParameters.lineDelay = 3.66e-5;
     cout << cameraParameters << endl;
 
     // init
     cout << Section("Initialization");
-    Imu imu(FLAGS_bagFile, imuParameters, ros::Time(startTime), ros::Time(endTime));
-    Camera camera(FLAGS_bagFile, cameraParameters, targetParameters, ros::Time(startTime), ros::Time(endTime));
+    Imu imu(FLAGS_bagFile, imuParameters);
+    Camera camera(FLAGS_bagFile, cameraParameters, targetParameters);
     ImuCameraCalibrator calibrator(camera, imu);
     calibrator.buildProblem();
 
