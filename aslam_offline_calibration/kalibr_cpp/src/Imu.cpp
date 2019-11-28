@@ -125,7 +125,8 @@ void Imu::addAccelerometerErrorTerms(calibration::OptimizationProblem& problem,
     }
 
     cout << format("\tAdd {} of {} accelerometer error terms (skipped {} out of bounds measurements)",
-                   data.size() - skipedNum, data.size(), skipedNum);
+                   data.size() - skipedNum, data.size(), skipedNum)
+         << endl;
 }
 
 void Imu::addGyroscopeErrorTerms(calibration::OptimizationProblem& problem,
@@ -161,7 +162,8 @@ void Imu::addGyroscopeErrorTerms(calibration::OptimizationProblem& problem,
     }
 
     cout << format("\tAdd {} of {} gyroscope error terms (skipped {} out of bounds measurements)",
-                   data.size() - skipedNum, data.size(), skipedNum);
+                   data.size() - skipedNum, data.size(), skipedNum)
+         << endl;
 }
 
 void Imu::addBiasMotionTerms(aslam::calibration::OptimizationProblem& problem) {

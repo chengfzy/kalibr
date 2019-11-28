@@ -352,7 +352,7 @@ void Camera::addErrorTerms(aslam::calibration::OptimizationProblem& problem,
         }
     }
 
-    cout << format("\tAdd {} camera errors terms", observations.size());
+    cout << format("\tAdd {} camera errors terms", observations.size()) << endl;
 }
 
 sm::kinematics::Transformation Camera::getResultTransformationImuToCam() {

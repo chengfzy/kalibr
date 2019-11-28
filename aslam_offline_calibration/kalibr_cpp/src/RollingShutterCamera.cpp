@@ -358,7 +358,7 @@ void RollingShutterCamera::addErrorTerms(
         }
     }
 
-    cout << format("\tAdd {} camera errors terms", observations.size());
+    cout << format("\tAdd {} camera errors terms", observations.size()) << endl;
 }
 
 sm::kinematics::Transformation RollingShutterCamera::getResultTransformationImuToCam() {

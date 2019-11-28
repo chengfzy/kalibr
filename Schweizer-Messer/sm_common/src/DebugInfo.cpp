@@ -22,7 +22,7 @@ void printInfo(const std::string& title, DebugInfoType type, bool breakLine) {
             fillChar = '*';
             break;
         case DebugInfoType::Paragraph:
-            infoLen = 100;
+            infoLen = 67;
             fillChar = '-';
             break;
     }
@@ -30,7 +30,7 @@ void printInfo(const std::string& title, DebugInfoType type, bool breakLine) {
     if (title.empty()) {
         std::cout << std::string(infoLen, fillChar);
     } else {
-        std::string fillStr(std::max(5, static_cast<int>((infoLen - title.size() - 1) / 2)), '=');
+        std::string fillStr(std::max(5, static_cast<int>((infoLen - title.size() - 1) / 2)), fillChar);
         std::cout << fillStr << " " << title << " " << fillStr;
     }
     std::cout << std::endl;
