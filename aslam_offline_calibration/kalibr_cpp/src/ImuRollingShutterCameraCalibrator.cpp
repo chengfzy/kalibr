@@ -41,7 +41,9 @@ void ImuRollingShutterCameraCalibrator::buildProblem() {
 
     // init optimization problem
     // initialize a pose spline using the camera poses in the cam chain
-    bsplines::BSplinePose poseSpline = camera.initPoseSplineFromCamera(options.splineOrder, options.timeOffsetPadding);
+    cout << SubSection("Initialize Pose B-Spline from Camera");
+    bsplines::BSplinePose poseSpline =
+        camera.initPoseSplineFromCamera(options.splineOrder, options.poseKnotsPerSecond, options.timeOffsetPadding);
 
     // initialize bias spines for IMU
     imu.initBiasSpline(poseSpline, options.splineOrder, options.biasKnotsPerSecond);

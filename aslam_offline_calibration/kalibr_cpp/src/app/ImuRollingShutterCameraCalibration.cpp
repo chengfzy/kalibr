@@ -10,6 +10,7 @@ using namespace fmt;
 using namespace cc;
 
 DEFINE_string(bagFile, "../data/data.bag", "bag file");
+DEFINE_int32(poseKnotsPerSecond, 100, "B-Spline pose knots number per second");
 
 int main(int argc, char* argv[]) {
     google::ParseCommandLineFlags(&argc, &argv, true);
@@ -17,6 +18,8 @@ int main(int argc, char* argv[]) {
 
     // print heading
     cout << Section("", false) << Section("IMU Rolling Shutter Camera Calibration", false) << Section("", false);
+    cout << format("bag file: \"{}\"", FLAGS_bagFile) << endl;
+    cout << format("poseKnotsPerSecond : {}", FLAGS_poseKnotsPerSecond) << endl;
 
     // load and set parameters
     cout << Section("Load and Set Parameters");
@@ -61,9 +64,11 @@ int main(int argc, char* argv[]) {
     RollingShutterCamera camera(FLAGS_bagFile, cameraParameters, targetParameters);
     // calibrator
     ImuRollingShutterCameraCalibrator::Options options;
+    options.poseKnotsPerSecond = FLAGS_poseKnotsPerSecond;
     options.timeOffsetConstantSparsityPattern = 0.08;
     options.timeOffsetPadding = 0.5;
     ImuRollingShutterCameraCalibrator calibrator(camera, imu);
+    calibrator.options = options;
     calibrator.buildProblem();
 
     cout << Section("Before Optimization");

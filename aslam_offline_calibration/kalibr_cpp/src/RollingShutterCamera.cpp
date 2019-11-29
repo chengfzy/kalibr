@@ -68,7 +68,8 @@ RollingShutterCamera::RollingShutterCamera(const string& bagFile, const CameraPa
 }
 
 // initialize a pose spine using camera poses(pose spine = T_TB)
-bsplines::BSplinePose RollingShutterCamera::initPoseSplineFromCamera(int splineOrder, const double& timeOffsetPadding) {
+bsplines::BSplinePose RollingShutterCamera::initPoseSplineFromCamera(int splineOrder, int poseKnotsPerSecond,
+                                                                     const double& timeOffsetPadding) {
     // FIXME, the extrinsic is T_BC, not T_CB, even though they are the same during initialization
     Matrix4d Tcb = extrinsic.T();
     bsplines::BSplinePose pose(splineOrder, boost::make_shared<sm::kinematics::RotationVector>());
@@ -135,10 +136,14 @@ bsplines::BSplinePose RollingShutterCamera::initPoseSplineFromCamera(int splineO
     }
 
     double seconds = times[kN + 1] - times[0];
-    int knots = round(seconds * cameraParams.frameRate / 3);
+    int knots = round(seconds * poseKnotsPerSecond);
     cout << format("Initializing a pose spline with {} knots ({} knots per second over {} seconds)", knots,
-                   knots / seconds, seconds)
+                   poseKnotsPerSecond, seconds)
          << endl;
+    // int knots = round(seconds * cameraParams.frameRate / 3);
+    // cout << format("Initializing a pose spline with {} knots ({} knots per second over {} seconds)", knots,
+    //                knots / seconds, seconds)
+    //      << endl;
 
     // note by CC: seems like the curve fitting. The first parameters is the timestamp, the second is the pose(position
     // + rotation, size = 6), third parameters is the knots number, and the last one don't understand yet
@@ -148,7 +153,7 @@ bsplines::BSplinePose RollingShutterCamera::initPoseSplineFromCamera(int splineO
 
 void RollingShutterCamera::findTimeShiftCameraImuPrior(const Imu& imu) {
     cout << SubSection("Estimating time shift camera to IMU");
-    bsplines::BSplinePose poseSpline = initPoseSplineFromCamera(6, 0);
+    bsplines::BSplinePose poseSpline = initPoseSplineFromCamera(6, 100, 0);
 
     // predict time shift prior
     vector<double> t;
@@ -206,7 +211,7 @@ void RollingShutterCamera::findOrientationPriorCameraToImu(Imu& imu) {
     problem->addDesignVariable(gyroBias);
 
     // initialize a pose spline using the camera poses
-    bsplines::BSplinePose poseSpline = initPoseSplineFromCamera(6, 0.0);
+    bsplines::BSplinePose poseSpline = initPoseSplineFromCamera(6, 100, 0.0);
     cout << format("pose spline time = [{:.10f}, {:.10f}]", poseSpline.tMin(), poseSpline.tMax()) << endl;
     for (auto& m : imu.data) {
         double tk = m.stamp.toSec();

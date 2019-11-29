@@ -44,10 +44,11 @@ class ImuRollingShutterCameraCalibrator {
 
     void printResult(bool withCov = false);
 
+  public:
+    Options options;  // options
   private:
     RollingShutterCamera camera;  // camera
     Imu imu;                      // IMU
-    Options options;              // options
 
     aslam::calibration::OptimizationProblem problem;                             // problem
     boost::shared_ptr<aslam::splines::BSplinePoseDesignVariable> poseDesignVar;  // pose design variable
