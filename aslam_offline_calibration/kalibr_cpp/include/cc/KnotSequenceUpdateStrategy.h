@@ -37,17 +37,18 @@ class KnotSequenceUpdateStrategy {
                                            int splineOrder);
 
   private:
-    // extract the timestamps and reprojection error values
+    // evaluate the timestamp and reprojection error values from the input reprojection error terms, and sort it by
+    // timestamp
     void getErrorAndTimestamp(
         const std::vector<boost::shared_ptr<AdaptiveCovarianceReprojectionError>>& reprojectionErrors,
         std::vector<double>& times, std::vector<double>& errors);
 
-    // get the total error per segment and number of error terms per segment
+    // get the errors and errors term numbers in each pose spline segment
     void getErrorPerSegment(const std::vector<double>& times, const std::vector<double>& errors,
                             const std::vector<double>& knots, std::vector<double>& errorPerSegment,
                             std::vector<double>& errorTermsPerSegment);
 
-    // get the knot section [n0, n1) the time locate in
+    // get the knot section [n0, n1) the timed locate in
     std::pair<int, int> timeToKnotSection(const double& t, const std::vector<double>& knots,
                                           const std::pair<int, int>& segment);
 
@@ -62,8 +63,9 @@ class KnotSequenceUpdateStrategy {
     bool isSegmentDisabled(const double& t);
 
   private:
-    double frameRate_;          // frame rate
-    double maxKnotsPerSecond_;  // max knot per second
+    double frameRate_;  // frame rate
+    // max knot per second. NOTE by CC: the true meaning in code is the min time interval between two adjacent knots
+    double maxKnotsPerSecond_;
 
     std::vector<double> previousKnots_;                            // previous knots sequence
     std::vector<double> previousErrors_;                           // previous error terms

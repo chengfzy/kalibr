@@ -292,7 +292,7 @@ void RollingShutterCameraCalibrator::buildProblem(const bsplines::BSplinePose& p
     problem->addDesignVariable(cameraDeignVariable->distortionDesignVariable(), kCalibrationGroupId);
     cameraDeignVariable->setActive(false, false, true);
 
-    // regularization term(motion prior
+    // regularization term(motion prior)
     auto motionError = boost::make_shared<backend::BSplineMotionError<splines::BSplinePoseDesignVariable>>(
         poseDesignVariable.get(), W);
     problem->addErrorTerm(motionError);

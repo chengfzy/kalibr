@@ -1,6 +1,6 @@
 #include "cc/KnotSequenceUpdateStrategy.h"
 #include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <glog/logging.h>
 #include "cc/Heading.hpp"
 
 using namespace std;
@@ -19,12 +19,14 @@ KnotSequenceUpdateStrategy::KnotSequenceUpdateStrategy(const double& frameRate)
 bool KnotSequenceUpdateStrategy::generateKnots(
     const vector<boost::shared_ptr<AdaptiveCovarianceReprojectionError>>& reprojectionErrors,
     const bsplines::BSplinePose& poseSpline, vector<double>& updatedKnots) {
+    // evaluate the timestamp and reprojection error values from the input reprojection error terms
     vector<double> times, errors;
     getErrorAndTimestamp(reprojectionErrors, times, errors);
 
     // take a copy of the old knots
     vector<double> knots = poseSpline.knots();
 
+    // get the errors and errors term numbers in each pose spline segment
     vector<double> errorPerSegment;
     vector<double> errorTermsPerSegment;
     getErrorPerSegment(times, errors, knots, errorPerSegment, errorTermsPerSegment);
@@ -39,12 +41,13 @@ bool KnotSequenceUpdateStrategy::generateKnots(
     // generate new knots
     updatedKnots.clear();
     for (size_t i = 0; i < errorPerSegmentFiltered.size(); ++i) {
+        // FIXME by CC: expected error should be 2N because the dimension of reprojection error is 2. see paper
         double expectedNormalError = errorTermsPerSegmentFiltered[i];
         if (errorPerSegmentFiltered[i] > expectedNormalError && i < knots.size() - 1) {
             double newKnot = (knots[i] + knots[i + 1]) / 2.0;
             double deltaT = newKnot - knots[i];
             if (deltaT + kEpsilon <= maxKnotsPerSecond_) {
-                // max number of knots per second hit: do not split
+                // reach the max number of knots per second: do not split
                 updatedKnots.emplace_back(knots[i]);
             } else if (!disabledTimeSegments_.empty() && isSegmentDisabled(newKnot)) {
                 // segment is disabled: don't split
@@ -113,7 +116,8 @@ bsplines::BSplinePose KnotSequenceUpdateStrategy::getUpdatedSpline(const bspline
     return newPoseSpline;
 }
 
-// extract the timestamps and reprojection error values
+// evaluate the timestamp and reprojection error values from the input reprojection error terms, and sort it by
+// timestamp
 void KnotSequenceUpdateStrategy::getErrorAndTimestamp(
     const vector<boost::shared_ptr<AdaptiveCovarianceReprojectionError>>& reprojectionErrors, vector<double>& times,
     vector<double>& errors) {
@@ -134,21 +138,22 @@ void KnotSequenceUpdateStrategy::getErrorAndTimestamp(
     transform(index.begin(), index.end(), errors.begin(), [&](const size_t& i) { return rawErrors[i]; });
 }
 
-// get the total error per segment and number of error terms per segment
+// get the errors and errors term numbers in each pose spline segment
 void KnotSequenceUpdateStrategy::getErrorPerSegment(const std::vector<double>& times, const std::vector<double>& errors,
                                                     const std::vector<double>& knots, vector<double>& errorPerSegment,
                                                     vector<double>& errorTermsPerSegment) {
-    errorPerSegment.resize(knots.size(), 0);
-    errorTermsPerSegment.resize(knots.size(), 0);
+    errorPerSegment.resize(knots.size(), 0);       // error in each spline segment
+    errorTermsPerSegment.resize(knots.size(), 0);  // error term numbers in each spline segment
     pair<int, int> segment(-1, -1);
     for (size_t n = 0; n < times.size(); ++n) {
         segment = timeToKnotSection(times[n], knots, segment);
+        CHECK(segment.first != -1) << format("the found segment = ({}, {}) is error", segment.first, segment.second);
         errorPerSegment[segment.first] += errors[n];
         errorTermsPerSegment[segment.first] += 1;
     }
 }
 
-// get the knot section [n0, n1) the time locate in
+// get the knot section [n0, n1) the time located in
 std::pair<int, int> KnotSequenceUpdateStrategy::timeToKnotSection(const double& t, const std::vector<double>& knots,
                                                                   const std::pair<int, int>& segment) {
     int n = segment.first;
@@ -173,19 +178,22 @@ void KnotSequenceUpdateStrategy::removeSegmentWithoutImprovement(const std::vect
     // adding errors
     if (!previousKnots_.empty() && !previousErrors_.empty()) {
         vector<pair<double, double>> timeSegments;
-        vector<double> errorPerSegmentOld;
-        errorPerSegmentOld.resize(previousKnots_.size(), 0);
+        vector<double> errorPerSegment;  // error in each segment in current solution
+        errorPerSegment.resize(previousKnots_.size(), 0);
         pair<int, int> segment(-1, -1);
         // analyze each section of the knot sequence
         for (size_t i = 0; i < times.size(); ++i) {
             segment = timeToKnotSection(times[i], previousKnots_, segment);
-
-            errorPerSegmentOld[segment.first] += errors[i];
-            timeSegments.push_back(make_pair(previousKnots_[segment.first], previousKnots_[segment.second]));
+            CHECK(segment.first != -1) << format("the found segment = ({}, {}) is error", segment.first,
+                                                 segment.second);
+            errorPerSegment[segment.first] += errors[i];
+            timeSegments.emplace_back(make_pair(previousKnots_[segment.first], previousKnots_[segment.second]));
         }
+
+        // compare to previous errors, if we don't observe a significant drop, stop adding errors
         for (size_t i = 0; i < previousErrors_.size(); ++i) {
-            if (previousErrors_[i] * 0.8 < errorPerSegmentOld[i]) {
-                disabledTimeSegments_.push_back(timeSegments[i]);
+            if (previousErrors_[i] * 0.8 < errorPerSegment[i]) {
+                disabledTimeSegments_.emplace_back(timeSegments[i]);
             }
         }
     }
@@ -194,10 +202,12 @@ void KnotSequenceUpdateStrategy::removeSegmentWithoutImprovement(const std::vect
 // remove segment without observations, return filtered knots
 vector<double> KnotSequenceUpdateStrategy::removeSegmentWithoutObservations(
     const std::vector<double>& knots, const std::vector<double>& errorPerSegment) {
-    vector<double> filteredKnots;
-    double pError{0};
+    vector<double> filteredKnots;  // after removed errors
+
+    // remove segment with consecutive 0-valued errors
+    double pError{0};  // previous error
     for (size_t i = 0; i < errorPerSegment.size(); ++i) {
-        // this should depend on the spline order
+        // this should depend on the spline order, FIXME by CC: seems the value should be 4 instead of 6?
         if (pError == 0 && errorPerSegment[i] == 0 && 6 < i && i < errorPerSegment.size() - 6) {
             // add the segment between the previous and the next knot to the blacklist
             disabledTimeSegments_.emplace_back(knots[i - 1], knots[i + 1]);
