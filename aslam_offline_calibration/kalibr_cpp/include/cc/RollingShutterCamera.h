@@ -3,16 +3,17 @@
 #include <rosbag/view.h>
 #include <Eigen/Core>
 #include <Eigen/Dense>
-#include <aslam/cameras/GridDetector.hpp>
 #include <boost/filesystem.hpp>
 #include <vector>
 #include "aslam/PinholeUndistorter.hpp"
 #include "aslam/Time.hpp"
 #include "aslam/backend/CameraDesignVariable.hpp"
+#include "aslam/backend/CovarianceReprojectionError.hpp"
 #include "aslam/backend/Scalar.hpp"
 #include "aslam/backend/SimpleReprojectionError.hpp"
 #include "aslam/cameras.hpp"
 #include "aslam/cameras/GridCalibrationTargetAprilgrid.hpp"
+#include "aslam/cameras/GridDetector.hpp"
 #include "aslam/splines/BSplinePoseDesignVariable.hpp"
 #include "bsplines/BSplinePose.hpp"
 #include "cc/AprilTargetParameters.h"
@@ -63,6 +64,8 @@ class RollingShutterCamera {
     using Frame = aslam::Frame<CameraGeometry>;
     using KeyPoint = aslam::Keypoint<2>;
     using ReprojectionError = aslam::backend::SimpleReprojectionError<Frame>;
+    using AdaptiveCovarianceReprojectionError =
+        aslam::backend::CovarianceReprojectionError<aslam::Frame<CameraGeometry>>;
 
     CameraParameters cameraParams;   // camera parameters
     double cornerUncertainty = 1.0;  // corner uncertainty
@@ -75,9 +78,10 @@ class RollingShutterCamera {
     CameraGeometry geometry;                                                     // camera geometry
     std::vector<aslam::cameras::GridCalibrationTargetObservation> observations;  // observations
 
-    boost::shared_ptr<cc::TransformationDesignVariable> TcbDesignVar;      // extrinsic TCB design variable
-    boost::shared_ptr<aslam::backend::Scalar> cameraTimeToImuDesignVar;    // time delay design variable
-    std::vector<boost::shared_ptr<ReprojectionError>> reprojectionErrors;  // reprojection error
+    boost::shared_ptr<cc::TransformationDesignVariable> TcbDesignVar;    // extrinsic TCB design variable
+    boost::shared_ptr<aslam::backend::Scalar> cameraTimeToImuDesignVar;  // time delay design variable
+    std::vector<boost::shared_ptr<Frame>> frames;                        // frames
+    std::vector<boost::shared_ptr<AdaptiveCovarianceReprojectionError>> reprojectionErrors;  // reprojection error
 };
 
 }  // namespace cc

@@ -296,16 +296,18 @@ void RollingShutterCamera::addErrorTerms(
     aslam::backend::TransformationExpression& Tcb, int blakeZisserCam, const double& timeOffsetPadding) {
     cout << Paragraph("Adding Camera Error Terms");
 
+    // add camera design variable
     CameraDesignVariable cameraDeignVariable(boost::shared_ptr<CameraGeometry>(&geometry, sm::null_deleter()));
+    problem.addDesignVariable(cameraDeignVariable.shutterDesignVariable(), kCalibrationGroupId);
+    problem.addDesignVariable(cameraDeignVariable.projectionDesignVariable(), kCalibrationGroupId);
+    problem.addDesignVariable(cameraDeignVariable.distortionDesignVariable(), kCalibrationGroupId);
 
     for (auto& v : observations) {
-        // build a transformation expression for the time
+        // as we are applying an initial time shift outside the optimization, so we need to make sure that we don't add
+        // data outside the spline definition
         backend::ScalarExpression frameTime =
             cameraTimeToImuDesignVar->toExpression() + v.time().toSec() + timeshiftCameraToImuPrior;
         double frameTimeScalar = frameTime.toScalar();
-
-        // as we are applying an initial time shift outside the optimization, so we need to make sure that we don't add
-        // data outside the spline definition
         if (frameTimeScalar <= poseDesignVariable->spline().tMin() ||
             frameTimeScalar >= poseDesignVariable->spline().tMax()) {
             continue;
@@ -318,21 +320,12 @@ void RollingShutterCamera::addErrorTerms(
         v.getCornersTargetFrame(targetCorners);
 
         // setup a frame to handle the distortion
-        Frame frame;
-        frame.setGeometry(boost::shared_ptr<CameraGeometry>(&geometry, sm::null_deleter()));
+        auto frame = boost::make_shared<Frame>();
+        frame->setGeometry(boost::shared_ptr<CameraGeometry>(&geometry, sm::null_deleter()));
+        frame->setTime(v.time());
+        frames.emplace_back(frame);
 
-        // corner uncertainty
-        Matrix2d R = Matrix2d::Identity() * cornerUncertainty * cornerUncertainty;
-        Matrix2d invR = R.inverse();
-
-        // add all image points
-        for (auto& p : imageCorners) {
-            KeyPoint k;
-            k.setMeasurement(Vector2d(p.x, p.y));
-            k.setInverseMeasurementCovariance(invR);
-            frame.addKeypoint(k);
-        }
-
+        // add error terms fro each observed corner
         for (size_t n = 0; n < imageCorners.size(); ++n) {
             // keypoint time offset by line delay
             Vector2d keypoint(imageCorners[n].x, imageCorners[n].y);
@@ -345,20 +338,29 @@ void RollingShutterCamera::addErrorTerms(
             // calibration target from world frame to camera frame
             TransformationExpression Tcw = Tcb * Tbw;
 
-            // add target points
+            // transform target point to camera frame
             Vector4d targetPoint(targetCorners[n].x, targetCorners[n].y, targetCorners[n].z, 1);
             // HomogeneousExpression TransformationExpression::operator*(const HomogeneousExpression& rhs) const
             HomogeneousExpression p = Tcw * HomogeneousExpression(targetPoint);
-            auto error = boost::make_shared<ReprojectionError>(&frame, n, p);
 
+            // add key point frame
+            size_t keypointId = frame->numKeypoints();
+            KeyPoint k;
+            k.setMeasurement(keypoint);
+            k.setInverseMeasurementCovariance(Matrix2d::Identity() * cornerUncertainty * cornerUncertainty);
+            frame->addKeypoint(k);
+
+            // create reprojection error
+            auto error = boost::make_shared<AdaptiveCovarianceReprojectionError>(
+                frame.get(), keypointId, p, cameraDeignVariable, poseDesignVariable.get());
             // add blake-zisserman M-estimator
             if (blakeZisserCam > 0) {
                 auto estimator = boost::make_shared<BlakeZissermanMEstimator>(blakeZisserCam);
                 error->setMEstimatorPolicy(estimator);
             }
 
-            problem.addErrorTerm(error);
             reprojectionErrors.emplace_back(error);
+            problem.addErrorTerm(error);
         }
     }
 
