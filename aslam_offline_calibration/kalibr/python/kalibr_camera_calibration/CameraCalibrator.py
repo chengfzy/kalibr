@@ -30,6 +30,7 @@ class OptimizationDiverged(Exception):
 
 
 class CameraGeometry(object):
+
     def __init__(self, cameraModel, targetConfig, dataset, geometry=None, verbose=False):
         self.dataset = dataset
 
@@ -38,8 +39,8 @@ class CameraGeometry(object):
             self.geometry = cameraModel.geometry()
 
         if not type(self.geometry) == cameraModel.geometry:
-            raise RuntimeError("The type of geometry passed in \"%s\" does not match the model type \"%s\"" % (
-            type(geometry), type(cameraModel.geometry)))
+            raise RuntimeError("The type of geometry passed in \"%s\" does not match the model type \"%s\"" %
+                               (type(geometry), type(cameraModel.geometry)))
 
         # create the design variables
         self.dv = cameraModel.designVariable(self.geometry)
@@ -77,6 +78,7 @@ class CameraGeometry(object):
 
 
 class TargetDetector(object):
+
     def __init__(self, targetConfig, cameraGeometry, showCorners=False, showReproj=False, showOneStep=False):
         self.targetConfig = targetConfig
 
@@ -93,20 +95,16 @@ class TargetDetector(object):
             options.windowWidth = 5
             options.showExtractionVideo = showCorners
 
-            self.grid = acv.GridCalibrationTargetCheckerboard(targetParams['targetRows'],
-                                                              targetParams['targetCols'],
+            self.grid = acv.GridCalibrationTargetCheckerboard(targetParams['targetRows'], targetParams['targetCols'],
                                                               targetParams['rowSpacingMeters'],
-                                                              targetParams['colSpacingMeters'],
-                                                              options)
+                                                              targetParams['colSpacingMeters'], options)
         elif targetType == 'circlegrid':
             options = acv.CirclegridOptions()
             options.showExtractionVideo = showCorners
             options.useAsymmetricCirclegrid = targetParams['asymmetricGrid']
 
-            self.grid = acv.GridCalibrationTargetCirclegrid(targetParams['targetRows'],
-                                                            targetParams['targetCols'],
-                                                            targetParams['spacingMeters'],
-                                                            options)
+            self.grid = acv.GridCalibrationTargetCirclegrid(targetParams['targetRows'], targetParams['targetCols'],
+                                                            targetParams['spacingMeters'], options)
 
         elif targetType == 'aprilgrid':
             options = acv_april.AprilgridOptions()
@@ -114,10 +112,8 @@ class TargetDetector(object):
             options.minTagsForValidObs = int(np.max([targetParams['tagRows'], targetParams['tagCols']]) + 1)
             options.showExtractionVideo = showCorners
 
-            self.grid = acv_april.GridCalibrationTargetAprilgrid(targetParams['tagRows'],
-                                                                 targetParams['tagCols'],
-                                                                 targetParams['tagSize'],
-                                                                 targetParams['tagSpacing'],
+            self.grid = acv_april.GridCalibrationTargetAprilgrid(targetParams['tagRows'], targetParams['tagCols'],
+                                                                 targetParams['tagSize'], targetParams['tagSpacing'],
                                                                  options)
         else:
             RuntimeError('Unknown calibration target type!')
@@ -131,13 +127,14 @@ class TargetDetector(object):
 
 
 class CalibrationTarget(object):
+
     def __init__(self, target, estimateLandmarks=False):
         self.target = target
         # Create design variables and expressions for all target points.
         P_t_dv = []
         P_t_ex = []
         for i in range(0, self.target.size()):
-            p_t_dv = aopt.HomogeneousPointDv(sm.toHomogeneous(self.target.point(i)));
+            p_t_dv = aopt.HomogeneousPointDv(sm.toHomogeneous(self.target.point(i)))
             p_t_dv.setActive(estimateLandmarks)
             p_t_ex = p_t_dv.toExpression()
             P_t_dv.append(p_t_dv)
@@ -150,8 +147,14 @@ class CalibrationTarget(object):
 
 
 class CalibrationTargetOptimizationProblem(ic.CalibrationOptimizationProblem):
+
     @classmethod
-    def fromTargetViewObservations(cls, cameras, target, baselines, T_tc_guess, rig_observations,
+    def fromTargetViewObservations(cls,
+                                   cameras,
+                                   target,
+                                   baselines,
+                                   T_tc_guess,
+                                   rig_observations,
                                    useBlakeZissermanMest=True):
         rval = CalibrationTargetOptimizationProblem()
 
@@ -182,7 +185,8 @@ class CalibrationTargetOptimizationProblem(ic.CalibrationOptimizationProblem):
         for camera in cameras:
             if not camera.isGeometryInitialized:
                 raise RuntimeError(
-                    'The camera geometry is not initialized. Please initialize with initGeometry() or initGeometryFromDataset()')
+                    'The camera geometry is not initialized. Please initialize with initGeometry() or initGeometryFromDataset()'
+                )
             camera.setDvActiveStatus(True, True, False)
             rval.addDesignVariable(camera.dv.distortionDesignVariable(), CALIBRATION_GROUP_ID)
             rval.addDesignVariable(camera.dv.projectionDesignVariable(), CALIBRATION_GROUP_ID)
@@ -246,17 +250,19 @@ def removeCornersFromBatch(batch, camId_cornerIdList_tuples, useBlakeZissermanMe
     assert hasCornerRemoved, "need to remove at least one corner..."
 
     # rebuild problem
-    new_problem = CalibrationTargetOptimizationProblem.fromTargetViewObservations(batch.cameras,
-                                                                                  batch.target,
-                                                                                  batch.baselines,
-                                                                                  batch.T_tc_guess,
-                                                                                  batch.rig_observations,
-                                                                                  useBlakeZissermanMest=useBlakeZissermanMest)
+    new_problem = CalibrationTargetOptimizationProblem.fromTargetViewObservations(
+        batch.cameras,
+        batch.target,
+        batch.baselines,
+        batch.T_tc_guess,
+        batch.rig_observations,
+        useBlakeZissermanMest=useBlakeZissermanMest)
 
     return new_problem
 
 
 class CameraCalibration(object):
+
     def __init__(self, cameras, baseline_guesses, estimateLandmarks=False, verbose=False, useBlakeZissermanMest=True):
         self.cameras = cameras
         self.useBlakeZissermanMest = useBlakeZissermanMest
@@ -279,10 +285,13 @@ class CameraCalibration(object):
 
     def addTargetView(self, rig_observations, T_tc_guess, force=False):
         # create the problem for this batch and try to add it
-        batch_problem = CalibrationTargetOptimizationProblem.fromTargetViewObservations(self.cameras, self.target,
-                                                                                        self.baselines, T_tc_guess,
-                                                                                        rig_observations,
-                                                                                        useBlakeZissermanMest=self.useBlakeZissermanMest)
+        batch_problem = CalibrationTargetOptimizationProblem.fromTargetViewObservations(
+            self.cameras,
+            self.target,
+            self.baselines,
+            T_tc_guess,
+            rig_observations,
+            useBlakeZissermanMest=self.useBlakeZissermanMest)
         self.estimator_return_value = self.estimator.addBatch(batch_problem, force)
 
         if self.estimator_return_value.numIterations >= self.optimizerOptions.maxIterations:
@@ -308,7 +317,7 @@ def getImageCenterRay(cself, cam_id):
     projection = geometry.projection()
     yc = np.array([projection.cu(), projection.cv()])
     vc = normalize(geometry.keypointToEuclidean(yc))
-    return vc;
+    return vc
 
 
 class pointStatistics(object):
@@ -332,8 +341,8 @@ def getPointStatistics(cself, view_id, cam_id, pidx):
     dz = np.dot(z, vc)
     if np.abs(dz - 1.0) > 1e-3:
         print(
-                    "The point statistics are only valid if the camera points down the z axis. This camera has the image center: [%f, %f, %f]" % (
-            z[0], z[1], z[2]))
+            "The point statistics are only valid if the camera points down the z axis. This camera has the image center: [%f, %f, %f]"
+            % (z[0], z[1], z[2]))
     valid, y = obs.imagePoint(pidx)
     geometry = cself.cameras[cam_id].geometry
     rerr = None
@@ -383,7 +392,7 @@ def getReprojectionErrorStatistics(all_rerrs):
         raise RuntimeError("rerrs has invalid dimension")
 
     gc.disable()  # append speed up
-    rerr_matrix = list();
+    rerr_matrix = list()
     for view_id, view_rerrs in enumerate(all_rerrs):
         if view_rerrs is not None:  # if cam sees target in this view
             for rerr in view_rerrs:
@@ -401,15 +410,15 @@ def getReprojectionErrorStatistics(all_rerrs):
 
 # return a list (views) of a list (reprojection errors) for a cam
 def getReprojectionErrors(cself, cam_id):
-    all_corners = list();
-    all_reprojections = list();
+    all_corners = list()
+    all_reprojections = list()
     all_reprojection_errs = list()
 
     gc.disable()  # append speed up
     for view_id, view in enumerate(cself.views):
         if cam_id in view.rerrs.keys():
-            view_corners = list();
-            view_reprojections = list();
+            view_corners = list()
+            view_reprojections = list()
             view_reprojection_errs = list()
             for rerr in view.rerrs[cam_id]:
                 # add if the corners was observed
@@ -544,14 +553,20 @@ def plotAllReprojectionErrors(cself, cam_id, fno=1, noShow=False, clearFigure=Tr
     pl.ylabel('error y (pix)')
 
     SM = pl.cm.ScalarMappable(pl.cm.colors.Normalize(0.0, len(cself.views)), pl.cm.jet)
-    SM.set_array(np.arange(len(cself.views)));
+    SM.set_array(np.arange(len(cself.views)))
     cb = pl.colorbar(SM)
     cb.set_label('image index')
     if not noShow:
         pl.show()
 
 
-def plotCornersAndReprojection(gridobs, reprojs, fno=1, cornerlist=None, clearFigure=True, plotImage=True, color=None,
+def plotCornersAndReprojection(gridobs,
+                               reprojs,
+                               fno=1,
+                               cornerlist=None,
+                               clearFigure=True,
+                               plotImage=True,
+                               color=None,
                                title=""):
     # create figure
     f = pl.figure(fno)
@@ -629,7 +644,10 @@ def printParameters(cself, dest=sys.stdout):
         corners, reprojs, rerrs = getReprojectionErrors(cself, cidx)
         if len(rerrs) > 0:
             me, se = getReprojectionErrorStatistics(rerrs)
-            print >> dest, "\t reprojection error: [%f, %f] +- [%f, %f]" % (me[0], me[1], se[0], se[1])
+            try:
+                print >> dest, "\t reprojection error: [%f, %f] +- [%f, %f]" % (me[0], me[1], se[0], se[1])
+            except:
+                print >> dest, "\t Failed printing the reprojection error."
         print >> dest
 
     # print baselines
@@ -685,20 +703,24 @@ def printDebugEnd(cself):
 
 
 def saveChainParametersYaml(cself, resultFile, graph):
-    cameraModels = {acvb.DistortedPinhole: 'pinhole',
-                    acvb.EquidistantPinhole: 'pinhole',
-                    acvb.FovPinhole: 'pinhole',
-                    acvb.Omni: 'omni',
-                    acvb.DistortedOmni: 'omni',
-                    acvb.ExtendedUnified: 'eucm',
-                    acvb.DoubleSphere: 'ds'}
-    distortionModels = {acvb.DistortedPinhole: 'radtan',
-                        acvb.EquidistantPinhole: 'equidistant',
-                        acvb.FovPinhole: 'fov',
-                        acvb.Omni: 'none',
-                        acvb.DistortedOmni: 'radtan',
-                        acvb.ExtendedUnified: 'none',
-                        acvb.DoubleSphere: 'none'}
+    cameraModels = {
+        acvb.DistortedPinhole: 'pinhole',
+        acvb.EquidistantPinhole: 'pinhole',
+        acvb.FovPinhole: 'pinhole',
+        acvb.Omni: 'omni',
+        acvb.DistortedOmni: 'omni',
+        acvb.ExtendedUnified: 'eucm',
+        acvb.DoubleSphere: 'ds'
+    }
+    distortionModels = {
+        acvb.DistortedPinhole: 'radtan',
+        acvb.EquidistantPinhole: 'equidistant',
+        acvb.FovPinhole: 'fov',
+        acvb.Omni: 'none',
+        acvb.DistortedOmni: 'radtan',
+        acvb.ExtendedUnified: 'none',
+        acvb.DoubleSphere: 'none'
+    }
 
     chain = cr.CameraChainParameters(resultFile, createYaml=True)
     for cam_id, cam in enumerate(cself.cameras):
@@ -779,7 +801,7 @@ def generateReport(cself, filename="report.pdf", showOnScreen=True, graph=None, 
     # plot graph
     if graph is not None:
         f = pl.figure(1001)
-        title = "Inter-camera observations graph (edge weight=#mutual obs.)";
+        title = "Inter-camera observations graph (edge weight=#mutual obs.)"
         graph.plotGraphPylab(fno=f.number, noShow=True, title=title)
         plotter.add_figure("Obs. graph", f)
         figs.append(f)
@@ -832,7 +854,7 @@ def generateReport(cself, filename="report.pdf", showOnScreen=True, graph=None, 
 
 def plotCorners(gridobs, fno=1, cornerlist=None, clearFigure=True, plotImage=True, color=None, subplot=0):
     if color is None:
-        color = [0, 1, 1, 0.3];
+        color = [0, 1, 1, 0.3]
     f = pl.figure(fno)
     if subplot > 0:
         pl.subplot(subplot)

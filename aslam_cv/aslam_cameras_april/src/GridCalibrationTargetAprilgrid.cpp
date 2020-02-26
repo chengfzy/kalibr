@@ -52,9 +52,8 @@ GridCalibrationTargetAprilgrid::GridCalibrationTargetAprilgrid() : _tagCodes(Apr
 /// \brief initialize the object
 void GridCalibrationTargetAprilgrid::initialize() {
     if (_options.showExtractionVideo) {
-        cv::namedWindow("Aprilgrid: Tag detection");
-        cv::namedWindow("Aprilgrid: Tag corners");
-        cvStartWindowThread();
+        cv::namedWindow("Aprilgrid: Tag detection", cv::WINDOW_NORMAL);
+        cv::namedWindow("Aprilgrid: Tag corners", cv::WINDOW_NORMAL);
     }
 
     // create the tag detector
@@ -159,8 +158,7 @@ bool GridCalibrationTargetAprilgrid::computeObservation(const cv::Mat& image, Ei
             if (detections[i].id == detections[i + 1].id) {
                 // show the duplicate tags in the image
                 cv::destroyAllWindows();
-                cv::namedWindow("Wild Apriltag detected. Hide them!");
-                cvStartWindowThread();
+                cv::namedWindow("Wild Apriltag detected. Hide them!", cv::WINDOW_NORMAL);
 
                 cv::Mat imageCopy = image.clone();
                 cv::cvtColor(imageCopy, imageCopy, CV_GRAY2RGB);
