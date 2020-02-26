@@ -67,11 +67,14 @@ class RollingShutterCamera {
     using AdaptiveCovarianceReprojectionError =
         aslam::backend::CovarianceReprojectionError<aslam::Frame<CameraGeometry>>;
 
+    int initSplineOrder = 6;       // spline order
+    int poseKnotsPerSecond = 100;  // pose knot per seconds
+
     CameraParameters cameraParams;   // camera parameters
     double cornerUncertainty = 1.0;  // corner uncertainty
     // NOTE by CC: I'm not sure the extrinsic is T_BC or T_CB, please note that kalibr using JPL conversion, just regard
     // it as what you think it is.
-    sm::kinematics::Transformation extrinsic = sm::kinematics::Transformation();  // extrinsic, T_BC set to default
+    sm::kinematics::Transformation extrinsic = sm::kinematics::Transformation();  // extrinsic, T_CB set to default
     double timeshiftCameraToImuPrior = 0;                                         // timeshift between camera and IMU
     Eigen::Vector3d gravity = Eigen::Vector3d(9.80655, 0., 0.);                   // gravity
 

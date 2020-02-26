@@ -289,7 +289,7 @@ bool GridCalibrationTargetAprilgrid::computeObservation(const cv::Mat& image, Ei
             double cornerRaw_y = tagCornersRaw.row(4 * i + j).at<float>(1);
 
             // only add point if the displacement in the subpixel refinement is below a given threshold
-            double subpix_displacement_squarred = (corner_x - cornerRaw_x) * (corner_x - cornerRaw_x) +
+            double subpix_displacement_squared = (corner_x - cornerRaw_x) * (corner_x - cornerRaw_x) +
                                                   (corner_y - cornerRaw_y) * (corner_y - cornerRaw_y);
 
             // add all points, but only set active if the point has not moved to far in the subpix refinement
@@ -306,7 +306,7 @@ bool GridCalibrationTargetAprilgrid::computeObservation(const cv::Mat& image, Ei
         }
     }
 
-    // succesful observation
+    // successful observation
     return success;
 }
 

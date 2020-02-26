@@ -153,7 +153,7 @@ bsplines::BSplinePose RollingShutterCamera::initPoseSplineFromCamera(int splineO
 
 void RollingShutterCamera::findTimeShiftCameraImuPrior(const Imu& imu) {
     cout << SubSection("Estimating time shift camera to IMU");
-    bsplines::BSplinePose poseSpline = initPoseSplineFromCamera(6, 100, 0);
+    bsplines::BSplinePose poseSpline = initPoseSplineFromCamera(initSplineOrder, poseKnotsPerSecond, 0);
 
     // predict time shift prior
     vector<double> t;
@@ -201,9 +201,9 @@ void RollingShutterCamera::findOrientationPriorCameraToImu(Imu& imu) {
     boost::shared_ptr<backend::OptimizationProblem> problem = boost::make_shared<backend::OptimizationProblem>();
 
     // add rotation R_BC as design variable
-    boost::shared_ptr<backend::RotationQuaternion> qIC = boost::make_shared<backend::RotationQuaternion>(extrinsic.q());
-    qIC->setActive(true);
-    problem->addDesignVariable(qIC);
+    boost::shared_ptr<backend::RotationQuaternion> qCB = boost::make_shared<backend::RotationQuaternion>(extrinsic.q());
+    qCB->setActive(true);
+    problem->addDesignVariable(qCB);
 
     // add the gyro bias b_g as design variable
     boost::shared_ptr<backend::EuclideanPoint> gyroBias = boost::make_shared<backend::EuclideanPoint>(Vector3d::Zero());
@@ -211,13 +211,13 @@ void RollingShutterCamera::findOrientationPriorCameraToImu(Imu& imu) {
     problem->addDesignVariable(gyroBias);
 
     // initialize a pose spline using the camera poses
-    bsplines::BSplinePose poseSpline = initPoseSplineFromCamera(6, 100, 0.0);
+    bsplines::BSplinePose poseSpline = initPoseSplineFromCamera(initSplineOrder, poseKnotsPerSecond, 0.0);
     cout << format("pose spline time = [{:.10f}, {:.10f}]", poseSpline.tMin(), poseSpline.tMax()) << endl;
     for (auto& m : imu.data) {
         double tk = m.stamp.toSec();
         if (poseSpline.tMin() < tk && tk < poseSpline.tMax()) {
             backend::EuclideanExpression gyroPredict =
-                qIC->toExpression() * backend::EuclideanExpression(poseSpline.angularVelocityBodyFrame(tk));
+                qCB->toExpression() * backend::EuclideanExpression(poseSpline.angularVelocityBodyFrame(tk));
             problem->addErrorTerm(boost::make_shared<kalibr_errorterms::GyroscopeError>(m.gyro, m.gyroInvR, gyroPredict,
                                                                                         gyroBias->toExpression()));
 #if defined(DebugTest) && false
@@ -251,9 +251,9 @@ void RollingShutterCamera::findOrientationPriorCameraToImu(Imu& imu) {
     optimizer.optimize();
 
     // overwrite the external rotation prior
-    Matrix3d Ric = qIC->toRotationMatrix().transpose();
-    extrinsic = sm::kinematics::Transformation(sm::kinematics::rt2Transform(Ric, extrinsic.t()));
-    cout << format("Orientation prior camera-IMU found as (T_IC) = \n{}", Ric) << endl;
+    Matrix3d Rcb = qCB->toRotationMatrix().transpose();
+    extrinsic = sm::kinematics::Transformation(sm::kinematics::rt2Transform(Rcb, extrinsic.t()));
+    cout << format("Orientation prior camera-IMU found as (T_CB) = \n{}", Rcb) << endl;
     cout << format("estimated extrinsic = \n{}", extrinsic.T()) << endl;
 
     // estimate gravity in the world coordinate frame as the mean specific force
@@ -263,7 +263,7 @@ void RollingShutterCamera::findOrientationPriorCameraToImu(Imu& imu) {
         double tk = m.stamp.toSec();
         if (poseSpline.tMin() < tk && tk < poseSpline.tMax()) {
             //- R_WB * a(t) = R_WC * R_CB * a(t) = -R_WB * R_CB * a(t), note R_WB = R_WC * R_CB before initialization
-            aw.emplace_back(-poseSpline.orientation(tk) * Ric * m.acc);
+            aw.emplace_back(-poseSpline.orientation(tk) * Rcb * m.acc);
         }
     }
     Vector3d awMean = accumulate(aw.begin(), aw.end(), Vector3d(0, 0, 0),

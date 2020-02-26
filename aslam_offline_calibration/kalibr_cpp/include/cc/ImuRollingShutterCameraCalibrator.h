@@ -45,8 +45,7 @@ class ImuRollingShutterCameraCalibrator {
     void printResult(bool withCov = false);
 
   public:
-    Options options;  // options
-  private:
+    Options options;              // options
     RollingShutterCamera camera;  // camera
     Imu imu;                      // IMU
 

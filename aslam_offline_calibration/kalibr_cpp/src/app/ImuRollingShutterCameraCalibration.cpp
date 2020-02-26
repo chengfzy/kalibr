@@ -62,13 +62,22 @@ int main(int argc, char* argv[]) {
     cout << Section("Initialization");
     Imu imu(FLAGS_bagFile, imuParameters);
     RollingShutterCamera camera(FLAGS_bagFile, cameraParameters, targetParameters);
+    // Note, set extrinsics of TCB,  and rotation using JPL expression
+    // Vector4d qCB(0.00000, 0.71541, 0.69864, 0.00951);  // [qx, qy, qz, qw]
+    // Vector3d pCB(0, 0.03, -0.03);
+    // camera.extrinsic = sm::kinematics::Transformation(qCB, pCB);
+    // cout << "Initial Tcb, Transformation T_cam0_imu0 (imu0 to cam0):" << endl;
+    // cout << camera.extrinsic.T() << endl;
     // calibrator
     ImuRollingShutterCameraCalibrator::Options options;
     options.poseKnotsPerSecond = FLAGS_poseKnotsPerSecond;
+    options.splineOrder = 6;
     options.timeOffsetConstantSparsityPattern = 0.08;
     options.timeOffsetPadding = 0.5;
     ImuRollingShutterCameraCalibrator calibrator(camera, imu);
     calibrator.options = options;
+    calibrator.camera.initSplineOrder = options.splineOrder;            // set spline order
+    calibrator.camera.poseKnotsPerSecond = options.poseKnotsPerSecond;  // set spline order
     calibrator.buildProblem();
 
     cout << Section("Before Optimization");
