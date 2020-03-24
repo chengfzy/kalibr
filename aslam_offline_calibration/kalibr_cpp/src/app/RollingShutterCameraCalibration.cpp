@@ -9,7 +9,7 @@ using namespace Eigen;
 using namespace cc;
 
 DEFINE_string(bagFile, "../data/data.bag", "bag file");
-DEFINE_int32(frameRate, 30, "Approximate framerate of th camera");
+DEFINE_int32(frameRate, 30, "Approximate framerate of the camera");
 DEFINE_double(featureVariance, 1.0, "Estimated variance of the feature detector");
 DEFINE_int32(maxIter, 30, "Max iterations");
 
@@ -33,12 +33,12 @@ int main(int argc, char* argv[]) {
     // camera parameters: Sensing Camera JAX52202
     cout << Paragraph("Camera Parameters");
     CameraParameters cameraParameters;
-    cameraParameters.topic = "/camNormal/image_raw";
+    cameraParameters.topic = "/camSensing/image_raw";
     cameraParameters.model = "pinhole";
-    cameraParameters.f = Vector2d(823.906785813718, 824.704794976756);
-    cameraParameters.c = Vector2d(648.608565867332, 314.810494971340);
+    cameraParameters.f = Vector2d(826.999140224398, 827.942754081805);
+    cameraParameters.c = Vector2d(682.225164651297, 311.932742151825);
     cameraParameters.distortModel = "radtan";
-    cameraParameters.d = Vector4d(-0.312098601430490, 0.0928470270344407, -1.93958495467811e-05, -0.000132104569851275);
+    cameraParameters.d = Vector4d(-0.314814115131056, 0.0945857861790417, 0.000176515325718172, 0.000678933511638204);
     cameraParameters.resolution = Vector2i(1936, 1216);
     cout << cameraParameters << endl;
 

@@ -54,7 +54,7 @@ Camera::Camera(const string& bagFile, const CameraParameters& cameraParams, cons
     // check observations data is in folder, if is, then load observations from folder, otherwise detect
     // observations(corners) from rosbag image
     boost::filesystem::path dataPath(bagFile);
-    boost::filesystem::path obsPath = dataPath.parent_path() / "observations.xml";
+    boost::filesystem::path obsPath = dataPath.parent_path() / "imuCameraObservations.xml";
     if (boost::filesystem::exists(obsPath)) {
         // load observations(corners) from folder
         cout << format("load observations from file \"{}\"", obsPath.string()) << endl;

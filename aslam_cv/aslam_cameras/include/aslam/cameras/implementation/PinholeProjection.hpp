@@ -140,6 +140,8 @@ bool PinholeProjection<DISTORTION_T>::homogeneousToKeypoint(const Eigen::MatrixB
                                J.derived().template topLeftCorner<2, 3>());
 }
 
+// NOTE by CC: convert point in image frame p_uv to point in normalized camera frame. This procedure contains two
+// steps: (1) Back projection (2) Undistortion
 template <typename DISTORTION_T>
 template <typename DERIVED_K, typename DERIVED_P>
 bool PinholeProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& keypoint,
@@ -149,8 +151,10 @@ bool PinholeProjection<DISTORTION_T>::keypointToEuclidean(const Eigen::MatrixBas
 
     keypoint_t kp = keypoint;
 
+    // back projection
     kp[0] = (kp[0] - _cu) / _fu;
     kp[1] = (kp[1] - _cv) / _fv;
+    // undistortion
     _distortion.undistort(kp);  // revert distortion
 
     Eigen::MatrixBase<DERIVED_P>& outPoint = const_cast<Eigen::MatrixBase<DERIVED_P>&>(outPointConst);
@@ -713,6 +717,8 @@ bool PinholeProjection<DISTORTION_T>::estimateTransformation(const GridCalibrati
     if (Ps.size() < 4) return false;
 
     // Call the OpenCV pnp function.
+    // NOTE by CC: the input image point Ms is the point in normalized camera frame, which without the distortion and
+    // projection, so the input camera matrix is I, distortion coefficients is zeros.
     cv::solvePnP(Ps, Ms, cv::Mat::eye(3, 3, CV_64F), distCoeffs, rvec, tvec);
 
     // convert the rvec/tvec to a transformation

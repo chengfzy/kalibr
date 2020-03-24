@@ -28,12 +28,12 @@ int main(int argc, char* argv[]) {
     // IMU parameters
     cout << Paragraph("IMU Parameters");
     ImuParameters imuParameters;
-    imuParameters.topic = "/imuSanChi";
+    imuParameters.topic = "/imuSbg";
     imuParameters.updateRate = 100;
-    imuParameters.accNoiseDensity = 0.00447;
-    imuParameters.accRandomWalk = 7.071e-5;
-    imuParameters.gyroNoiseDensity = 0.063246;
-    imuParameters.gyroRandomWalk = 0.001;
+    imuParameters.accNoiseDensity = 0.00568;
+    imuParameters.accRandomWalk = 8.97e-5;
+    imuParameters.gyroNoiseDensity = 0.000488;
+    imuParameters.gyroRandomWalk = 3.19e-5;
     cout << imuParameters << endl;
     // target parameters
     cout << Paragraph("Target Parameters");
@@ -47,14 +47,14 @@ int main(int argc, char* argv[]) {
     // camera parameters: SensingJAX52202
     cout << Paragraph("Camera Parameters");
     CameraParameters cameraParameters;
-    cameraParameters.topic = "/camNormal/image_raw";
+    cameraParameters.topic = "/camSensing/image_raw";
     cameraParameters.model = "pinhole";
-    cameraParameters.f = Vector2d(823.906785813718, 824.704794976756);
-    cameraParameters.c = Vector2d(648.608565867332, 314.810494971340);
+    cameraParameters.f = Vector2d(826.999140224398, 827.942754081805);
+    cameraParameters.c = Vector2d(682.225164651297, 311.932742151825);
     cameraParameters.distortModel = "radtan";
-    cameraParameters.d = Vector4d(-0.312098601430490, 0.0928470270344407, -1.93958495467811e-05, -0.000132104569851275);
-    cameraParameters.lineDelay = 3.6667e-5;
-    cameraParameters.resolution = Vector2i(1280, 720);
+    cameraParameters.d = Vector4d(-0.314814115131056, 0.0945857861790417, 0.000176515325718172, 0.000678933511638204);
+    cameraParameters.lineDelay = 3.68e-5;
+    cameraParameters.resolution = Vector2i(1936, 1216);
     cameraParameters.frameRate = 30;
     cout << cameraParameters << endl;
 

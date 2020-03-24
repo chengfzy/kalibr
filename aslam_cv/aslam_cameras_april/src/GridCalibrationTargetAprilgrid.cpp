@@ -293,11 +293,11 @@ bool GridCalibrationTargetAprilgrid::computeObservation(const cv::Mat& image, Ei
             // add all points, but only set active if the point has not moved to far in the subpix refinement
             outImagePoints.row(pIdx[j]) = Eigen::Matrix<double, 1, 2>(corner_x, corner_y);
 
-            if (subpix_displacement_squarred <= _options.maxSubpixDisplacement2) {
+            if (subpix_displacement_squared <= _options.maxSubpixDisplacement2) {
                 outCornerObserved[pIdx[j]] = true;
             } else {
                 SM_DEBUG_STREAM("Subpix refinement failed for point: " << pIdx[j] << " with displacement: "
-                                                                       << sqrt(subpix_displacement_squarred)
+                                                                       << sqrt(subpix_displacement_squared)
                                                                        << "(point removed) \n");
                 outCornerObserved[pIdx[j]] = false;
             }

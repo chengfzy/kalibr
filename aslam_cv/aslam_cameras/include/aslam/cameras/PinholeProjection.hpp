@@ -16,6 +16,14 @@
 namespace aslam {
 namespace cameras {
 
+/**
+ * @brief
+ *
+ * @note NOTE by CC
+ *  The frame defined in `kalibr`
+ *    (1) Keypoint frame: the image frame F_uv
+ *    (2) Euclidean frame: the camera frame F_C, sometime it means the normalized camera frame
+ */
 template <typename DISTORTION_T>
 class PinholeProjection {
   public:
@@ -65,6 +73,8 @@ class PinholeProjection {
     bool homogeneousToKeypoint(const Eigen::MatrixBase<DERIVED_P>& p, const Eigen::MatrixBase<DERIVED_K>& outKeypoint,
                                const Eigen::MatrixBase<DERIVED_JP>& outJp) const;
 
+    // NOTE by CC: convert point in image frame p_uv to point in normalized camera frame. This procedure contains two
+    // steps: (1) Back projection (2) Undistortion
     template <typename DERIVED_K, typename DERIVED_P>
     bool keypointToEuclidean(const Eigen::MatrixBase<DERIVED_K>& keypoint,
                              const Eigen::MatrixBase<DERIVED_P>& outPoint) const;
@@ -98,6 +108,13 @@ class PinholeProjection {
     void homogeneousToKeypointDistortionJacobian(const Eigen::MatrixBase<DERIVED_P>& p,
                                                  const Eigen::MatrixBase<DERIVED_JD>& outJd) const;
 
+    /**
+     * @brief Whether the point is in image
+     *
+     * @tparam DERIVED_K
+     * @param keypoint
+     * @return
+     */
     template <typename DERIVED_K>
     bool isValid(const Eigen::MatrixBase<DERIVED_K>& keypoint) const;
 
