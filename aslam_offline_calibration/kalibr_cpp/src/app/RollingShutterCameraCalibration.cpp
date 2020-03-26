@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
     targetParameters.size = 0.09;
     targetParameters.spacing = 0.3;
     cout << targetParameters << endl;
-    // camera parameters: Sensing Camera JAX52202
+    // camera parameters: Sensing Camera JAX52102
     cout << Paragraph("Camera Parameters");
     CameraParameters cameraParameters;
     cameraParameters.topic = "/camSensing/image_raw";

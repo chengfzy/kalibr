@@ -57,12 +57,14 @@ template <typename T>
 void save_xml(T& object, std::string topLevelXmlTag, ::boost::filesystem::path const& filename) {
     std::ofstream ofs(filename.string().c_str());
     SM_ASSERT_TRUE(std::runtime_error, ofs.good(), "Unable to open file " << filename << " for writing");
-    ::boost::archive::xml_oarchive oa(ofs);
-    if (topLevelXmlTag.size() == 0) {
-        topLevelXmlTag = "object";
+    {
+        ::boost::archive::xml_oarchive oa(ofs);
+        if (topLevelXmlTag.size() == 0) {
+            topLevelXmlTag = "object";
+        }
+        oa << ::boost::serialization::make_nvp(topLevelXmlTag.c_str(), object);
     }
-
-    oa << ::boost::serialization::make_nvp(topLevelXmlTag.c_str(), object);
+    ofs.close();
 }
 
 template <typename T>
@@ -70,13 +72,14 @@ void load_xml(T& object, std::string topLevelXmlTag, ::boost::filesystem::path c
     std::ifstream ifs(filename.string().c_str());
     SM_ASSERT_TRUE(std::runtime_error, ifs.good(), "Unable to open file " << filename << " for reading");
 
-    ::boost::archive::xml_iarchive ia(ifs);
-
-    if (topLevelXmlTag.size() == 0) {
-        topLevelXmlTag = "object";
+    {
+        ::boost::archive::xml_iarchive ia(ifs);
+        if (topLevelXmlTag.size() == 0) {
+            topLevelXmlTag = "object";
+        }
+        ia >> ::boost::serialization::make_nvp(topLevelXmlTag.c_str(), object);
     }
-
-    ia >> ::boost::serialization::make_nvp(topLevelXmlTag.c_str(), object);
+    ifs.close();
 }
 
 template <typename T>
