@@ -156,6 +156,9 @@ bool GridCalibrationTargetAprilgrid::computeObservation(const cv::Mat& image, Ei
     if (detections.size() > 1) {
         for (unsigned i = 0; i < detections.size() - 1; i++)
             if (detections[i].id == detections[i + 1].id) {
+                // if detect duplicated tags, return false the error image
+                return false;
+#if false
                 // show the duplicate tags in the image
                 cv::destroyAllWindows();
                 cv::namedWindow("Wild Apriltag detected. Hide them!", cv::WINDOW_NORMAL);
@@ -184,6 +187,7 @@ bool GridCalibrationTargetAprilgrid::computeObservation(const cv::Mat& image, Ei
 
                 cv::waitKey();
                 exit(0);
+#endif
             }
     }
 
@@ -288,7 +292,7 @@ bool GridCalibrationTargetAprilgrid::computeObservation(const cv::Mat& image, Ei
 
             // only add point if the displacement in the subpixel refinement is below a given threshold
             double subpix_displacement_squared = (corner_x - cornerRaw_x) * (corner_x - cornerRaw_x) +
-                                                  (corner_y - cornerRaw_y) * (corner_y - cornerRaw_y);
+                                                 (corner_y - cornerRaw_y) * (corner_y - cornerRaw_y);
 
             // add all points, but only set active if the point has not moved to far in the subpix refinement
             outImagePoints.row(pIdx[j]) = Eigen::Matrix<double, 1, 2>(corner_x, corner_y);
