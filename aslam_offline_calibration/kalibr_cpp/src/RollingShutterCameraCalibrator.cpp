@@ -56,6 +56,7 @@ void RollingShutterCameraCalibrator::calibrate() {
         initPoseBSpline(options.splineOrder, options.timeOffsetPadding, options.numberOfKnots, options.frameRate);
     buildProblem(poseSpline, W);
     solve();
+    printResult();
 
     // continue with knot replacement
     if (options.adaptiveKnotPlacement) {
@@ -77,6 +78,7 @@ void RollingShutterCameraCalibrator::calibrate() {
                 knotSequenceUpdateStrategy.getUpdatedSpline(poseDesignVariable->spline(), knots, options.splineOrder);
             buildProblem(poseSpline, W);
             solve();
+            printResult();
         }
     }
 

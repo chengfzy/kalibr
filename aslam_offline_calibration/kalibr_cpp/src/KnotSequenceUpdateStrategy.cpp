@@ -147,7 +147,7 @@ void KnotSequenceUpdateStrategy::getErrorPerSegment(const std::vector<double>& t
     pair<int, int> segment(-1, -1);
     for (size_t n = 0; n < times.size(); ++n) {
         segment = timeToKnotSection(times[n], knots, segment);
-        CHECK(segment.first != -1) << format("the found segment = ({}, {}) is error", segment.first, segment.second);
+        CHECK(segment.first != -1) << format(". the found segment = ({}, {}) is error", segment.first, segment.second);
         errorPerSegment[segment.first] += errors[n];
         errorTermsPerSegment[segment.first] += 1;
     }
@@ -184,7 +184,7 @@ void KnotSequenceUpdateStrategy::removeSegmentWithoutImprovement(const std::vect
         // analyze each section of the knot sequence
         for (size_t i = 0; i < times.size(); ++i) {
             segment = timeToKnotSection(times[i], previousKnots_, segment);
-            CHECK(segment.first != -1) << format("the found segment = ({}, {}) is error", segment.first,
+            CHECK(segment.first != -1) << format(". the found segment = ({}, {}) is error", segment.first,
                                                  segment.second);
             errorPerSegment[segment.first] += errors[i];
             timeSegments.emplace_back(make_pair(previousKnots_[segment.first], previousKnots_[segment.second]));
