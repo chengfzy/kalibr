@@ -28,12 +28,26 @@ int main(int argc, char* argv[]) {
     // IMU parameters
     cout << Paragraph("IMU Parameters");
     ImuParameters imuParameters;
-    imuParameters.topic = "/imuSbg";
+    // imuParameters.topic = "/imuSbg";
+    // imuParameters.updateRate = 100;
+    // imuParameters.accNoiseDensity = 0.00568;
+    // imuParameters.accRandomWalk = 8.97e-5;
+    // imuParameters.gyroNoiseDensity = 0.000488;
+    // imuParameters.gyroRandomWalk = 3.19e-5;
+    // the parameters of SparkFun and SanChi consider the same
+    imuParameters.topic = "/imuSparkFun0";
     imuParameters.updateRate = 100;
-    imuParameters.accNoiseDensity = 0.00568;
-    imuParameters.accRandomWalk = 8.97e-5;
-    imuParameters.gyroNoiseDensity = 0.000488;
-    imuParameters.gyroRandomWalk = 3.19e-5;
+    imuParameters.accNoiseDensity = 0.00447;
+    imuParameters.accRandomWalk = 7.071e-5;
+    imuParameters.gyroNoiseDensity = 0.063246;
+    imuParameters.gyroRandomWalk = 0.001;
+    // below parameter don't seem reasonable, ref: https://confluence.ygomi.com:8443/display/RF/SBG+IMU
+    // imuParameters.topic = "/imuSparkFun0";
+    // imuParameters.updateRate = 100;
+    // imuParameters.accNoiseDensity = 0.0562;
+    // imuParameters.accRandomWalk = 0.0049;
+    // imuParameters.gyroNoiseDensity = 0.0050;
+    // imuParameters.gyroRandomWalk = 1.1569e-5;
     cout << imuParameters << endl;
     // target parameters
     cout << Paragraph("Target Parameters");
@@ -44,15 +58,32 @@ int main(int argc, char* argv[]) {
     targetParameters.size = 0.09;
     targetParameters.spacing = 0.3;
     cout << targetParameters << endl;
-    // camera parameters: SensingJAX52202
+    // camera parameters
     cout << Paragraph("Camera Parameters");
     CameraParameters cameraParameters;
-    cameraParameters.topic = "/camSensing/image_raw";
+    // Sensing JAX52202
+    // cameraParameters.topic = "/camSensing/image_raw";
+    // cameraParameters.model = "pinhole";
+    // cameraParameters.f = Vector2d(826.999140224398, 827.942754081805);
+    // cameraParameters.c = Vector2d(682.225164651297, 311.932742151825);
+    // cameraParameters.distortModel = "radtan";
+    // cameraParameters.d[0] = -0.314814115131056;
+    // cameraParameters.d[1] = 0.0945857861790417;
+    // cameraParameters.d[2] = 0.000176515325718172;
+    // cameraParameters.d[3] = 0.000678933511638204;
+    // cameraParameters.d[4] = 0;
+    // cameraParameters.lineDelay = 3.68e-5;
+    // Sensing JAX80802
+    cameraParameters.topic = "/camNormal1/image_raw";
     cameraParameters.model = "pinhole";
-    cameraParameters.f = Vector2d(826.999140224398, 827.942754081805);
-    cameraParameters.c = Vector2d(682.225164651297, 311.932742151825);
+    cameraParameters.f = Vector2d(829.708551330165, 828.779399078419);
+    cameraParameters.c = Vector2d(652.639155240132, 348.883447318945);
     cameraParameters.distortModel = "radtan";
-    cameraParameters.d = Vector4d(-0.314814115131056, 0.0945857861790417, 0.000176515325718172, 0.000678933511638204);
+    cameraParameters.d[0] = -0.345600280288694;
+    cameraParameters.d[1] = 0.171489212385776;
+    cameraParameters.d[2] = -3.44338669628556e-05;
+    cameraParameters.d[3] = -1.49180538008743e-05;
+    cameraParameters.d[4] = -0.0525549437324129;
     cameraParameters.lineDelay = 3.68e-5;
     cameraParameters.resolution = Vector2i(1936, 1216);
     cameraParameters.frameRate = 30;

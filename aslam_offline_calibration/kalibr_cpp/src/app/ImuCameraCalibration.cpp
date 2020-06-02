@@ -49,7 +49,11 @@ int main(int argc, char* argv[]) {
     cameraParameters.f = Vector2d(823.906785813718, 824.704794976756);
     cameraParameters.c = Vector2d(648.608565867332, 314.810494971340);
     cameraParameters.distortModel = "radtan";
-    cameraParameters.d = Vector4d(-0.312098601430490, 0.0928470270344407, -1.93958495467811e-05, -0.000132104569851275);
+    cameraParameters.d[0] = -0.312098601430490;
+    cameraParameters.d[1] = 0.0928470270344407;
+    cameraParameters.d[2] = -1.93958495467811e-05;
+    cameraParameters.d[3] = -0.000132104569851275;
+    cameraParameters.d[4] = 0.0;
     cameraParameters.resolution = Vector2i(1280, 720);
     cameraParameters.lineDelay = 3.66e-5;
     cout << cameraParameters << endl;

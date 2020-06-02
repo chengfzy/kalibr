@@ -36,14 +36,14 @@ namespace cameras {
  */
 class RadialTangentialDistortion {
   public:
-    enum { IntrinsicsDimension = 4 };
+    enum { IntrinsicsDimension = 5 };
     enum { DesignVariableDimension = IntrinsicsDimension };
 
     /// \brief The default constructor sets all values to zero.
     RadialTangentialDistortion();
 
     /// \brief A constructor that initializes all values.
-    RadialTangentialDistortion(double k1, double k2, double p1, double p2);
+    RadialTangentialDistortion(double k1, double k2, double p1, double p2, double k3 = 0.0);
 
     RadialTangentialDistortion(const sm::PropertyTree& config);
 
@@ -135,12 +135,15 @@ class RadialTangentialDistortion {
     double p1() { return _p1; }
     /// \brief the second tangential distortion parameter
     double p2() { return _p2; }
+    /// \brief the third radial distortion parameter
+    double k3() { return _k3; }
 
     void clear() {
         _k1 = 0.0;
         _k2 = 0.0;
         _p1 = 0.0;
         _p2 = 0.0;
+        _k3 = 0.0;
     }
 
     /// \brief Compatibility with boost::serialization.
@@ -163,6 +166,8 @@ class RadialTangentialDistortion {
     double _p1;
     /// \brief the second tangential distortion parameter
     double _p2;
+    // the third radial distortion parameter
+    double _k3;
 };
 
 }  // namespace cameras

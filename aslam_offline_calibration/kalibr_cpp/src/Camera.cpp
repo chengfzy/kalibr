@@ -45,7 +45,7 @@ Camera::Camera(const string& bagFile, const CameraParameters& cameraParams, cons
 
     // init camera model
     cameras::RadialTangentialDistortion dist(cameraParams.d[0], cameraParams.d[1], cameraParams.d[2],
-                                             cameraParams.d[3]);
+                                             cameraParams.d[3], cameraParams.d[4]);
     cameras::PinholeProjection<cameras::RadialTangentialDistortion> proj(
         cameraParams.f[0], cameraParams.f[1], cameraParams.c[0], cameraParams.c[1], cameraParams.resolution[0],
         cameraParams.resolution[1], dist);

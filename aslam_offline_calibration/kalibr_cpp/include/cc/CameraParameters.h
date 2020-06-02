@@ -13,15 +13,15 @@ class CameraParameters {
     friend std::ostream& operator<<(std::ostream& os, const CameraParameters& cameraParams);
 
   public:
-    std::string topic;           // ros topic
-    std::string model;           // camera model
-    std::string distortModel;    // distortion model
-    Eigen::Vector2d f;           // focal length
-    Eigen::Vector2d c;           // principal point
-    Eigen::Vector4d d;           // distortion coefficients
-    double lineDelay = 0;        // line delay parameters for rolling shutter camera
-    Eigen::Vector2i resolution;  // camera resolution
-    double frameRate = 0;        // frame rate, Hz
+    std::string topic;              // ros topic
+    std::string model;              // camera model
+    std::string distortModel;       // distortion model
+    Eigen::Vector2d f;              // focal length
+    Eigen::Vector2d c;              // principal point
+    Eigen::Matrix<double, 5, 1> d;  // distortion coefficients
+    double lineDelay = 0;           // line delay parameters for rolling shutter camera
+    Eigen::Vector2i resolution;     // camera resolution
+    double frameRate = 0;           // frame rate, Hz
 };
 
 }  // namespace cc
