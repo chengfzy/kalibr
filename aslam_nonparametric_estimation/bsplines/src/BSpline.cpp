@@ -18,7 +18,8 @@ BSpline::BSpline(int splineOrder) : splineOrder_(splineOrder) {
 
 // Get the number of coefficients required for a specified number of valid time segments
 int BSpline::numCoefficientsRequired(int numTimeSegments) const {
-    // n + 1 = m1 - k + 1 = m + 2(k-1) - k + 1 = m + k - 1
+    // the number of time segments is the symbol m.
+    // m1 = n + k => control points number = n + 1 = m1 - k + 1 = m + 2(k-1) - k + 1 = m + k - 1
     return numTimeSegments + splineOrder_ - 1;
 }
 
@@ -27,17 +28,19 @@ int BSpline::minimumKnotsRequired() const { return numKnotsRequired(1); }
 
 // Get the number of knots required for a specified number of valid time segments
 int BSpline::numKnotsRequired(int numTimeSegments) const {
-    // m1 = n + k, coefficient (control points) number is n + 1, knots points is m1 + 1
+    // the number of time segments is the symbol m, and m1 = n + k, coefficient (control points) number is n + 1, knots
+    // points is m1 + 1
+    // or, knots number = m1 + 1 = m + 2(k-1) + 1 = m + 2k - 1
     return numCoefficientsRequired(numTimeSegments) + splineOrder_;
 }
 
 // Get the number of valid time segments for a given number of knots
 int BSpline::numValidTimeSegments(int numKnots) const {
-    // m = m1 - 2(k - 1), knot number x = m1 + 1, so m = x - 1 - 2(k - 1) = x + 2k + 1
+    // m = m1 - 2(k - 1), knot number x = m1 + 1, m = x - 1 - 2(k - 1) = x - 2k + 1
     return max(numKnots - 2 * splineOrder_ + 1, 0);
 }
 
-// Get the number of valid time segments for a given for the current knot sequence
+// Get the number of valid time segments for the current knot sequence
 int BSpline::numValidTimeSegments() const { return numValidTimeSegments(knots_.size()); }
 
 // Get the basic matrix active on the i-th time segment
@@ -104,7 +107,7 @@ void BSpline::setCoefficientMatrix(const Eigen::MatrixXd& coefficients) {
     coefficients_ = coefficients;
 }
 
-// Sets the coefficient matrix from the stacked vector of coefficients
+// Sets the coefficient matrix from the stacked vector of coefficients(control points) matrix
 void BSpline::setCoefficientVector(const Eigen::VectorXd& c) {
     SM_ASSERT_EQ(Exception, c.size(), coefficients_.rows() * coefficients_.cols(),
                  "The coefficient vector is the wrong size. The vector must contain all vector-valued coefficients "
@@ -124,7 +127,7 @@ Eigen::VectorXd BSpline::knotVector() const {
     return k;
 }
 
-// Get the stacked vector of coefficients
+// Get the stacked vector of coefficients(control points) matrix
 Eigen::VectorXd BSpline::coefficientVector() {
     Eigen::VectorXd c(coefficients_.rows() * coefficients_.cols());
     for (int i = 0; i < coefficients_.cols(); ++i) {
@@ -136,6 +139,7 @@ Eigen::VectorXd BSpline::coefficientVector() {
 // Get the number of total coefficients the spline currently uses
 int BSpline::numCoefficients() const { return coefficients_.rows() * coefficients_.cols(); }
 
+// Get the length(number) of total coefficients the spline currently uses
 int BSpline::coefficientVectorLength() const { return coefficients_.rows() * coefficients_.cols(); }
 
 // This is equivalent to spline.coefficients().cols()
@@ -197,22 +201,24 @@ Eigen::VectorXd BSpline::evalDAndJacobian(double t, int derivativeOrder, Eigen::
         }
     }
 
-    // coefficient indices, [(i-k+1) * n1, (i+1) * n1)
+    // coefficient indices [(i-k+1) * n1, i * n1]
     if (coefficientIndices) {
         int D = coefficients_.rows();  // n1
         *coefficientIndices = Eigen::VectorXi::LinSpaced(splineOrder_ * D, idx * D, (idx + splineOrder_) * D - 1);
     }
     return v;
 }
+
 // Get the local basic matrix evaluated at the time t
 Eigen::MatrixXd BSpline::Phi(double t, int derivativeOrder) const {
     SM_ASSERT_GE(Exception, derivativeOrder, 0, "To integrate, use the integral function");
-    std::pair<double, int> ui = computeUAndTIndex(t);
+    std::pair<double, int> ui = computeUAndTIndex(t);  // <u, idx>, where u = (t - t[i]) / (t[i+1] - t[i])
+    // U = [1, u, u^2,...,u^{k-1}], and calculate the derivatives of U w.r.t. t, dU = U^{(l)} = d^{(l)} U/dt^{(l)}
     Eigen::VectorXd u = computeU(ui.first, ui.second, derivativeOrder);
     int idx = ui.second - splineOrder_ + 1;
-    u = basisMatrices_[idx].transpose() * u;
+    u = basisMatrices_[idx].transpose() * u;  // dU * M
 
-    // local basic matrix: n1 x (k*n1)
+    // local basic matrix: n1 x (kn1)
     Eigen::MatrixXd Phi = Eigen::MatrixXd::Zero(coefficients_.rows(), splineOrder_ * coefficients_.rows());
     Eigen::MatrixXd one = Eigen::MatrixXd::Identity(Phi.rows(), Phi.rows());
     for (int i = 0; i < splineOrder_; ++i) {
@@ -247,6 +253,7 @@ Eigen::VectorXd BSpline::localCoefficientVector(double t) const {
 Eigen::VectorXd BSpline::segmentCoefficientVector(int segmentIdx) const {
     SM_ASSERT_GE_LT(std::runtime_error, segmentIdx, 0, numValidTimeSegments(), "segment index out of bounds");
     Eigen::VectorXd c(splineOrder_ * coefficients_.rows());
+    // {V[i-k+1], V[i-k+2],...,V[i]} for i is the index, segmentIdx = i - (k - 1)
     for (int i = 0; i < splineOrder_; ++i) {
         c.segment(i * coefficients_.rows(), coefficients_.rows()) = coefficients_.col(i + segmentIdx);
     }
@@ -294,7 +301,7 @@ void BSpline::setLocalCoefficientVector(double t, const Eigen::VectorXd& c) {
     }
 }
 
-// Initialize a spline from two times and two positions, NOTE by CC: this method don't understand totally yet
+// Initialize a spline from two times and two positions
 void BSpline::initSpline(double t0, double t1, const Eigen::VectorXd& p0, const Eigen::VectorXd& p1) {
     SM_ASSERT_EQ(Exception, p0.size(), p1.size(), "The coefficient vectors should be the same size");
     SM_ASSERT_GT(Exception, t1, t0, "Time must be increasing from t_0 to t_1");
@@ -308,7 +315,8 @@ void BSpline::initSpline(double t0, double t1, const Eigen::VectorXd& p0, const 
     // What is the vector coefficient dimension
     int D = p0.size();
 
-    // Initialize a uniform knot sequence, NOTE by CC: not a clamped curve, and also in [0,1]
+    // Initialize a uniform knot sequence, the first and last element in knot is not the same, but don't change the
+    // result because they don't use it
     double dt = t1 - t0;
     std::vector<double> knots(K);
     for (int i = 0; i < K; ++i) {
@@ -392,7 +400,6 @@ void BSpline::initSpline2(const Eigen::VectorXd& times, const Eigen::MatrixXd& i
     }
 
     // Initialize the spline so that it interpolates the N points
-
     // How many knots are required for one time segment?
     int K = numKnotsRequired(numSegments);
     // How many coefficients are required for one time segment?
@@ -459,6 +466,7 @@ void BSpline::initSpline2(const Eigen::VectorXd& times, const Eigen::MatrixXd& i
     setCoefficientVector(c);
 }
 
+// The method is only few difference to `initSpline2`, but assume the quadratic integral to zero
 void BSpline::initSpline3(const Eigen::VectorXd& times, const Eigen::MatrixXd& interpolationPoints, int numSegments,
                           double lambda) {
     SM_ASSERT_EQ(Exception, times.size(), interpolationPoints.cols(),
@@ -472,11 +480,11 @@ void BSpline::initSpline3(const Eigen::VectorXd& times, const Eigen::MatrixXd& i
     }
 
     // How many knots are required for one time segment?
-    int K = numKnotsRequired(numSegments);
+    int K = numKnotsRequired(numSegments);  // m
     // How many coefficients are required for one time segment?
-    int C = numCoefficientsRequired(numSegments);
+    int C = numCoefficientsRequired(numSegments);  // n+1
     // What is the vector coefficient dimension
-    int D = interpolationPoints.rows();
+    int D = interpolationPoints.rows();  // n1
 
     // Initialize a uniform knot sequence
     double dt = (times[times.size() - 1] - times[0]) / numSegments;
@@ -485,16 +493,16 @@ void BSpline::initSpline3(const Eigen::VectorXd& times, const Eigen::MatrixXd& i
         knots[i] = times[0] + (i - splineOrder_ + 1) * dt;
     }
     // Set the knots and zero the coefficients
-    setKnotsAndCoefficients(knots, Eigen::MatrixXd::Zero(D, C));
+    setKnotsAndCoefficients(knots, Eigen::MatrixXd::Zero(D, C));  // n1 x (n+1)
 
     // Now we have to solve an Ax = b linear system to determine the correct coefficient vectors.
-    int coefficientDim = C * D;
+    int coefficientDim = C * D;  // (n+1)n1, the element size of coefficient matrix
 
-    int numConstraints = interpolationPoints.cols();
-    int constraintSize = numConstraints * D;
+    int numConstraints = interpolationPoints.cols();  // a
+    int constraintSize = numConstraints * D;          // an1, the size of input constrains
 
-    Eigen::MatrixXd A = Eigen::MatrixXd::Zero(constraintSize, coefficientDim);
-    Eigen::VectorXd b = Eigen::VectorXd::Zero(constraintSize);
+    Eigen::MatrixXd A = Eigen::MatrixXd::Zero(constraintSize, coefficientDim);  // an1 x (n+1)n1
+    Eigen::VectorXd b = Eigen::VectorXd::Zero(constraintSize);                  // an1
 
     //     std::cout << A.rows() << ":" << A.cols() << std::endl;
 
@@ -517,7 +525,7 @@ void BSpline::initSpline3(const Eigen::VectorXd& times, const Eigen::MatrixXd& i
     A = (A.transpose() * A).eval();
 
     // Add the motion constraint.
-    Eigen::VectorXd W = Eigen::VectorXd::Constant(D, lambda);
+    Eigen::VectorXd W = Eigen::VectorXd::Constant(D, lambda);  // n1 x n1
 
     // make this conditional on the order of the spline:
     if (splineOrder_ == 2)
@@ -958,29 +966,7 @@ void BSpline::removeCurveSegment() {
     }
 }
 
-Eigen::MatrixXd BSpline::Vi(int segmentIndex) const {
-    SM_ASSERT_GE_LT(Exception, segmentIndex, 0, numValidTimeSegments(), "Segment index out of bounds");
-
-    Eigen::VectorXd vals(splineOrder_ * 2);
-    for (int i = 0; i < vals.size(); ++i) {
-        vals[i] = 1.0 / (i + 1.0);
-    }
-
-    Eigen::MatrixXd V(splineOrder_, splineOrder_);
-    for (int r = 0; r < V.rows(); r++) {
-        for (int c = 0; c < V.cols(); c++) {
-            V(r, c) = vals[r + c];
-        }
-    }
-
-    double t_0, t_1;
-    boost::tie(t_0, t_1) = timeInterval(segmentIndex);
-
-    V *= t_1 - t_0;
-
-    return V;
-}
-
+// Evaluate the integral from t1 to t2
 Eigen::VectorXd BSpline::evalIntegral(double t1, double t2) const {
     if (t1 > t2) {
         return -evalIntegral(t2, t1);
@@ -1039,10 +1025,33 @@ Eigen::VectorXd BSpline::evalIntegral(double t1, double t2) const {
     return integral;
 }
 
+Eigen::MatrixXd BSpline::Vi(int segmentIndex) const {
+    SM_ASSERT_GE_LT(Exception, segmentIndex, 0, numValidTimeSegments(), "Segment index out of bounds");
+
+    Eigen::VectorXd vals(splineOrder_ * 2);  // 2k
+    for (int i = 0; i < vals.size(); ++i) {
+        vals[i] = 1.0 / (i + 1.0);
+    }
+
+    Eigen::MatrixXd V(splineOrder_, splineOrder_);  // k x k
+    for (int r = 0; r < V.rows(); r++) {
+        for (int c = 0; c < V.cols(); c++) {
+            V(r, c) = vals[r + c];
+        }
+    }
+
+    double t_0, t_1;
+    boost::tie(t_0, t_1) = timeInterval(segmentIndex);
+
+    V *= t_1 - t_0;
+
+    return V;
+}
+
 Eigen::MatrixXd BSpline::Mi(int segmentIndex) const {
     SM_ASSERT_GE_LT(Exception, segmentIndex, 0, (int)basisMatrices_.size(), "Out of range");
-    int D = coefficients_.rows();
-    Eigen::MatrixXd M = Eigen::MatrixXd::Zero(splineOrder_ * D, splineOrder_ * D);
+    int D = coefficients_.rows();                                                   // n1
+    Eigen::MatrixXd M = Eigen::MatrixXd::Zero(splineOrder_ * D, splineOrder_ * D);  // kn1 x kn1
 
     for (int j = 0; j < splineOrder_; j++) {
         M.block(0, j * D, D * splineOrder_, D) = Bij(segmentIndex, j);
@@ -1054,8 +1063,8 @@ Eigen::MatrixXd BSpline::Mi(int segmentIndex) const {
 Eigen::MatrixXd BSpline::Bij(int segmentIndex, int columnIndex) const {
     SM_ASSERT_GE_LT(Exception, segmentIndex, 0, (int)basisMatrices_.size(), "Out of range");
     SM_ASSERT_GE_LT(Exception, columnIndex, 0, splineOrder_, "Out of range");
-    int D = coefficients_.rows();
-    Eigen::MatrixXd B = Eigen::MatrixXd::Zero(splineOrder_ * D, D);
+    int D = coefficients_.rows();                                    // n1
+    Eigen::MatrixXd B = Eigen::MatrixXd::Zero(splineOrder_ * D, D);  // kn1 x n1
     for (int i = 0; i < D; ++i) {
         B.block(i * splineOrder_, i, splineOrder_, 1) = basisMatrices_[segmentIndex].col(columnIndex);
     }
@@ -1064,8 +1073,8 @@ Eigen::MatrixXd BSpline::Bij(int segmentIndex, int columnIndex) const {
 
 Eigen::MatrixXd BSpline::U(double t, int derivativeOrder) const {
     Eigen::VectorXd uvec = u(t, derivativeOrder);
-    int D = coefficients_.rows();
-    Eigen::MatrixXd Umat = Eigen::MatrixXd::Zero(splineOrder_ * D, D);
+    int D = coefficients_.rows();                                       // n1
+    Eigen::MatrixXd Umat = Eigen::MatrixXd::Zero(splineOrder_ * D, D);  // kn1 x n1
 
     for (int i = 0; i < D; ++i) {
         Umat.block(i * splineOrder_, i, splineOrder_, 1) = uvec;
@@ -1079,6 +1088,7 @@ Eigen::VectorXd BSpline::u(double t, int derivativeOrder) const {
     return computeU(ui.first, ui.second, derivativeOrder);
 }
 
+// the index of basic matrix for input time t
 int BSpline::segmentIndex(double t) const {
     std::pair<double, int> ui = computeTIndex(t);
     return basisMatrixIndexFromStartingKnotIndex(ui.second);
@@ -1087,12 +1097,14 @@ int BSpline::segmentIndex(double t) const {
 Eigen::MatrixXd BSpline::Dii(int segmentIndex) const {
     SM_ASSERT_GE_LT(Exception, segmentIndex, 0, (int)basisMatrices_.size(), "Out of range");
     double t_0, t_1;
-    boost::tie(t_0, t_1) = timeInterval(segmentIndex);
+    boost::tie(t_0, t_1) = timeInterval(segmentIndex);  // [t0, t1] at the segment index
     double dt = t_1 - t_0;
 
     double recip_dt = 0.0;
-    if (dt > 0) recip_dt = 1.0 / dt;
-    Eigen::MatrixXd D = Eigen::MatrixXd::Zero(splineOrder_, splineOrder_);
+    if (dt > 0) {
+        recip_dt = 1.0 / dt;
+    }
+    Eigen::MatrixXd D = Eigen::MatrixXd::Zero(splineOrder_, splineOrder_);  // k x k
     for (int i = 0; i < splineOrder_ - 1; ++i) {
         D(i, i + 1) = (i + 1.0) * recip_dt;
     }
@@ -1101,8 +1113,8 @@ Eigen::MatrixXd BSpline::Dii(int segmentIndex) const {
 }
 
 Eigen::MatrixXd BSpline::Di(int segmentIndex) const {
-    int D = coefficients_.rows();
-    Eigen::MatrixXd fullD = Eigen::MatrixXd::Zero(splineOrder_ * D, splineOrder_ * D);
+    int D = coefficients_.rows();                                                       // n1
+    Eigen::MatrixXd fullD = Eigen::MatrixXd::Zero(splineOrder_ * D, splineOrder_ * D);  // kn1 x kn1
 
     Eigen::MatrixXd subD = Dii(segmentIndex);
 
@@ -1148,16 +1160,16 @@ Eigen::MatrixXd BSpline::segmentIntegral(int segmentIdx, const Eigen::MatrixXd& 
 }
 
 Eigen::MatrixXd BSpline::segmentQuadraticIntegral(const Eigen::MatrixXd& W, int segmentIdx, int derivativeOrder) const {
-    int D = coefficients_.rows();
+    int D = coefficients_.rows();  // n1
     SM_ASSERT_GE_LT(Exception, segmentIdx, 0, (int)basisMatrices_.size(), "Out of range");
     SM_ASSERT_EQ(Exception, W.rows(), D, "W must be a square matrix the size of a single vector-valued coefficient");
     SM_ASSERT_EQ(Exception, W.cols(), D, "W must be a square matrix the size of a single vector-valued coefficient");
 
-    int N = D * splineOrder_;
-    Eigen::MatrixXd Q;  // = Eigen::MatrixXd::Zero(N,N);
-    Eigen::MatrixXd Dm = Dii(segmentIdx);
-    Eigen::MatrixXd V = Vi(segmentIdx);
-    Eigen::MatrixXd M = Mi(segmentIdx);
+    int N = D * splineOrder_;              // kn1
+    Eigen::MatrixXd Q;                     // kn1 x kn1
+    Eigen::MatrixXd Dm = Dii(segmentIdx);  // k x k
+    Eigen::MatrixXd V = Vi(segmentIdx);    // k x k
+    Eigen::MatrixXd M = Mi(segmentIdx);    // kn1 x kn1
 
     // Calculate the appropriate derivative version of V
     // using the matrix multiplication version of the derivative.
@@ -1165,7 +1177,7 @@ Eigen::MatrixXd BSpline::segmentQuadraticIntegral(const Eigen::MatrixXd& W, int 
         V = (Dm.transpose() * V * Dm).eval();
     }
 
-    Eigen::MatrixXd WV = Eigen::MatrixXd::Zero(N, N);
+    Eigen::MatrixXd WV = Eigen::MatrixXd::Zero(N, N);  // kn1 x kn1
 
     for (int r = 0; r < D; r++) {
         for (int c = 0; c < D; c++) {
@@ -1183,15 +1195,18 @@ Eigen::MatrixXd BSpline::segmentQuadraticIntegral(const Eigen::MatrixXd& W, int 
 
 Eigen::MatrixXd BSpline::segmentQuadraticIntegralDiag(const Eigen::VectorXd& Wdiag, int segmentIdx,
                                                       int derivativeOrder) const {
-    int D = coefficients_.rows();
+    int D = coefficients_.rows();  // n1
     SM_ASSERT_GE_LT(Exception, segmentIdx, 0, (int)basisMatrices_.size(), "Out of range");
     SM_ASSERT_EQ(Exception, Wdiag.size(), D, "Wdiag must be the length of a single vector-valued coefficient");
 
-    int N = D * splineOrder_;
-    Eigen::MatrixXd Q;  // = Eigen::MatrixXd::Zero(N,N);
-    Eigen::MatrixXd Dm = Dii(segmentIdx);
-    Eigen::MatrixXd V = Vi(segmentIdx);
-    Eigen::MatrixXd M = Mi(segmentIdx);
+    int N = D * splineOrder_;              // kn1
+    Eigen::MatrixXd Q;                     // kn1 x kn1
+    Eigen::MatrixXd Dm = Dii(segmentIdx);  // k x k
+    Eigen::MatrixXd V = Vi(segmentIdx);    // k x k
+    Eigen::MatrixXd M = Mi(segmentIdx);    // kn1 x kn1
+
+    cout << "V = " << endl << V << endl;
+    cout << "Dm^T * V = " << endl << Dm.transpose() * V << endl;
 
     // Calculate the appropriate derivative version of V
     // using the matrix multiplication version of the derivative.
@@ -1199,7 +1214,7 @@ Eigen::MatrixXd BSpline::segmentQuadraticIntegralDiag(const Eigen::VectorXd& Wdi
         V = (Dm.transpose() * V * Dm).eval();
     }
 
-    Eigen::MatrixXd WV = Eigen::MatrixXd::Zero(N, N);
+    Eigen::MatrixXd WV = Eigen::MatrixXd::Zero(N, N);  // kn1 x kn1
 
     for (int d = 0; d < D; d++) {
         // std::cout << "Size WV: " << WV.rows() << ", " << WV.cols() << std::endl;
@@ -1208,6 +1223,80 @@ Eigen::MatrixXd BSpline::segmentQuadraticIntegralDiag(const Eigen::VectorXd& Wdi
     }
 
     Q = M.transpose() * WV * M;
+
+#if true
+    // my calculation method, just for comparison to verify whether it's same as author's
+    {
+        using namespace Eigen;
+        using namespace std;
+
+        // print the result of author's for comparison
+        cout << "Dm = " << endl << Dm << endl;
+        cout << "V = " << endl << V << endl;
+        cout << "M = " << endl << M << endl;
+        cout << "WV = " << endl << WV << endl;
+        cout << "Q = " << endl << Q << endl;
+
+        double t0{0}, t1{0};
+        boost::tie(t0, t1) = timeInterval(segmentIdx);
+        // calculate the integral of matrix U, don't consider the dt^d
+        VectorXd U = VectorXd::Ones(splineOrder_);  // k x 1
+        for (int i = 0; i < splineOrder_; ++i) {
+            for (int d = 0; d < derivativeOrder; ++d) {
+                U[i] /= (i + derivativeOrder);
+            }
+        }
+        cout << "U = " << U.transpose() << endl;
+        cout << "U^T * U = " << endl << U * U.transpose() << endl;
+
+        // calculate UM = dt^d * U * M
+        VectorXd UM = pow((t1 - t0), 2 * derivativeOrder) * U.transpose() * basisMatrices_[segmentIdx];  // k x 1
+        cout << "UM = " << UM.transpose() << endl;
+
+        // construct the Phi
+        MatrixXd Phi = MatrixXd::Zero(D, N);      // n1 x kn1
+        MatrixXd one = MatrixXd::Identity(D, D);  // n1 x n1
+        for (int i = 0; i < splineOrder_; ++i) {
+            Phi.middleCols(i * D, D) = UM[i] * one;
+        }
+        cout << "Phi = " << endl << Phi << endl;
+
+        // calculate the result Q = Phi^T * W * Phi
+        MatrixXd Q1 = Phi.transpose() * Wdiag.asDiagonal() * Phi;  // kn1 x kn1
+        cout << "Q1 = " << endl << Q1 << endl;
+    }
+#endif
+
+    return Q;
+}
+
+Eigen::MatrixXd BSpline::curveQuadraticIntegral(const Eigen::MatrixXd& W, int derivativeOrder) const {
+    int D = coefficients_.rows();  // n1
+    SM_ASSERT_EQ(Exception, W.rows(), D, "W must be a square matrix the size of a single vector-valued coefficient");
+    SM_ASSERT_EQ(Exception, W.cols(), D, "W must be a square matrix the size of a single vector-valued coefficient");
+    int N = coefficients_.cols();  // n+1
+
+    Eigen::MatrixXd Q = Eigen::MatrixXd::Zero(D * N, D * N);  // (n+1)n1 x (n+1)n1
+
+    int QiSize = splineOrder_ * D;  // kn1
+    for (int s = 0; s < numValidTimeSegments(); s++) {
+        Q.block(s * D, s * D, QiSize, QiSize) += segmentQuadraticIntegral(W, s, derivativeOrder);
+    }
+
+    return Q;
+}
+
+Eigen::MatrixXd BSpline::curveQuadraticIntegralDiag(const Eigen::VectorXd& Wdiag, int derivativeOrder) const {
+    int D = coefficients_.rows();  // n1
+    SM_ASSERT_EQ(Exception, Wdiag.size(), D, "Wdiag must be the length of a single vector-valued coefficient");
+    int N = coefficients_.cols();  // n+1
+
+    Eigen::MatrixXd Q = Eigen::MatrixXd::Zero(D * N, D * N);  // (n+1)n1 x (n+1)n1
+
+    int QiSize = splineOrder_ * D;  // kn1
+    for (int s = 0; s < numValidTimeSegments(); s++) {
+        Q.block(s * D, s * D, QiSize, QiSize) += segmentQuadraticIntegralDiag(Wdiag, s, derivativeOrder);
+    }
 
     return Q;
 }
@@ -1286,37 +1375,6 @@ sparse_block_matrix::SparseBlockMatrix<Eigen::MatrixXd> BSpline::curveQuadraticI
     return Q_sparse;
 }
 
-Eigen::MatrixXd BSpline::curveQuadraticIntegral(const Eigen::MatrixXd& W, int derivativeOrder) const {
-    int D = coefficients_.rows();
-    SM_ASSERT_EQ(Exception, W.rows(), D, "W must be a square matrix the size of a single vector-valued coefficient");
-    SM_ASSERT_EQ(Exception, W.cols(), D, "W must be a square matrix the size of a single vector-valued coefficient");
-    int N = coefficients_.cols();
-
-    Eigen::MatrixXd Q = Eigen::MatrixXd::Zero(D * N, D * N);
-
-    int QiSize = splineOrder_ * D;
-    for (int s = 0; s < numValidTimeSegments(); s++) {
-        Q.block(s * D, s * D, QiSize, QiSize) += segmentQuadraticIntegral(W, s, derivativeOrder);
-    }
-
-    return Q;
-}
-
-Eigen::MatrixXd BSpline::curveQuadraticIntegralDiag(const Eigen::VectorXd& Wdiag, int derivativeOrder) const {
-    int D = coefficients_.rows();
-    SM_ASSERT_EQ(Exception, Wdiag.size(), D, "Wdiag must be the length of a single vector-valued coefficient");
-    int N = coefficients_.cols();
-
-    Eigen::MatrixXd Q = Eigen::MatrixXd::Zero(D * N, D * N);
-
-    int QiSize = splineOrder_ * D;
-    for (int s = 0; s < numValidTimeSegments(); s++) {
-        Q.block(s * D, s * D, QiSize, QiSize) += segmentQuadraticIntegralDiag(Wdiag, s, derivativeOrder);
-    }
-
-    return Q;
-}
-
 void BSpline::initConstantSpline(double t_min, double t_max, int numSegments, const Eigen::VectorXd& constant) {
     SM_ASSERT_GT(Exception, t_max, t_min, "The max time is less than the min time");
     SM_ASSERT_GE(Exception, numSegments, 1, "There must be at least one segment");
@@ -1349,7 +1407,7 @@ void BSpline::verifyKnotSequence(const std::vector<double>& knots) {
                      << "for a B-spline of order " << splineOrder_ << ". At least " << minimumKnotsRequired()
                      << " knots are required");
 
-    for (size_t i = 1; i < knots_.size(); ++i) {
+    for (size_t i = 1; i < knots.size(); ++i) {
         SM_ASSERT_LE(Exception, knots[i - 1], knots[i],
                      "The knot sequence must be non-decreasing. Knot " << i << " was not greater than or equal to knot "
                                                                        << (i - 1));
@@ -1362,6 +1420,7 @@ void BSpline::initializeBasisMatrices() {
     basisMatrices_.resize(numValidTimeSegments());
     for (size_t i = 0; i < basisMatrices_.size(); ++i) {
         basisMatrices_[i] = M(splineOrder_, i + splineOrder_ - 1);
+        // cout << "M[" << i << "] =" << endl << basisMatrices_[i] << endl;
     }
 }
 
@@ -1464,7 +1523,7 @@ std::pair<double, int> BSpline::computeTIndex(double t) const {
     return std::make_pair(*it - *(it - 1), (it - knots_.begin()) - 1);
 }
 
-// get the value i * (i - 1) * (i - 1) * ... * (i - n)
+// get the value i * (i - 1) * (i - 1) * ... * (i - n + 1), where n is the derivative order
 int dmul(int i, int derivativeOrder) {
     if (derivativeOrder == 0)
         return 1;
@@ -1474,8 +1533,8 @@ int dmul(int i, int derivativeOrder) {
         return i * dmul(i - 1, derivativeOrder - 1);
 }
 
-// Compute the vector U for a spline of order k, this is an k X 1 vector.
-// NOTE: the calculation could be optimize more
+// Compute the vector U w.r.t t at given derivative order l, this is an k X 1 vector.
+// TODO: the calculation could be optimize more
 Eigen::VectorXd BSpline::computeU(double u, int segmentIndex, int derivativeOrder) const {
     Eigen::VectorXd uMat = Eigen::VectorXd::Zero(splineOrder_);
     double delta_t = knots_[segmentIndex + 1] - knots_[segmentIndex];

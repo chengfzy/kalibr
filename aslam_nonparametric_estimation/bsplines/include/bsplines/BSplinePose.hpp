@@ -125,6 +125,13 @@ class BSplinePose : public BSpline {
 
     sm::kinematics::RotationalKinematics::Ptr rotation() const;
 
+    /**
+     * @brief Convert the pose parameter to transformation and also calculate the Jacobian.
+     * 
+     * @param c Pose parameter, [p, R], N=6
+     * @param J Jacobian for transformation w.r.t pose parameters
+     * @return  The transformation matrix, 6x6
+     */
     Eigen::Matrix4d curveValueToTransformationAndJacobian(const Eigen::VectorXd& c, Eigen::MatrixXd* J) const;
 
   private:

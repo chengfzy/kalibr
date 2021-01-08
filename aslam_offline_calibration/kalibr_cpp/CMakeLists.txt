@@ -40,6 +40,12 @@ add_executable(RollingShutterCameraCalibration ${FILE_INCLUDES} ${FILE_SRCS}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/app/RollingShutterCameraCalibration.cpp)
 target_link_libraries(RollingShutterCameraCalibration ${catkin_LIBRARIES} fmt::fmt-header-only glog gflags)
 
+# BSpline Test, it's only used for compare to my developed library
+file(GLOB_RECURSE FILE_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/include/cc/*.*)
+add_executable(BSplineTest ${FILE_INCLUDES}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/app/BSplineTest.cpp)
+target_link_libraries(BSplineTest ${catkin_LIBRARIES} fmt::fmt-header-only glog gflags)
+
 ##################################
 # tests
 ##################################
