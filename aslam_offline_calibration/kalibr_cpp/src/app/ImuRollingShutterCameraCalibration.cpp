@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
     // camera parameters
     cout << Paragraph("Camera Parameters");
     CameraParameters cameraParameters;
-    // Sensing JAX52202
+    // Sensing JAX52102
     // cameraParameters.topic = "/camSensing/image_raw";
     // cameraParameters.model = "pinhole";
     // cameraParameters.f = Vector2d(826.999140224398, 827.942754081805);
